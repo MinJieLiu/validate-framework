@@ -1,0 +1,340 @@
+/**
+ * @descrition: 正则表达式
+ */
+var regexs = {
+
+    // 匹配 max_length(12) => ["max_length", 12]
+    rule: /^(.+?)\((.+)\)$/,
+
+    // 数字
+    numeric: /^[0-9]+$/,
+
+    /**
+     * @descrition: 邮箱
+     * 1.邮箱以a-z、A-Z、0-9开头，最小长度为1.
+     * 2.如果左侧部分包含-、_、.则这些特殊符号的前面必须包一位数字或字母。
+     * 3.@符号是必填项
+     * 4.右则部分可分为两部分，第一部分为邮件提供商域名地址，第二部分为域名后缀，现已知的最短为2位。最长的为6为。
+     * 5.邮件提供商域可以包含特殊字符-、_、.
+     */
+    email: /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
+
+    /**
+     * [ip ipv4、ipv6]
+     * "192.168.0.0"
+     * "192.168.2.3.1.1"
+     * "235.168.2.1"
+     * "192.168.254.10"
+     * "192.168.254.10.1.1"
+     */
+    ip: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])((\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}|(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){5})$/,
+
+    /**
+     * @descrition: 判断输入的参数是否是个合格的固定电话号码。
+     * 待验证的固定电话号码。
+     * 国家代码(2到3位)-区号(2到3位)-电话号码(7到8位)-分机号(3位)
+     **/
+    fax: /^(([0\+]\d{2,3}-)?(0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/,
+
+    /**
+     *@descrition: 手机号码
+     * 13段：130、131、132、133、134、135、136、137、138、139
+     * 14段：145、147
+     * 15段：150、151、152、153、155、156、157、158、159
+     * 17段：170、176、177、178
+     * 18段：180、181、182、183、184、185、186、187、188、189
+     * 国际码 如：中国(+86)
+     */
+    phone: /^((\+?[0-9]{1,4})|(\(\+86\)))?(13[0-9]|14[57]|15[012356789]|17[0678]|18[0-9])\d{8}$/,
+
+    /**
+     * @descrition: 字母数字或下划线
+     */
+    abc: /^[a-zA-Z0-9_]*$/,
+
+    /**
+     * @descrition: URL
+     */
+    url: /[a-zA-z]+:\/\/[^\s]/,
+
+    /**
+     * @descrition: 日期
+     */
+    date: /\d{4}-\d{1,2}-\d{1,2}/
+}
+
+var _testHook = {
+
+    // 验证合法邮箱
+    is_email: function(field) {
+        return regexs.email.test(getValue(field));
+    },
+
+    // 验证合法 ip 地址
+    is_ip: function(field) {
+        return regexs.ip.test(getValue(field));
+    },
+
+    // 验证传真
+    is_fax: function(field) {
+        return regexs.fax.test(getValue(field));
+    },
+
+    // 验证座机
+    is_tel: function(field) {
+        return regexs.fax.test(getValue(field));
+    },
+
+    // 验证手机
+    is_phone: function(field) {
+        return regexs.phone.test(getValue(field));
+    },
+
+    // 验证字母数字下划线
+    is_abc: function(field) {
+        return regexs.abc.test(getValue(field));
+    },
+
+    // 验证URL
+    is_url: function(field) {
+        return regexs.url.test(getValue(field));
+    },
+
+    // 验证日期
+    is_date: function(field) {
+        return regexs.date.test(getValue(field));
+    },
+
+    // 是否为必填
+    required: function(field) {
+        var value = getValue(field);
+        if ((field.type === 'checkbox') || (field.type === 'radio')) {
+            return (field.checked === true);
+        }
+        return (value !== null && value !== '');
+    },
+
+    // 最大长度
+    max_length: function(field, length) {
+        if (!regexs.numeric.test(length)) return false;
+        return (getValue(field).length <= parseInt(length, 10));
+    },
+
+    // 最小长度
+    min_length: function(field, length) {
+        if (!regexs.numeric.test(length)) return false;
+        return (getValue(field).length >= parseInt(length, 10));
+    }
+}
+
+var Validator = function(formEl, fields, callback) {
+
+    // 将验证方法绑到 Validator 对象上
+    for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
+
+    this.isCallback = callback ? true : false;
+    this.callback = callback || function() {};
+    this.form = _formElement(formEl) || {};
+    this.errors = [];
+    this.fields = {};
+    this.handles = {};
+
+    // 如果不存在 form 对象
+    if (!formEl) return this;
+
+    for (var i = 0, fieldLength = fields.length; i < fieldLength; i++) {
+
+        var field = fields[i];
+
+        // 如果通过不正确，我们需要跳过该领域。
+        if ((!field.name && !field.names) || !field.rules) {
+            console.warn(field);
+            continue;
+        }
+
+        // 构建具有所有需要验证的信息的主域数组
+        if (field.names) {
+            for (var j = 0, fieldNamesLength = field.names.length; j < fieldNamesLength; j++) {
+                addField(this, field, field.names[j]);
+            }
+        } else {
+            addField(this, field, field.name);
+        }
+    }
+
+    // 使用 submit 按钮拦截
+    var _onsubmit = this.form.onsubmit;
+    this.form.onsubmit = (function(that) {
+        return function(evt) {
+            try {
+                return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
+            } catch (e) {}
+        };
+    })(this);
+}
+
+Validator.prototype = {
+    /**
+     * [_validator 在提交表单时进行验证。或者直接调用validate]
+     * @param  {[type]} evt [description]
+     * @return {[type]}     [JSON]
+     */
+    validate: function(evt) {
+
+        this.handles["ok"] = true;
+        this.handles["evt"] = evt;
+        this.errors = [];
+
+        for (var key in this.fields) {
+            if (this.fields.hasOwnProperty(key)) {
+                var field = this.fields[key] || {},
+                    element = this.form[field.name];
+
+                if (element && element !== undefined) {
+                    field.id = attributeValue(element, 'id');
+                    field.element = element;
+                    field.type = (element.length > 0) ? element[0].type : element.type;
+                    field.value = attributeValue(element, 'value');
+                    field.checked = attributeValue(element, 'checked');
+
+                    this._validateField(field);
+                }
+            }
+        }
+
+        if (typeof this.callback === 'function') {
+            this.callback(this, evt);
+        }
+
+        // 如果有错误，停止 submit 提交
+        if (this.errors.length > 0) {
+            if (evt && evt.preventDefault) {
+                evt.preventDefault();
+            } else if (event) {
+                // IE 使用的全局变量
+                event.returnValue = false;
+            }
+        }
+
+        return this;
+    },
+    _validateField: function(field) {
+
+        var rules = field.rules.split('|'),
+            isEmpty = (!field.value || field.value === '' || field.value === undefined);
+
+        for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
+
+            var method = rules[i];
+            var parts = regexs.rule.exec(method);
+
+            var param = null;
+            var failed = false;
+
+            // 解析带参数的验证如 max_length(12)
+            if (parts) method = parts[1], param = parts[2];
+
+            if (typeof _testHook[method] === 'function') {
+                if (!_testHook[method].apply(this, [field, param])) {
+                    failed = true;
+                }
+            }
+
+            if (failed) {
+                var message = (function() {
+                    return field.display.split('|')[i] && field.display.split('|')[i].replace('{{' + field.name + '}}', field.value)
+                })()
+
+                var existingError;
+                for (j = 0; j < this.errors.length; j += 1) {
+                    if (field.element === this.errors[j].element) {
+                        existingError = this.errors[j];
+                    }
+                }
+
+                var errorObject = existingError || {
+                    id: field.id,
+                    display: field.display,
+                    element: field.element,
+                    name: field.name,
+                    message: message,
+                    messages: [],
+                    rule: method
+                };
+                errorObject.messages.push(message);
+                if (!existingError) this.errors.push(errorObject);
+            }
+        }
+        return this;
+    }
+}
+
+/**
+ * @descrition: 将样式属性字符转换成驼峰。
+ * @param  {[string]} caseName [字符串]
+ * @return {[string]}
+ */
+function toCamelCase(caseName) {
+    // Support: IE9-11+
+    return caseName.replace(/\_([a-z])/g, function(all, letter) {
+        return letter.toUpperCase();
+    });
+}
+
+/**
+ * @descrition: 获取节点对象的属性
+ * @param  {[element]} el            [传入节点]
+ * @param  {[string]}  attributeName [需要获取的属性]
+ * @return {[string]}                [返回String，属性值]
+ */
+function attributeValue(el, attributeName) {
+    var i;
+    if ((el.length > 0) && (el[0].type === 'radio' || el[0].type === 'checkbox')) {
+        for (i = 0, elLength = el.length; i < elLength; i++) {
+            if (el[i].checked) {
+                return el[i][attributeName];
+            }
+        }
+        return;
+    }
+    return el[attributeName];
+};
+
+/**
+ * @descrition: 构建具有所有需要验证的信息的主域数组
+ * @param {[object]} self      [Validator]
+ * @param {[object]} field     [description]
+ * @param {[string]} nameValue [description]
+ */
+function addField(self, field, nameValue) {
+    self.fields[nameValue] = {
+        name: nameValue,
+        display: field.display || nameValue,
+        rules: field.rules,
+        id: null,
+        element: null,
+        type: null,
+        value: null,
+        checked: null
+    }
+}
+
+/**
+ * @descrition: 获取 dom 节点对象
+ * @param  {[element]} el  [字符串或者节点对象]
+ * @return {[element]}     [返回dom节点]
+ */
+function _formElement(el) {
+    return (typeof el === 'object') ? el : document.forms[el];
+}
+
+/**
+ * @descrition: 判断 field 是否为字符串
+ * @param  {[object]}      [Object 或 String]
+ * @return {[string]}      [返回值]
+ */
+function getValue(field) {
+    return (typeof field === 'string') ? field : field.value;
+}
+
+return Validator;
