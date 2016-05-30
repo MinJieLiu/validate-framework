@@ -1,5 +1,5 @@
 /**
- * @descrition: 正则表达式
+ * 正则表达式
  */
 var regexs = {
 
@@ -9,80 +9,43 @@ var regexs = {
     // 数字
     numeric: /^[0-9]+$/,
 
-    /**
-     * @descrition: 邮箱
-     * 1.邮箱以a-z、A-Z、0-9开头，最小长度为1.
-     * 2.如果左侧部分包含-、_、.则这些特殊符号的前面必须包一位数字或字母。
-     * 3.@符号是必填项
-     * 4.右则部分可分为两部分，第一部分为邮件提供商域名地址，第二部分为域名后缀，现已知的最短为2位。最长的为6为。
-     * 5.邮件提供商域可以包含特殊字符-、_、.
-     */
+    // 邮箱
     email: /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
 
-    /**
-     * [ip ipv4、ipv6]
-     * "192.168.0.0"
-     * "192.168.2.3.1.1"
-     * "235.168.2.1"
-     * "192.168.254.10"
-     * "192.168.254.10.1.1"
-     */
+    // IP地址 [ip ipv4、ipv6]
     ip: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])((\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}|(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){5})$/,
 
-    /**
-     * @descrition: 判断输入的参数是否是个合格的固定电话号码。
-     * 待验证的固定电话号码。
-     * 国家代码(2到3位)-区号(2到3位)-电话号码(7到8位)-分机号(3位)
-     **/
-    fax: /^(([0\+]\d{2,3}-)?(0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/,
+    // 电话号码
+    tel: /^(([0\+]\d{2,3}-)?(0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/,
 
-    /**
-     *@descrition: 手机号码
-     * 13段：130、131、132、133、134、135、136、137、138、139
-     * 14段：145、147
-     * 15段：150、151、152、153、155、156、157、158、159
-     * 17段：170、176、177、178
-     * 18段：180、181、182、183、184、185、186、187、188、189
-     * 国际码 如：中国(+86)
-     */
+    // 手机号码
     phone: /^((\+?[0-9]{1,4})|(\(\+86\)))?(13[0-9]|14[57]|15[012356789]|17[0678]|18[0-9])\d{8}$/,
 
-    /**
-     * @descrition: 字母数字或下划线
-     */
+    // 字母数字或下划线
     abc: /^[a-zA-Z0-9_]*$/,
 
-    /**
-     * @descrition: URL
-     */
+    // URL
     url: /[a-zA-z]+:\/\/[^\s]/,
 
-    /**
-     * @descrition: 日期
-     */
+    // 日期
     date: /\d{4}-\d{1,2}-\d{1,2}/
 }
 
 var _testHook = {
 
-    // 验证合法邮箱
+    // 验证邮箱
     is_email: function(field) {
         return regexs.email.test(getValue(field));
     },
 
-    // 验证合法 ip 地址
+    // 验证 ip 地址
     is_ip: function(field) {
         return regexs.ip.test(getValue(field));
     },
 
-    // 验证传真
-    is_fax: function(field) {
-        return regexs.fax.test(getValue(field));
-    },
-
     // 验证座机
     is_tel: function(field) {
-        return regexs.fax.test(getValue(field));
+        return regexs.tel.test(getValue(field));
     },
 
     // 验证手机
@@ -127,12 +90,17 @@ var _testHook = {
     }
 }
 
+/**
+ * Validator 对象
+ * @param {Object} form节点
+ * @param {Object} 验证对象（参数）
+ * @param {Object}
+ */
 var Validator = function(formEl, fields, callback) {
 
     // 将验证方法绑到 Validator 对象上
     for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
 
-    this.isCallback = callback ? true : false;
     this.callback = callback || function() {};
     this.form = _formElement(formEl) || {};
     this.errors = [];
@@ -175,9 +143,9 @@ var Validator = function(formEl, fields, callback) {
 
 Validator.prototype = {
     /**
-     * [_validator 在提交表单时进行验证。或者直接调用validate]
-     * @param  {[type]} evt [description]
-     * @return {[type]}     [JSON]
+     * 在提交表单时进行验证。或者直接调用validate
+     * @param  {Object} 当前事件
+     * @return {Object}
      */
     validate: function(evt) {
 
@@ -188,14 +156,14 @@ Validator.prototype = {
         for (var key in this.fields) {
             if (this.fields.hasOwnProperty(key)) {
                 var field = this.fields[key] || {},
-                    element = this.form[field.name];
+                    el = this.form[field.name];
 
-                if (element && element !== undefined) {
-                    field.id = attributeValue(element, 'id');
-                    field.element = element;
-                    field.type = (element.length > 0) ? element[0].type : element.type;
-                    field.value = attributeValue(element, 'value');
-                    field.checked = attributeValue(element, 'checked');
+                if (el && el !== undefined) {
+                    field.id = attributeValue(el, 'id');
+                    field.el = el;
+                    field.type = (el.length > 0) ? el[0].type : el.type;
+                    field.value = attributeValue(el, 'value');
+                    field.checked = attributeValue(el, 'checked');
 
                     this._validateField(field);
                 }
@@ -218,6 +186,7 @@ Validator.prototype = {
 
         return this;
     },
+
     _validateField: function(field) {
 
         var rules = field.rules.split('|'),
@@ -232,7 +201,9 @@ Validator.prototype = {
             var failed = false;
 
             // 解析带参数的验证如 max_length(12)
-            if (parts) method = parts[1], param = parts[2];
+            if (parts) {
+                method = parts[1], param = parts[2];
+            }
 
             if (typeof _testHook[method] === 'function') {
                 if (!_testHook[method].apply(this, [field, param])) {
@@ -242,12 +213,12 @@ Validator.prototype = {
 
             if (failed) {
                 var message = (function() {
-                    return field.display.split('|')[i] && field.display.split('|')[i].replace('{{' + field.name + '}}', field.value)
-                })()
+                    return field.display.split('|')[i] && field.display.split('|')[i].replace('{{' + field.name + '}}', field.value);
+                })();
 
                 var existingError;
                 for (j = 0; j < this.errors.length; j += 1) {
-                    if (field.element === this.errors[j].element) {
+                    if (field.el === this.errors[j].el) {
                         existingError = this.errors[j];
                     }
                 }
@@ -255,7 +226,7 @@ Validator.prototype = {
                 var errorObject = existingError || {
                     id: field.id,
                     display: field.display,
-                    element: field.element,
+                    el: field.el,
                     name: field.name,
                     message: message,
                     messages: [],
@@ -270,9 +241,9 @@ Validator.prototype = {
 }
 
 /**
- * @descrition: 将样式属性字符转换成驼峰。
- * @param  {[string]} caseName [字符串]
- * @return {[string]}
+ * 将样式属性字符转换成驼峰。
+ * @param {String} 字符串
+ * @return {String}
  */
 function toCamelCase(caseName) {
     // Support: IE9-11+
@@ -282,10 +253,10 @@ function toCamelCase(caseName) {
 }
 
 /**
- * @descrition: 获取节点对象的属性
- * @param  {[element]} el            [传入节点]
- * @param  {[string]}  attributeName [需要获取的属性]
- * @return {[string]}                [返回String，属性值]
+ * 获取节点对象的属性
+ * @param {Object} 传入节点
+ * @param {String} 需要获取的属性
+ * @return {String} 属性值
  */
 function attributeValue(el, attributeName) {
     var i;
@@ -301,10 +272,10 @@ function attributeValue(el, attributeName) {
 };
 
 /**
- * @descrition: 构建具有所有需要验证的信息的主域数组
- * @param {[object]} self      [Validator]
- * @param {[object]} field     [description]
- * @param {[string]} nameValue [description]
+ * 构建具有所有需要验证的信息的主域数组
+ * @param {Object} 
+ * @param {Object} 当前验证对象
+ * @param {String} 提示文字
  */
 function addField(self, field, nameValue) {
     self.fields[nameValue] = {
@@ -312,7 +283,7 @@ function addField(self, field, nameValue) {
         display: field.display || nameValue,
         rules: field.rules,
         id: null,
-        element: null,
+        el: null,
         type: null,
         value: null,
         checked: null
@@ -320,18 +291,18 @@ function addField(self, field, nameValue) {
 }
 
 /**
- * @descrition: 获取 dom 节点对象
- * @param  {[element]} el  [字符串或者节点对象]
- * @return {[element]}     [返回dom节点]
+ * 获取 dom 节点对象
+ * @param {Object} 字符串或者节点对象
+ * @return {Object} 返回dom节点
  */
 function _formElement(el) {
     return (typeof el === 'object') ? el : document.forms[el];
 }
 
 /**
- * @descrition: 判断 field 是否为字符串
- * @param  {[object]}      [Object 或 String]
- * @return {[string]}      [返回值]
+ * 判断 field 是否为字符串
+ * @param {Object}
+ * @return {String} 返回值
  */
 function getValue(field) {
     return (typeof field === 'string') ? field : field.value;
