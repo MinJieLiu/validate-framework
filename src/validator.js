@@ -189,7 +189,7 @@ Validator.prototype = {
 
     _validateField: function(field) {
 
-        var rules = field.rules.split('|');
+        var rules = field.rules.split(/\s*\|\s*/g);
 
         for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
 
@@ -212,7 +212,7 @@ Validator.prototype = {
 
             if (failed) {
                 var message = (function() {
-                    return field.display.split('|')[i] && field.display.split('|')[i].replace('{{' + field.name + '}}', field.value);
+                    return field.display.split(/\s*\|\s*/g)[i] && field.display.split(/\s*\|\s*/g)[i].replace('{{' + field.name + '}}', field.value);
                 })();
 
                 var existingError;
