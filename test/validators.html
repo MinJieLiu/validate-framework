@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>单元测试</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+<body>
+    <!-- I you use Backbone Model you will need JSON -->
+    <div id="mocha"></div>
+
+    <div id="test"></div>
+    <script type="text/javascript" src="../dist/validator.js"></script>
+    <script type="text/javascript" src="../node_modules/chai/chai.js"></script>
+    <script type="text/javascript" src="../node_modules/mocha/mocha.js" ></script>
+    <script>mocha.setup('bdd')</script>
+    <script src="unit/validators.js"></script>
+    <script>
+        if (window.mochaPhantomJS) {
+            mochaPhantomJS.run();
+        } else {
+            mocha.run();
+        }
+    </script>
+</body>
+</html>

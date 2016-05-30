@@ -189,8 +189,7 @@ Validator.prototype = {
 
     _validateField: function(field) {
 
-        var rules = field.rules.split('|'),
-            isEmpty = (!field.value || field.value === '' || field.value === undefined);
+        var rules = field.rules.split('|');
 
         for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
 

@@ -1,0 +1,38 @@
+{
+  "name": "validator.js",
+  "version": "1.0.0",
+  "description": "轻量级JavaScript表单验证，字符串验证。",
+  "homepage": "https://github.com/MinJieLiu/validator.js",
+  "main": "dist/validator.js",
+  "scripts": {
+    "test": "mocha-phantomjs test/validators.html",
+    "clean": "rm -rf dist/validator*.js",
+    "build:min": "umd Validator src/validator.js | uglifyjs -mc | bannerjs -o > dist/validator.min.js",
+    "build:dist": "umd Validator src/validator.js | uglifyjs -b beautify=true --comments 'all' | bannerjs -m > dist/validator.js ",
+    "build": "npm run build:min && npm run build:dist",
+    "watch": "onchange 'src/store.js' -v -- npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MinJieLiu/validator.js"
+  },
+  "keywords": [
+    "validator",
+    "validator.js",
+    "validation",
+    "validate",
+    "form"
+  ],
+  "author": "LMY",
+  "license": "Apache License 2",
+  "devDependencies": {
+    "bannerjs": "^1.0.1",
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "mocha-phantomjs": "^4.0.2",
+    "object-assign": "^4.1.0",
+    "onchange": "^2.4.0",
+    "uglify-js": "^2.6.2",
+    "umd": "^3.0.1"
+  }
+}
