@@ -65,6 +65,7 @@ var _testHook = {
 
     // 验证日期
     is_date: function(field) {
+        // 解析日期
         var _date = getValue(field);
         if (regexs.date.test(_date)) {
             _date = _date.split('-');
@@ -153,6 +154,15 @@ var Validator = function(formEl, fields, callback) {
         }
     }
 
+    // 使用表单值改变拦截
+    this.form.onchange = (function(that) {
+        return function(evt) {
+            try {
+                return that.validate(evt);
+            } catch (e) {}
+        };
+    })(this);
+
     // 使用 submit 按钮拦截
     var _onsubmit = this.form.onsubmit;
     this.form.onsubmit = (function(that) {
@@ -188,7 +198,7 @@ Validator.prototype = {
                     field.value = attributeValue(el, 'value');
                     field.checked = attributeValue(el, 'checked');
 
-                    this._validateField(field);
+                    this.validateField(field);
                 }
             }
         }
@@ -210,7 +220,7 @@ Validator.prototype = {
         return this;
     },
 
-    _validateField: function(field) {
+    validateField: function(field) {
 
         var rules = field.rules.split(/\s*\|\s*/g);
 

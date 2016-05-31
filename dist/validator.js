@@ -78,6 +78,7 @@
         },
         // 验证日期
         is_date: function(field) {
+            // 解析日期
             var _date = getValue(field);
             if (regexs.date.test(_date)) {
                 _date = _date.split("-");
@@ -151,6 +152,14 @@
                 addField(this, field, field.name);
             }
         }
+        // 使用表单值改变拦截
+        this.form.onchange = function(that) {
+            return function(evt) {
+                try {
+                    return that.validate(evt);
+                } catch (e) {}
+            };
+        }(this);
         // 使用 submit 按钮拦截
         var _onsubmit = this.form.onsubmit;
         this.form.onsubmit = function(that) {
@@ -181,7 +190,7 @@
                         field.type = el.length > 0 ? el[0].type : el.type;
                         field.value = attributeValue(el, "value");
                         field.checked = attributeValue(el, "checked");
-                        this._validateField(field);
+                        this.validateField(field);
                     }
                 }
             }
@@ -199,7 +208,7 @@
             }
             return this;
         },
-        _validateField: function(field) {
+        validateField: function(field) {
             var rules = field.rules.split(/\s*\|\s*/g);
             for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
                 var method = rules[i];

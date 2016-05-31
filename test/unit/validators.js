@@ -10,6 +10,7 @@ describe("validators", function() {
         expect(v.required(' ')).to.be.true;
         expect(v.required('null')).to.be.true;
         expect(v.required('ss')).to.be.true;
+        expect(v.required('\s')).to.be.true;
     });
 
     it("isUrl() URL 验证", function() {
@@ -22,6 +23,7 @@ describe("validators", function() {
         expect(v.isUrl('hps://www.baidu.com')).to.be.true;
     });
 
+    // 邮箱验证 完美的邮箱验证表达式非常庞大，达23k，故采用普通的邮箱验证表达式，不匹配中文域名
     it("isEmail() 邮箱验证", function() {
         expect(v.isEmail('d.s.s.d@qq.com.cn')).to.be.true;
         expect(v.isEmail('d.s-s.d@qq.com.cn')).to.be.true;
@@ -29,6 +31,8 @@ describe("validators", function() {
         expect(v.isEmail('ds.sd@qq.com')).to.be.true;
         expect(v.isEmail('dss1234.sd@qq.com')).to.be.true;
         expect(v.isEmail('ds.sd@qq.com.cn')).to.be.true;
+        expect(v.isEmail('@qq.cn')).to.be.false;
+        expect(v.isEmail('saf#qq.cn')).to.be.false;
         expect(v.isEmail('wowohoo@qq.com')).to.be.true;
         expect(v.isEmail('wowo.o@qq.com')).to.be.true;
         expect(v.isEmail('wowo@123.sd')).to.be.true;
@@ -38,7 +42,6 @@ describe("validators", function() {
         expect(v.isEmail('wowo@asdf.中国')).to.be.false;
         expect(v.isEmail('wowo@中国.com')).to.be.false;
         expect(v.isEmail('中@qq.com')).to.be.false;
-
     });
 
     it("isIp() IP验证", function() {
