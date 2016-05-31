@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.0
+ * validator.js v1.0.1
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -156,7 +156,8 @@
         this.form.onchange = function(that) {
             return function(evt) {
                 try {
-                    return that.validate(evt);
+                    // 验证单个表单
+                    return that.validateField(that.fields[evt.target.name]);
                 } catch (e) {}
             };
         }(this);
@@ -172,7 +173,7 @@
     };
     Validator.prototype = {
         /**
-     * 在提交表单时进行验证。或者直接调用validate
+     * 验证当前表单域
      * @param  {Object} 当前事件
      * @return {Object}
      */
@@ -183,19 +184,8 @@
             for (var key in this.fields) {
                 if (this.fields.hasOwnProperty(key)) {
                     var field = this.fields[key] || {};
-                    var el = this.form[field.name];
-                    if (el && el !== undefined) {
-                        field.id = attributeValue(el, "id");
-                        field.el = el;
-                        field.type = el.length > 0 ? el[0].type : el.type;
-                        field.value = attributeValue(el, "value");
-                        field.checked = attributeValue(el, "checked");
-                        this.validateField(field);
-                    }
+                    this.validateField(field);
                 }
-            }
-            if (typeof this.callback === "function") {
-                this.callback(this, evt);
             }
             // 如果有错误，停止 submit 提交
             if (this.errors.length > 0) {
@@ -208,7 +198,22 @@
             }
             return this;
         },
+        /**
+     * 验证当前节点
+     * @param  {Object} 验证信息域
+     * @return {Object}
+     */
         validateField: function(field) {
+            // 获得节点
+            var el = this.form[field.name];
+            // 设置验证信息域属性
+            if (el && el !== undefined) {
+                field.id = attributeValue(el, "id");
+                field.el = el;
+                field.type = el.length > 0 ? el[0].type : el.type;
+                field.value = attributeValue(el, "value");
+                field.checked = attributeValue(el, "checked");
+            }
             var rules = field.rules.split(/\s*\|\s*/g);
             for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
                 var method = rules[i];
@@ -247,6 +252,10 @@
                     errorObject.messages.push(message);
                     if (!existingError) this.errors.push(errorObject);
                 }
+            }
+            // 执行回调函数
+            if (typeof this.callback === "function") {
+                this.callback(this, this.handles["evt"]);
             }
             return this;
         }

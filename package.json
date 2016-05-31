@@ -1,6 +1,6 @@
 {
   "name": "validator.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "轻量级JavaScript表单验证，字符串验证。",
   "homepage": "https://github.com/MinJieLiu/validator.js",
   "main": "dist/validator.js",
@@ -11,7 +11,7 @@
     "build:min": "umd Validator src/validator.js | uglifyjs -mc | bannerjs -o > dist/validator.min.js",
     "build:dist": "umd Validator src/validator.js | uglifyjs -b --comments all | bannerjs -m > dist/validator.js",
     "build": "npm run lint && npm run build:min && npm run build:dist",
-    "watch": "onchange 'src/store.js' -v -- npm run build"
+    "watch": "onchange 'src/validator.js' -v -- npm run build"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "validator.js",
     "validation",
     "validate",
+    "validate.js",
     "form"
   ],
   "author": "LMY",
