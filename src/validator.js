@@ -28,7 +28,7 @@ var regexs = {
     url: /[a-zA-z]+:\/\/[^\s]/,
 
     // 日期
-    date: /\d{4}-\d{1,2}-\d{1,2}/
+    date: /^\d{4}-\d{1,2}-\d{1,2}$/
 };
 
 var _testHook = {
@@ -65,7 +65,30 @@ var _testHook = {
 
     // 验证日期
     is_date: function(field) {
-        return regexs.date.test(getValue(field));
+        var _date = getValue(field);
+        if (regexs.date.test(_date)) {
+            _date = _date.split('-');
+            var year = parseInt(_date[0], 10);
+            var month = parseInt(_date[1], 10);
+            var day = parseInt(_date[2], 10);
+
+            if (year < 1 || year > 9999 || month < 1 || month > 12) {
+                return false;
+            }
+
+            var numDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            // 闰年2月29号
+            if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
+                numDays[1] = 29;
+            }
+
+            // 检查日期
+            if (day < 1 || day > numDays[month - 1]) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     },
 
     // 是否为必填
