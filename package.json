@@ -5,11 +5,12 @@
   "homepage": "https://github.com/MinJieLiu/validator.js",
   "main": "dist/validator.js",
   "scripts": {
+    "lint": "eslint src/validator.js",
     "test": "mocha-phantomjs test/validators.html",
     "clean": "rm -rf dist/validator*.js",
     "build:min": "umd Validator src/validator.js | uglifyjs -mc | bannerjs -o > dist/validator.min.js",
-    "build:dist": "umd Validator src/validator.js | uglifyjs -b beautify=true --comments 'all' | bannerjs -m > dist/validator.js ",
-    "build": "npm run build:min && npm run build:dist",
+    "build:dist": "umd Validator src/validator.js | uglifyjs -b --comments all | bannerjs -m > dist/validator.js",
+    "build": "npm run lint && npm run build:min && npm run build:dist",
     "watch": "onchange 'src/store.js' -v -- npm run build"
   },
   "repository": {
@@ -26,8 +27,13 @@
   "author": "LMY",
   "license": "Apache License 2",
   "devDependencies": {
+    "babel-core": "^6.9.1",
+    "babel-eslint": "^6.0.4",
     "bannerjs": "^1.0.1",
     "chai": "^3.5.0",
+    "eslint": "^2.11.1",
+    "eslint-plugin-promise": "^1.3.1",
+    "eslint-plugin-standard": "^1.3.2",
     "mocha": "^2.4.5",
     "mocha-phantomjs": "^4.0.2",
     "object-assign": "^4.1.0",

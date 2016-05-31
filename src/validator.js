@@ -3,7 +3,7 @@
  */
 var regexs = {
 
-    // 匹配 max_length(12) => ["max_length", 12]
+    // 匹配 max_length(12) => ['max_length', 12]
     rule: /^(.+?)\((.+)\)$/,
 
     // 数字
@@ -29,7 +29,7 @@ var regexs = {
 
     // 日期
     date: /\d{4}-\d{1,2}-\d{1,2}/
-}
+};
 
 var _testHook = {
 
@@ -88,7 +88,7 @@ var _testHook = {
         if (!regexs.numeric.test(length)) return false;
         return (getValue(field).length >= parseInt(length, 10));
     }
-}
+};
 
 /**
  * Validator 对象
@@ -139,7 +139,7 @@ var Validator = function(formEl, fields, callback) {
             } catch (e) {}
         };
     })(this);
-}
+};
 
 Validator.prototype = {
     /**
@@ -149,14 +149,14 @@ Validator.prototype = {
      */
     validate: function(evt) {
 
-        this.handles["ok"] = true;
-        this.handles["evt"] = evt;
+        this.handles['ok'] = true;
+        this.handles['evt'] = evt;
         this.errors = [];
 
         for (var key in this.fields) {
             if (this.fields.hasOwnProperty(key)) {
-                var field = this.fields[key] || {},
-                    el = this.form[field.name];
+                var field = this.fields[key] || {};
+                var el = this.form[field.name];
 
                 if (el && el !== undefined) {
                     field.id = attributeValue(el, 'id');
@@ -201,7 +201,8 @@ Validator.prototype = {
 
             // 解析带参数的验证如 max_length(12)
             if (parts) {
-                method = parts[1], param = parts[2];
+                method = parts[1];
+                param = parts[2];
             }
 
             if (typeof _testHook[method] === 'function') {
@@ -216,7 +217,7 @@ Validator.prototype = {
                 })();
 
                 var existingError;
-                for (j = 0; j < this.errors.length; j += 1) {
+                for (var j = 0, errorsLength = this.errors.length; j < errorsLength; j += 1) {
                     if (field.el === this.errors[j].el) {
                         existingError = this.errors[j];
                     }
@@ -237,7 +238,7 @@ Validator.prototype = {
         }
         return this;
     }
-}
+};
 
 /**
  * 将样式属性字符转换成驼峰。
@@ -258,7 +259,7 @@ function toCamelCase(caseName) {
  * @return {String} 属性值
  */
 function attributeValue(el, attributeName) {
-    var i;
+    var i, elLength;
     if ((el.length > 0) && (el[0].type === 'radio' || el[0].type === 'checkbox')) {
         for (i = 0, elLength = el.length; i < elLength; i++) {
             if (el[i].checked) {
@@ -272,7 +273,7 @@ function attributeValue(el, attributeName) {
 
 /**
  * 构建具有所有需要验证的信息的主域数组
- * @param {Object} 
+ * @param {Object} 当前对象
  * @param {Object} 当前验证对象
  * @param {String} 提示文字
  */
@@ -286,7 +287,7 @@ function addField(self, field, nameValue) {
         type: null,
         value: null,
         checked: null
-    }
+    };
 }
 
 /**
