@@ -5,7 +5,7 @@
         <meta charset="utf-8" />
         <title>validator.js演示</title>
         <link rel="stylesheet" href="bootstrap.css" />
-        <script src="../src/validator.js"></script>
+        <script src="../dist/validator.js"></script>
     </head>
 
     <body>
@@ -89,8 +89,8 @@
                         message: "手机号： {{phone}} 不合法"
                     },
                     birthday: {
-                        rules: 'is_date | required',
-                        message: "请输入合法日期 | 不能为空"
+                        rules: 'required | is_date',
+                        message: "不能为空 | 请输入合法日期"
                     },
                     sex: {
                         rules: 'required',
