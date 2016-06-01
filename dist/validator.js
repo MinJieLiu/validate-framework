@@ -153,7 +153,7 @@
             return function(evt) {
                 try {
                     // 验证单个表单
-                    return that.validateField(that.fields[evt.target.name]);
+                    return that._validateField(that.fields[evt.target.name]);
                 } catch (e) {}
             };
         }(this);
@@ -179,7 +179,7 @@
             for (var name in this.fields) {
                 if (this.fields.hasOwnProperty(name)) {
                     var field = this.fields[name];
-                    this.validateField(field);
+                    this._validateField(field);
                 }
             }
             // 如果有错误，停止 submit 提交
@@ -201,7 +201,7 @@
      * 验证当前节点
      * @param  {Object} 验证信息域
      */
-        validateField: function(field) {
+        _validateField: function(field) {
             // 获得节点
             var el = this.form[field.name];
             // 成功标识
@@ -218,11 +218,13 @@
             // 删除之前验证过的信息
             delete this.errors[field.name];
             for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
+                // 开启逐条验证
+                if (failed) {
+                    break;
+                }
                 var method = rules[i];
                 var parts = regexs.rule.exec(method);
                 var param = null;
-                // 当前条目成功标识
-                var currentFailed = false;
                 // 解析带参数的验证如 max_length(12)
                 if (parts) {
                     method = parts[1];
@@ -232,11 +234,10 @@
                 if (typeof _testHook[method] === "function") {
                     if (!_testHook[method].apply(this, [ field, param ])) {
                         failed = true;
-                        currentFailed = true;
                     }
                 }
                 // 解析错误信息
-                if (currentFailed) {
+                if (failed) {
                     var message = function() {
                         return field.message.split(/\s*\|\s*/g)[i] && field.message.split(/\s*\|\s*/g)[i].replace("{{" + field.name + "}}", field.value);
                     }();
