@@ -117,10 +117,9 @@ var _testHook = {
 /**
  * Validator 对象
  * @param {Object} form节点
- * @param {Object} 验证对象（参数）
- * @param {Object} 回调函数
+ * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
-var Validator = function(formEl, fields, options) {
+var Validator = function(formEl, options) {
 
     // 将验证方法绑到 Validator 对象上
     for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
@@ -135,6 +134,8 @@ var Validator = function(formEl, fields, options) {
     if (!formEl) {
         return this;
     }
+
+    var fields = typeof options.fields === 'object' ? options.fields : {};
 
     for (var name in fields) {
 
@@ -216,6 +217,8 @@ Validator.prototype = {
 
         // 获得节点
         var el = this.form[field.name];
+        // 成功标识
+        var failed = false;
 
         // 设置验证信息域属性
         if (el && el !== undefined) {
@@ -237,7 +240,8 @@ Validator.prototype = {
             var parts = regexs.rule.exec(method);
 
             var param = null;
-            var failed = false;
+            // 当前条目成功标识
+            var currentFailed = false;
 
             // 解析带参数的验证如 max_length(12)
             if (parts) {
@@ -249,11 +253,12 @@ Validator.prototype = {
             if (typeof _testHook[method] === 'function') {
                 if (!_testHook[method].apply(this, [field, param])) {
                     failed = true;
+                    currentFailed = true;
                 }
             }
 
             // 解析错误信息
-            if (failed) {
+            if (currentFailed) {
                 var message = (function() {
                     return field.message.split(/\s*\|\s*/g)[i] && field.message.split(/\s*\|\s*/g)[i].replace('{{' + field.name + '}}', field.value);
                 })();
@@ -279,36 +284,53 @@ Validator.prototype = {
             }
         }
 
-        // 设置错误提示
-        if (!this.options.errorPlacement) {
-            this._currentErrorPlacement(field);
-        }
+        // 当前条目所有条件验证结果
+        failed ? this._addErrorPlacement(field) : this._removeErrorMessage(field);
 
         return this;
     },
 
     /**
-     * 创建错误信息
+     * 移除当前条目错误信息
+     * @param {Object} 验证信息域
      */
-    _currentErrorPlacement: function(field) {
+    _removeErrorMessage: function(field) {
+        var errorEl = document.getElementById('valid_error_' + field.name);
+        if (errorEl) {
+            errorEl.parentNode.removeChild(errorEl);
+        }
+    },
+
+    /**
+     * 创建错误信息
+     * @param {Object} 验证信息域
+     */
+    _addErrorPlacement: function(field) {
+
         // 无错误信息
         if (!this.errors[field.name]) {
             return;
         }
 
+        // 清除之前保留的错误信息
+        this._removeErrorMessage(field);
+
         // 创建元素
-        var errorLabel = document.createElement('em');
-        errorLabel.classList.add('valid-error');
-        if (field.el.parentNode) {
+        var errorEl = document.createElement('em');
+        errorEl.classList.add('valid-error');
+        errorEl.setAttribute('id', 'valid_error_' + field.name);
+        errorEl.innerHTML = this.errors[field.name].message;
 
-            // 获取存在的错误信息节点
-            var existsEl = field.el.parentNode.getElementsByClassName('valid-error');
-            if (existsEl.length) {
-                field.el.parentNode.removeChild(existsEl[0]);
+        // 错误信息位置
+        if (typeof this.options === 'object' && typeof this.options.errorPlacement === 'function') {
+            // 参数：错误信息节点，当前表单 DOM
+            this.options.errorPlacement(errorEl, field.el);
+        } else {
+            // 默认错误信息位置
+            // 非 label 、radio 元素
+            if (!field.el.length) {
+                field.el.parentNode.appendChild(errorEl);
             }
-
-            errorLabel.innerHTML = this.errors[field.name].message;
-            field.el.parentNode.appendChild(errorLabel);
         }
     }
 
