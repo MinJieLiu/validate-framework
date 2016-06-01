@@ -124,33 +124,29 @@
  * Validator 对象
  * @param {Object} form节点
  * @param {Object} 验证对象（参数）
- * @param {Object}
+ * @param {Object} 回调函数
  */
-    var Validator = function(formEl, fields, callback) {
+    var Validator = function(formEl, fields, options) {
         // 将验证方法绑到 Validator 对象上
         for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
-        this.callback = callback || function() {};
+        this.options = options || {};
         this.form = _formElement(formEl) || {};
-        this.errors = [];
+        this.errors = {};
         this.fields = {};
         this.handles = {};
         // 如果不存在 form 对象
-        if (!formEl) return this;
-        for (var i = 0, fieldLength = fields.length; i < fieldLength; i++) {
-            var field = fields[i];
-            // 如果通过不正确，我们需要跳过该领域。
-            if (!field.name && !field.names || !field.rules) {
+        if (!formEl) {
+            return this;
+        }
+        for (var name in fields) {
+            var field = fields[name];
+            // 规则不正确，则跳过
+            if (!field.rules) {
                 console.warn(field);
                 continue;
             }
             // 构建具有所有需要验证的信息的主域数组
-            if (field.names) {
-                for (var j = 0, fieldNamesLength = field.names.length; j < fieldNamesLength; j++) {
-                    addField(this, field, field.names[j]);
-                }
-            } else {
-                addField(this, field, field.name);
-            }
+            addField(this, name, field);
         }
         // 使用表单值改变拦截
         this.form.onchange = function(that) {
@@ -174,21 +170,20 @@
     Validator.prototype = {
         /**
      * 验证当前表单域
-     * @param  {Object} 当前事件
-     * @return {Object}
+     * @param  {Event} 当前事件
      */
         validate: function(evt) {
             this.handles["ok"] = true;
             this.handles["evt"] = evt;
-            this.errors = [];
-            for (var key in this.fields) {
-                if (this.fields.hasOwnProperty(key)) {
-                    var field = this.fields[key] || {};
+            this.errors = {};
+            for (var name in this.fields) {
+                if (this.fields.hasOwnProperty(name)) {
+                    var field = this.fields[name];
                     this.validateField(field);
                 }
             }
             // 如果有错误，停止 submit 提交
-            if (this.errors.length > 0) {
+            if (this.errors) {
                 if (evt && evt.preventDefault) {
                     evt.preventDefault();
                 } else if (event) {
@@ -196,12 +191,15 @@
                     event.returnValue = false;
                 }
             }
+            // 执行回调函数
+            if (typeof this.options === "object" && typeof this.options.callback === "function") {
+                this.options.callback(this.errors, evt);
+            }
             return this;
         },
         /**
      * 验证当前节点
      * @param  {Object} 验证信息域
-     * @return {Object}
      */
         validateField: function(field) {
             // 获得节点
@@ -215,6 +213,8 @@
                 field.checked = attributeValue(el, "checked");
             }
             var rules = field.rules.split(/\s*\|\s*/g);
+            // 删除之前验证过的信息
+            delete this.errors[field.name];
             for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
                 var method = rules[i];
                 var parts = regexs.rule.exec(method);
@@ -225,14 +225,16 @@
                     method = parts[1];
                     param = parts[2];
                 }
+                // 验证
                 if (typeof _testHook[method] === "function") {
                     if (!_testHook[method].apply(this, [ field, param ])) {
                         failed = true;
                     }
                 }
+                // 解析错误信息
                 if (failed) {
                     var message = function() {
-                        return field.display.split(/\s*\|\s*/g)[i] && field.display.split(/\s*\|\s*/g)[i].replace("{{" + field.name + "}}", field.value);
+                        return field.message.split(/\s*\|\s*/g)[i] && field.message.split(/\s*\|\s*/g)[i].replace("{{" + field.name + "}}", field.value);
                     }();
                     var existingError;
                     for (var j = 0, errorsLength = this.errors.length; j < errorsLength; j += 1) {
@@ -240,24 +242,44 @@
                             existingError = this.errors[j];
                         }
                     }
+                    // 错误信息域
                     var errorObject = existingError || {
-                        id: field.id,
-                        display: field.display,
                         el: field.el,
                         name: field.name,
                         message: message,
-                        messages: [],
                         rule: method
                     };
-                    errorObject.messages.push(message);
-                    if (!existingError) this.errors.push(errorObject);
+                    if (!existingError) {
+                        this.errors[field.name] = errorObject;
+                    }
                 }
             }
-            // 执行回调函数
-            if (typeof this.callback === "function") {
-                this.callback(this, this.handles["evt"]);
+            // 设置错误提示
+            if (!this.options.errorPlacement) {
+                this._currentErrorPlacement(field);
             }
             return this;
+        },
+        /**
+     * 创建错误信息
+     */
+        _currentErrorPlacement: function(field) {
+            // 无错误信息
+            if (!this.errors[field.name]) {
+                return;
+            }
+            // 创建元素
+            var errorLabel = document.createElement("em");
+            errorLabel.classList.add("valid-error");
+            if (field.el.parentNode) {
+                // 获取存在的错误信息节点
+                var existsEl = field.el.parentNode.getElementsByClassName("valid-error");
+                if (existsEl.length) {
+                    field.el.parentNode.removeChild(existsEl[0]);
+                }
+                errorLabel.innerHTML = this.errors[field.name].message;
+                field.el.parentNode.appendChild(errorLabel);
+            }
         }
     };
     /**
@@ -292,13 +314,13 @@
     /**
  * 构建具有所有需要验证的信息的主域数组
  * @param {Object} 当前对象
+ * @param {String} 表单 name 属性名称
  * @param {Object} 当前验证对象
- * @param {String} 提示文字
  */
-    function addField(self, field, nameValue) {
-        self.fields[nameValue] = {
-            name: nameValue,
-            display: field.display || nameValue,
+    function addField(self, name, field) {
+        self.fields[name] = {
+            name: name,
+            message: field.message,
             rules: field.rules,
             id: null,
             el: null,

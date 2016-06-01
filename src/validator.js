@@ -267,7 +267,6 @@ Validator.prototype = {
 
                 // 错误信息域
                 var errorObject = existingError || {
-                    message: field.message,
                     el: field.el,
                     name: field.name,
                     message: message,
@@ -383,4 +382,4 @@ function getValue(field) {
     return (typeof field === 'string') ? field : field.value;
 }
 
-//return Validator;
+return Validator;
