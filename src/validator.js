@@ -352,4 +352,4 @@ function getValue(field) {
     return (typeof field === 'string') ? field : field.value;
 }
 
-return Validator;
+//return Validator;

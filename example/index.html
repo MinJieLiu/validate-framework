@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8" />
+        <title>validator.js演示</title>
+        <link rel="stylesheet" href="bootstrap.css" />
+        <script src="../src/validator.js"></script>
+    </head>
+
+    <body>
+        <div class="container">
+
+            <h2>表单验证</h2>
+            <form id="validate_form" novalidate="">
+
+                <div class="form-group">
+                    <label for="email">邮箱：</label>
+                    <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">手机：</label>
+                    <input class="form-control" id="phone" name="phone" type="text" placeholder="请输入手机号" />
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday">生日：</label>
+                    <input class="form-control" id="birthday" name="birthday" type="text" placeholder="请填写生日">
+                </div>
+
+                <div class="form-group">
+                    <label>性别：</label>
+                    <div class="radio">
+                        <label>
+                            <input id="male" type="radio" name="sex" value="0" /> 男
+                        </label>
+                        <label>
+                            <input id="female" type="radio" name="sex" value="1" /> 女
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">城市：</label>
+                    <select class="form-control" id="city" name="city">
+                        <option value="">请选择</option>
+                        <option value="0">北京</option>
+                        <option value="1">上海</option>
+                        <option value="2">重庆</option>
+                        <option value="3">成都</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>爱好：</label>
+                    <div class="checkbox">
+                        <label>
+                            <input id="badminton" name="hobby" type="checkbox" value="1" /> 羽毛球
+                        </label>
+                        <label>
+                            <input id="swim" name="hobby" type="checkbox" value="2" /> 游泳
+                        </label>
+                        <label>
+                            <input id="run" name="hobby" type="checkbox" value="3" /> 跑步
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarks">简介：</label>
+                    <textarea class="form-control" id="remarks" name="remarks" rows="3" placeholder="一句话描述自己"></textarea>
+                </div>
+
+                <input class="btn btn-primary" type="submit" value="提交" />
+            </form>
+        </div>
+
+        <script type="text/javascript">
+            var validator = new Validator('validate_form', {
+                email: {
+                    rules: 'is_email | required | max_length(32)',
+                    message: "请输入合法邮箱 | 不能为空 | {{email}}太长"
+                },
+                phone: {
+                    rules: 'is_phone',
+                    message: "请输入合法的手机号"
+                },
+                birthday: {
+                    rules: 'is_date | required',
+                    message: "请输入合法日期 | 不能为空"
+                },
+                sex: {
+                    rules: 'required',
+                    message: "不能为空"
+                },
+                city: {
+                    rules: 'required',
+                    message: "不能为空"
+                },
+                hobby: {
+                    rules: 'required',
+                    message: "不能为空"
+                },
+                remarks: {
+                    rules: 'max_length(32)',
+                    message: "{{remarks}}太长"
+                }
+            });
+        </script>
+    </body>
+
+</html>
