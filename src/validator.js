@@ -120,12 +120,12 @@ var _testHook = {
  * @param {Object} 验证对象（参数）
  * @param {Object} 回调函数
  */
-var Validator = function(formEl, fields, callback) {
+var Validator = function(formEl, fields, options) {
 
     // 将验证方法绑到 Validator 对象上
     for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
 
-    this.callback = callback || function() {};
+    this.options = options || {};
     this.form = _formElement(formEl) || {};
     this.errors = {};
     this.fields = {};
@@ -175,8 +175,7 @@ Validator.prototype = {
 
     /**
      * 验证当前表单域
-     * @param  {Object} 当前事件
-     * @return {Object}
+     * @param  {Event} 当前事件
      */
     validate: function(evt) {
 
@@ -186,7 +185,7 @@ Validator.prototype = {
 
         for (var name in this.fields) {
             if (this.fields.hasOwnProperty(name)) {
-                var field = this.fields[name] || {};
+                var field = this.fields[name];
                 this.validateField(field);
             }
         }
@@ -202,8 +201,8 @@ Validator.prototype = {
         }
 
         // 执行回调函数
-        if (typeof this.callback === 'function') {
-            this.callback(this.errors, evt);
+        if (typeof this.options === 'object' && typeof this.options.callback === 'function') {
+            this.options.callback(this.errors, evt);
         }
 
         return this;
@@ -212,7 +211,6 @@ Validator.prototype = {
     /**
      * 验证当前节点
      * @param  {Object} 验证信息域
-     * @return {Object}
      */
     validateField: function(field) {
 
@@ -282,8 +280,39 @@ Validator.prototype = {
             }
         }
 
+        // 设置错误提示
+        if (!this.options.errorPlacement) {
+            this._currentErrorPlacement(field);
+        }
+
         return this;
+    },
+
+    /**
+     * 创建错误信息
+     */
+    _currentErrorPlacement: function(field) {
+        // 无错误信息
+        if (!this.errors[field.name]) {
+            return;
+        }
+
+        // 创建元素
+        var errorLabel = document.createElement('em');
+        errorLabel.classList.add('valid-error');
+        if (field.el.parentNode) {
+
+            // 获取存在的错误信息节点
+            var existsEl = field.el.parentNode.getElementsByClassName('valid-error');
+            if (existsEl.length) {
+                field.el.parentNode.removeChild(existsEl[0]);
+            }
+
+            errorLabel.innerHTML = this.errors[field.name].message;
+            field.el.parentNode.appendChild(errorLabel);
+        }
     }
+
 };
 
 /**

@@ -107,10 +107,13 @@
                     rules: 'max_length(32)',
                     message: "{{remarks}}太长"
                 }
-            }, function(errors, event) {
-//              console.log(o.errors);
+            }, {
+                callback: function(error, event) {
+                    // 回调操作
+                    console.log('执行回调操作');
+                }
             });
-//          console.log(validator);
+            validator.validate();
         </script>
     </body>
 
