@@ -118,7 +118,7 @@ var _testHook = {
  * Validator 对象
  * @param {Object} form节点
  * @param {Object} 验证对象（参数）
- * @param {Object}
+ * @param {Object} 回调函数
  */
 var Validator = function(formEl, fields, callback) {
 
@@ -127,31 +127,27 @@ var Validator = function(formEl, fields, callback) {
 
     this.callback = callback || function() {};
     this.form = _formElement(formEl) || {};
-    this.errors = [];
+    this.errors = {};
     this.fields = {};
     this.handles = {};
 
     // 如果不存在 form 对象
-    if (!formEl) return this;
+    if (!formEl) {
+        return this;
+    }
 
-    for (var i = 0, fieldLength = fields.length; i < fieldLength; i++) {
+    for (var name in fields) {
 
-        var field = fields[i];
+        var field = fields[name];
 
-        // 如果通过不正确，我们需要跳过该领域。
-        if ((!field.name && !field.names) || !field.rules) {
+        // 规则不正确，则跳过
+        if (!field.rules) {
             console.warn(field);
             continue;
         }
 
         // 构建具有所有需要验证的信息的主域数组
-        if (field.names) {
-            for (var j = 0, fieldNamesLength = field.names.length; j < fieldNamesLength; j++) {
-                addField(this, field, field.names[j]);
-            }
-        } else {
-            addField(this, field, field.name);
-        }
+        addField(this, name, field);
     }
 
     // 使用表单值改变拦截
@@ -186,23 +182,28 @@ Validator.prototype = {
 
         this.handles['ok'] = true;
         this.handles['evt'] = evt;
-        this.errors = [];
+        this.errors = {};
 
-        for (var key in this.fields) {
-            if (this.fields.hasOwnProperty(key)) {
-                var field = this.fields[key] || {};
+        for (var name in this.fields) {
+            if (this.fields.hasOwnProperty(name)) {
+                var field = this.fields[name] || {};
                 this.validateField(field);
             }
         }
 
         // 如果有错误，停止 submit 提交
-        if (this.errors.length > 0) {
+        if (this.errors) {
             if (evt && evt.preventDefault) {
                 evt.preventDefault();
             } else if (event) {
                 // IE 使用的全局变量
                 event.returnValue = false;
             }
+        }
+
+        // 执行回调函数
+        if (typeof this.callback === 'function') {
+            this.callback(this.errors, evt);
         }
 
         return this;
@@ -229,6 +230,9 @@ Validator.prototype = {
 
         var rules = field.rules.split(/\s*\|\s*/g);
 
+        // 删除之前验证过的信息
+        delete this.errors[field.name];
+
         for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
 
             var method = rules[i];
@@ -243,15 +247,17 @@ Validator.prototype = {
                 param = parts[2];
             }
 
+            // 验证
             if (typeof _testHook[method] === 'function') {
                 if (!_testHook[method].apply(this, [field, param])) {
                     failed = true;
                 }
             }
 
+            // 解析错误信息
             if (failed) {
                 var message = (function() {
-                    return field.display.split(/\s*\|\s*/g)[i] && field.display.split(/\s*\|\s*/g)[i].replace('{{' + field.name + '}}', field.value);
+                    return field.message.split(/\s*\|\s*/g)[i] && field.message.split(/\s*\|\s*/g)[i].replace('{{' + field.name + '}}', field.value);
                 })();
 
                 var existingError;
@@ -261,23 +267,19 @@ Validator.prototype = {
                     }
                 }
 
+                // 错误信息域
                 var errorObject = existingError || {
-                    id: field.id,
-                    display: field.display,
+                    message: field.message,
                     el: field.el,
                     name: field.name,
                     message: message,
-                    messages: [],
                     rule: method
                 };
-                errorObject.messages.push(message);
-                if (!existingError) this.errors.push(errorObject);
-            }
-        }
 
-        // 执行回调函数
-        if (typeof this.callback === 'function') {
-            this.callback(this, this.handles['evt']);
+                if (!existingError) {
+                    this.errors[field.name] = errorObject;
+                }
+            }
         }
 
         return this;
@@ -318,13 +320,13 @@ function attributeValue(el, attributeName) {
 /**
  * 构建具有所有需要验证的信息的主域数组
  * @param {Object} 当前对象
+ * @param {String} 表单 name 属性名称
  * @param {Object} 当前验证对象
- * @param {String} 提示文字
  */
-function addField(self, field, nameValue) {
-    self.fields[nameValue] = {
-        name: nameValue,
-        display: field.display || nameValue,
+function addField(self, name, field) {
+    self.fields[name] = {
+        name: name,
+        message: field.message,
         rules: field.rules,
         id: null,
         el: null,
