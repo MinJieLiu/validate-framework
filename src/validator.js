@@ -267,6 +267,7 @@ Validator.prototype = {
                 // IE 使用的全局变量
                 event.returnValue = false;
             }
+            return false;
         }
 
         // 执行回调函数
