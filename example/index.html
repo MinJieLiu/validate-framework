@@ -7,6 +7,14 @@
         <link rel="stylesheet" href="bootstrap.css" />
         <script src="../dist/validator.js"></script>
     </head>
+    <style>
+        .valid-error {
+            display: block;
+            margin: 5px 0;
+            font-style: normal;
+            color: orangered;
+        }
+    </style>
 
     <body>
         <div class="container">
@@ -107,8 +115,8 @@
                         message: "不能为空"
                     },
                     hobby: {
-                        rules: 'required',
-                        message: "不能为空"
+                        rules: 'required | select_limit(2)',
+                        message: "不能为空 | 至少选择两项"
                     },
                     remarks: {
                         rules: 'max_length(48)',
@@ -135,13 +143,26 @@
                 }
             });
 
+            // 至少选择两项
+            // 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)
+            validator.addMethod('select_limit', function(field, param) {
+                // 选择的条目数
+                var checkedNum = 0;
+                for (var i = 0, elLength = field.el.length; i < elLength; i++) {
+                    if (field.el[i].checked) {
+                        checkedNum += 1;
+                    }
+                }
+                return checkedNum >= param;
+            });
+
             // 设置邮箱值
             var emailEL = document.getElementById('email');
-            
+
             document.getElementById('setErrorEmail').addEventListener('click', function(e) {
                 emailEL.value = 'anonymous#qq.com';
             });
-            
+
             document.getElementById('setRightEmail').addEventListener('click', function(e) {
                 emailEL.value = 'anonymous@qq.com';
             });
@@ -152,7 +173,7 @@
                 // 通过 name 验证单个表单域
                 validator.validateByName('email');
             });
-            
+
         </script>
     </body>
 

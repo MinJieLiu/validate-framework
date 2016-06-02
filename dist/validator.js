@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.5
+ * validator.js v1.0.6
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
