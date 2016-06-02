@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.2
+ * validator.js v1.0.3
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -59,44 +59,44 @@
     var _testHook = {
         // 验证自然数
         is_numeric: function(field) {
-            return regexs.numeric.test(field.value);
+            return regexs.numeric.test(getValue(field));
         },
         // 验证整数
         is_integer: function(field) {
-            return regexs.integer.test(field.value);
+            return regexs.integer.test(getValue(field));
         },
         // 验证浮点数
         is_decimal: function(field) {
-            return regexs.decimal.test(field.value);
+            return regexs.decimal.test(getValue(field));
         },
         // 验证邮箱
         is_email: function(field) {
-            return regexs.email.test(field.value);
+            return regexs.email.test(getValue(field));
         },
         // 验证 ip 地址
         is_ip: function(field) {
-            return regexs.ip.test(field.value);
+            return regexs.ip.test(getValue(field));
         },
         // 验证座机
         is_tel: function(field) {
-            return regexs.tel.test(field.value);
+            return regexs.tel.test(getValue(field));
         },
         // 验证手机
         is_phone: function(field) {
-            return regexs.phone.test(field.value);
+            return regexs.phone.test(getValue(field));
         },
         // 验证字母数字下划线
         is_abc: function(field) {
-            return regexs.abc.test(field.value);
+            return regexs.abc.test(getValue(field));
         },
         // 验证URL
         is_url: function(field) {
-            return regexs.url.test(field.value);
+            return regexs.url.test(getValue(field));
         },
         // 验证日期
         is_date: function(field) {
             // 解析日期
-            var _date = field.value;
+            var _date = getValue(field);
             if (regexs.date.test(_date)) {
                 _date = _date.split("-");
                 var year = parseInt(_date[0], 10);
@@ -123,39 +123,41 @@
             if (field.type === "checkbox" || field.type === "radio") {
                 return field.checked === true;
             }
-            return field.value !== null && field.value !== "";
+            return getValue(field) !== null && getValue(field) !== "";
         },
         // 多于 某个数
         greater_than: function(field, param) {
-            if (!regexs.decimal.test(field.value)) {
+            var value = getValue(field);
+            if (!regexs.decimal.test(value)) {
                 return false;
             }
-            return parseFloat(field.value) > parseFloat(param);
+            return parseFloat(value) > parseFloat(param);
         },
         // 少于 某个数
         less_than: function(field, param) {
-            if (!regexs.decimal.test(field.value)) {
+            var value = getValue(field);
+            if (!regexs.decimal.test(value)) {
                 return false;
             }
-            return parseFloat(field.value) < parseFloat(param);
+            return parseFloat(value) < parseFloat(param);
         },
         // 最大长度
         max_length: function(field, length) {
-            if (!regexs.numeric.test(length)) {
+            if (!regexs.integer.test(length)) {
                 return false;
             }
-            return field.value.length <= parseInt(length, 10);
+            return getValue(field).length <= parseInt(length, 10);
         },
         // 最小长度
         min_length: function(field, length) {
-            if (!regexs.numeric.test(length)) {
+            if (!regexs.integer.test(length)) {
                 return false;
             }
-            return field.value.length >= parseInt(length, 10);
+            return getValue(field).length >= parseInt(length, 10);
         },
         // 大于某个日期
         greater_than_date: function(field, date) {
-            var currentDate = _paseToDate(field.value);
+            var currentDate = _paseToDate(getValue(field));
             var paramDate = _paseToDate(date);
             if (!paramDate || !currentDate) {
                 return false;
@@ -164,7 +166,7 @@
         },
         // 小于某个日期
         less_than_date: function(field, date) {
-            var currentDate = _paseToDate(field.value);
+            var currentDate = _paseToDate(getValue(field));
             var paramDate = _paseToDate(date);
             if (!paramDate || !currentDate) {
                 return false;
@@ -453,7 +455,7 @@
  * @return {Date}
  */
     function _paseToDate(paramDate) {
-        if (!paramDate.match(regexs.date)) {
+        if (!_testHook.is_date(paramDate)) {
             return false;
         }
         var thisDate = new Date();
@@ -463,6 +465,14 @@
         thisDate.setMonth(dateArray[1] - 1);
         thisDate.setDate(dateArray[2]);
         return thisDate;
+    }
+    /**
+ * 判断 field 是否为字符串
+ * @param {Object}
+ * @return {String} 返回值
+ */
+    function getValue(field) {
+        return typeof field === "string" ? field : field.value;
     }
     /*
  * Export 为 CommonJS 模块

@@ -13,6 +13,51 @@ describe("validators", function() {
         expect(v.required('\s')).to.be.true;
     });
 
+    it("isNumeric() 自然数 验证", function() {
+        expect(v.isNumeric('0000+')).to.be.false;
+        expect(v.isNumeric('0000')).to.be.true;
+        expect(v.isNumeric('1')).to.be.true;
+        expect(v.isNumeric('99999')).to.be.true;
+        expect(v.isNumeric('0')).to.be.true;
+        expect(v.isNumeric('-0')).to.be.false;
+        expect(v.isNumeric('-1')).to.be.false;
+        expect(v.isNumeric('1.1')).to.be.false;
+        expect(v.isNumeric('1.11')).to.be.false;
+        expect(v.isDecimal('NaN')).to.be.false;
+    });
+
+    it("isInteger() 整数 验证", function() {
+        expect(v.isInteger('0000+')).to.be.false;
+        expect(v.isInteger('0000')).to.be.true;
+        expect(v.isInteger('1')).to.be.true;
+        expect(v.isInteger('99999')).to.be.true;
+        expect(v.isInteger('0')).to.be.true;
+        expect(v.isInteger('-0')).to.be.true;
+        expect(v.isInteger('-1')).to.be.true;
+        expect(v.isInteger('-1.1')).to.be.false;
+        expect(v.isInteger('1.00001')).to.be.false;
+        expect(v.isInteger('1.11111')).to.be.false;
+        expect(v.isDecimal('NaN')).to.be.false;
+    });
+
+    it("isDecimal() 浮点数 验证", function() {
+        expect(v.isDecimal('0000+')).to.be.false;
+        expect(v.isDecimal('0000')).to.be.true;
+        expect(v.isDecimal('1')).to.be.true;
+        expect(v.isDecimal('99999')).to.be.true;
+        expect(v.isDecimal('0')).to.be.true;
+        expect(v.isDecimal('-0')).to.be.true;
+        expect(v.isDecimal('-1')).to.be.true;
+        expect(v.isDecimal('1.1')).to.be.true;
+        expect(v.isDecimal('-1.11')).to.be.true;
+        expect(v.isDecimal('-0.11')).to.be.true;
+        expect(v.isDecimal('999.999')).to.be.true;
+        expect(v.isDecimal('.11')).to.be.true;
+        expect(v.isDecimal('0.11')).to.be.true;
+        expect(v.isDecimal('+1.11')).to.be.false;
+        expect(v.isDecimal('NaN')).to.be.false;
+    });
+
     it("isUrl() URL 验证", function() {
         expect(v.isUrl('://www.ss')).to.be.false;
         expect(v.isUrl('www.baidu.com')).to.be.false;
@@ -21,6 +66,15 @@ describe("validators", function() {
         expect(v.isUrl('http:/abs.abs.baidu.com')).to.be.false;
         expect(v.isUrl('http://abs.abs.baidu.com')).to.be.true;
         expect(v.isUrl('hps://www.baidu.com')).to.be.true;
+    });
+
+    it("isAbc() 字母数字下划线验证", function() {
+        expect(v.isAbc('086-021')).to.be.false;
+        expect(v.isAbc('086_021')).to.be.true;
+        expect(v.isAbc('abc23')).to.be.true;
+        expect(v.isAbc('abc_23')).to.be.true;
+        expect(v.isAbc('AbC_')).to.be.true;
+        expect(v.isAbc('A!')).to.be.false;
     });
 
     // 邮箱验证 完美的邮箱验证表达式非常庞大，达23k，故采用普通的邮箱验证表达式，不匹配中文域名
@@ -109,6 +163,66 @@ describe("validators", function() {
         expect(v.isDate('201010-10')).to.be.false;
         expect(v.isDate('20101010')).to.be.false;
         expect(v.isDate('2010')).to.be.false;
+    });
+
+    it("greaterThan() 大于某个数", function() {
+        expect(v.greaterThan('23', '54')).to.be.false;
+        expect(v.greaterThan('23', '11')).to.be.true;
+        expect(v.greaterThan('abc', '11')).to.be.false;
+        expect(v.greaterThan('-11', '0')).to.be.false;
+        expect(v.greaterThan('11', 'abc')).to.be.false;
+        expect(v.greaterThan('11', '11')).to.be.false;
+    });
+
+    it("lessThan() 小于某个数", function() {
+        expect(v.lessThan('23', '54')).to.be.true;
+        expect(v.lessThan('55', '54')).to.be.false;
+        expect(v.lessThan('abc', '54')).to.be.false;
+        expect(v.lessThan('11', '-1')).to.be.false;
+        expect(v.lessThan('0', '54')).to.be.true;
+        expect(v.lessThan('23', 'abc')).to.be.false;
+    });
+
+    it("maxLength() 最大长度", function() {
+        expect(v.maxLength('23', '0')).to.be.false;
+        expect(v.maxLength('5555555', '7')).to.be.true;
+        expect(v.maxLength('abc', '3')).to.be.true;
+        expect(v.maxLength('111111', '999')).to.be.true;
+        expect(v.maxLength('0', '0')).to.be.false;
+        expect(v.maxLength('2 3', '3')).to.be.true;
+        expect(v.maxLength('2 3', '2')).to.be.false;
+    });
+
+    it("minLength() 最小长度", function() {
+        expect(v.minLength('23', '0')).to.be.true;
+        expect(v.minLength('55', '1')).to.be.true;
+        expect(v.minLength('55', '2')).to.be.true;
+        expect(v.minLength('abc', '4')).to.be.false;
+        expect(v.minLength('11', '-1')).to.be.true;
+        expect(v.minLength('0 0', '54')).to.be.false;
+        expect(v.minLength('   ', '3')).to.be.true;
+        expect(v.minLength('   ', '4')).to.be.false;
+    });
+
+    it("greaterThanDate() 大于某个日期", function() {
+        expect(v.greaterThanDate('23', '54')).to.be.false;
+        expect(v.greaterThanDate('2010-10-11', '54')).to.be.false;
+        expect(v.greaterThanDate('2010-01-01', '2010-01-01')).to.be.false;
+        expect(v.greaterThanDate('2010-01-02', '2010-01-01')).to.be.true;
+        expect(v.greaterThanDate('2020-01-02', '2010-01-02')).to.be.true;
+        expect(v.greaterThanDate('2020-01-02', '2020-11-02')).to.be.false;
+        expect(v.greaterThanDate('2020-01-02', '2020-13-02')).to.be.false;
+    });
+
+    it("lessThanDate() 小于某个日期", function() {
+        expect(v.lessThanDate('23', '54')).to.be.false;
+        expect(v.lessThanDate('2010-10-11', '54')).to.be.false;
+        expect(v.lessThanDate('2010-01-01', '2010-01-01')).to.be.false;
+        expect(v.lessThanDate('2010-01-02', '2010-01-01')).to.be.false;
+        expect(v.lessThanDate('2020-01-02', '2010-01-02')).to.be.false;
+        expect(v.lessThanDate('2020-01-02', '2020-11-02')).to.be.true;
+        expect(v.lessThanDate('2020-01-02', '2020-13-02')).to.be.false;
+        expect(v.lessThanDate('2020-21-02', '2022-1-02')).to.be.false;
     });
 
 });
