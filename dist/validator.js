@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.3
+ * validator.js v1.0.5
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -246,6 +246,7 @@
                     // IE 使用的全局变量
                     event.returnValue = false;
                 }
+                return false;
             }
             // 执行回调函数
             if (typeof this.options === "object" && typeof this.options.callback === "function") {
@@ -396,7 +397,8 @@
             } else {
                 // 默认错误信息位置
                 // 非 label 、radio 元素
-                if (!field.el.length) {
+                // label 、 radio 元素错误位置不固定，默认暂不设置
+                if (field.el.parentNode !== undefined) {
                     field.el.parentNode.appendChild(errorEl);
                 }
             }

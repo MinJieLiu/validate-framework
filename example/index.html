@@ -20,6 +20,12 @@
                 </div>
 
                 <div class="form-group">
+                    <button class="btn btn-default" id="setErrorEmail" type="button">设置错误邮箱</button> 
+                    <button class="btn btn-default" id="setRightEmail" type="button">设置正确邮箱</button> 
+                    <button class="btn btn-info" id="validEmail" type="button">验证邮箱</button>
+                </div>
+
+                <div class="form-group">
                     <label for="phone">手机：</label>
                     <input class="form-control" id="phone" name="phone" type="text" placeholder="请输入手机号" />
                 </div>
@@ -72,7 +78,7 @@
                     <textarea class="form-control" id="remarks" name="remarks" rows="3" placeholder="一句话描述自己"></textarea>
                 </div>
 
-                <input class="btn btn-primary" type="submit" value="提交" />
+                <input class="btn btn-primary" id="submit" type="submit" value="提交" />
 
             </form>
         </div>
@@ -110,11 +116,43 @@
                     }
                 },
                 // 参数：errorEl 错误信息节点，fieldEl 表单节点
-//              errorPlacement: function(errorEl, fieldEl) {
-//                  console.log(errorEl);
-//              },
-                callback: function(errors, event) {}
+                errorPlacement: function(errorEl, fieldEl) {
+                    // 非 label 、radio 元素
+                    if (fieldEl.parentNode !== undefined) {
+                        fieldEl.parentNode.appendChild(errorEl);
+                    } else {
+                        fieldEl[0].parentNode.parentNode.parentNode.appendChild(errorEl);
+                    }
+                },
+                callback: function(errors, event) {
+                    // 阻止提交
+                    event.preventDefault();
+                    // 设置按钮样式
+                    var submitButton = event.target['submit'];
+                    submitButton.classList.remove('btn-primary');
+                    submitButton.classList.add('btn-success');
+                    submitButton.value = '已验证成功';
+                }
             });
+
+            // 设置邮箱值
+            var emailEL = document.getElementById('email');
+            
+            document.getElementById('setErrorEmail').addEventListener('click', function(e) {
+                emailEL.value = 'anonymous#qq.com';
+            });
+            
+            document.getElementById('setRightEmail').addEventListener('click', function(e) {
+                emailEL.value = 'anonymous@qq.com';
+            });
+
+            // 验证邮箱值
+            var validEmailButton = document.getElementById('validEmail');
+            validEmailButton.addEventListener('click', function(e) {
+                // 通过 name 验证单个表单域
+                validator.validateByName('email');
+            });
+            
         </script>
     </body>
 

@@ -449,7 +449,8 @@ Validator.prototype = {
         } else {
             // 默认错误信息位置
             // 非 label 、radio 元素
-            if (!field.el.length) {
+            // label 、 radio 元素错误位置不固定，默认暂不设置
+            if (field.el.parentNode !== undefined) {
                 field.el.parentNode.appendChild(errorEl);
             }
         }
