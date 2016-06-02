@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.1
+ * validator.js v1.0.2
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -28,6 +28,7 @@
     }
 })(function() {
     var define, module, exports;
+    "use strict";
     /**
  * 正则表达式
  */
@@ -58,44 +59,44 @@
     var _testHook = {
         // 验证自然数
         is_numeric: function(field) {
-            return regexs.numeric.test(getValue(field));
+            return regexs.numeric.test(field.value);
         },
         // 验证整数
         is_integer: function(field) {
-            return regexs.integer.test(getValue(field));
+            return regexs.integer.test(field.value);
         },
         // 验证浮点数
         is_decimal: function(field) {
-            return regexs.decimal.test(getValue(field));
+            return regexs.decimal.test(field.value);
         },
         // 验证邮箱
         is_email: function(field) {
-            return regexs.email.test(getValue(field));
+            return regexs.email.test(field.value);
         },
         // 验证 ip 地址
         is_ip: function(field) {
-            return regexs.ip.test(getValue(field));
+            return regexs.ip.test(field.value);
         },
         // 验证座机
         is_tel: function(field) {
-            return regexs.tel.test(getValue(field));
+            return regexs.tel.test(field.value);
         },
         // 验证手机
         is_phone: function(field) {
-            return regexs.phone.test(getValue(field));
+            return regexs.phone.test(field.value);
         },
         // 验证字母数字下划线
         is_abc: function(field) {
-            return regexs.abc.test(getValue(field));
+            return regexs.abc.test(field.value);
         },
         // 验证URL
         is_url: function(field) {
-            return regexs.url.test(getValue(field));
+            return regexs.url.test(field.value);
         },
         // 验证日期
         is_date: function(field) {
             // 解析日期
-            var _date = getValue(field);
+            var _date = field.value;
             if (regexs.date.test(_date)) {
                 _date = _date.split("-");
                 var year = parseInt(_date[0], 10);
@@ -119,11 +120,10 @@
         },
         // 是否为必填
         required: function(field) {
-            var value = getValue(field);
             if (field.type === "checkbox" || field.type === "radio") {
                 return field.checked === true;
             }
-            return value !== null && value !== "";
+            return field.value !== null && field.value !== "";
         },
         // 多于 某个数
         greater_than: function(field, param) {
@@ -141,13 +141,17 @@
         },
         // 最大长度
         max_length: function(field, length) {
-            if (!regexs.numeric.test(length)) return false;
-            return getValue(field).length <= parseInt(length, 10);
+            if (!regexs.numeric.test(length)) {
+                return false;
+            }
+            return field.value.length <= parseInt(length, 10);
         },
         // 最小长度
         min_length: function(field, length) {
-            if (!regexs.numeric.test(length)) return false;
-            return getValue(field).length >= parseInt(length, 10);
+            if (!regexs.numeric.test(length)) {
+                return false;
+            }
+            return field.value.length >= parseInt(length, 10);
         },
         // 大于某个日期
         greater_than_date: function(field, date) {
@@ -187,14 +191,16 @@
         }
         var fields = typeof options.fields === "object" ? options.fields : {};
         for (var name in fields) {
-            var field = fields[name];
-            // 规则不正确，则跳过
-            if (!field.rules) {
-                console.warn(field);
-                continue;
+            if (fields.hasOwnProperty(name)) {
+                var field = fields[name];
+                // 规则不正确，则跳过
+                if (!field.rules) {
+                    console.warn(field);
+                    continue;
+                }
+                // 构建具有所有需要验证的信息的主域数组
+                this._addField(name, field);
             }
-            // 构建具有所有需要验证的信息的主域数组
-            this._addField(name, field);
         }
         // 使用表单值改变拦截
         this.form.onchange = function(that) {
@@ -217,7 +223,7 @@
     };
     Validator.prototype = {
         /**
-     * 验证当前表单域
+     * 验证整体表单域
      * @param  {Event} 当前事件
      */
         validate: function(evt) {
@@ -231,7 +237,7 @@
                 }
             }
             // 如果有错误，停止 submit 提交
-            if (this.errors) {
+            if (!isEmptyObject(this.errors)) {
                 if (evt && evt.preventDefault) {
                     evt.preventDefault();
                 } else if (event) {
@@ -244,6 +250,27 @@
                 this.options.callback(this.errors, evt);
             }
             return this;
+        },
+        /**
+     * 验证单个表单域
+     * @param 表单域 name 属性
+     */
+        validateByName: function(name) {
+            var field = this.fields[name];
+            if (!isEmptyObject(field)) {
+                this._validateField(field);
+            }
+            return this;
+        },
+        /**
+     * 扩展校验方法
+     * @param 校验名称 格式： is_date
+     * @param 校验方法
+     */
+        addMethod: function(name, method) {
+            _testHook[name] = method;
+            // 绑定验证方法
+            this[toCamelCase(name)] = _testHook[name];
         },
         /**
      * 验证当前节点
@@ -263,7 +290,7 @@
                 field.checked = attributeValue(el, "checked");
             }
             var isRequired = field.rules.indexOf("required") !== -1;
-            var isEmpty = !getValue(field) || getValue(field) === "" || getValue(field) === undefined;
+            var isEmpty = !field.value || field.value === "" || field.value === undefined;
             var rules = field.rules.split(/\s*\|\s*/g);
             // 删除之前验证过的信息
             delete this.errors[field.name];
@@ -280,11 +307,11 @@
                     method = parts[1];
                     param = parts[2];
                 }
-                // 如果不是 required 这个字段，并且该值是空的，继续到下一个规则。
+                // 如果不是 required 这个字段，并且该值是空的，则不验证，继续下一个规则。
                 if (!isRequired && isEmpty) {
                     continue;
                 }
-                // 验证
+                // 匹配验证
                 if (typeof _testHook[method] === "function") {
                     if (!_testHook[method].apply(this, [ field, param ])) {
                         failed = true;
@@ -318,8 +345,8 @@
             return this;
         },
         /**
-     * 构建具有所有需要验证的信息的主域数组
-     * @param {String} 表单 name 属性名称
+     * 构建具有所有需要验证的信息域数组
+     * @param {String} 表单域 name 属性名称
      * @param {Object} 当前验证对象
      */
         _addField: function(name, field) {
@@ -345,7 +372,7 @@
             }
         },
         /**
-     * 创建错误信息
+     * 添加当前条目错误信息
      * @param {Object} 验证信息域
      */
         _addErrorPlacement: function(field) {
@@ -405,10 +432,20 @@
     /**
  * 获取 dom 节点对象
  * @param {Object} 字符串或者节点对象
- * @return {Object} 返回dom节点
+ * @return {Object} 返回 DOM 节点
  */
     function _formElement(el) {
         return typeof el === "object" ? el : document.forms[el];
+    }
+    /**
+ * 是否为空对象
+ * @param {Object} obj
+ */
+    function isEmptyObject(obj) {
+        for (var name in obj) {
+            return !name;
+        }
+        return true;
     }
     /**
  * 转换为日期
@@ -427,13 +464,11 @@
         thisDate.setDate(dateArray[2]);
         return thisDate;
     }
-    /**
- * 判断 field 是否为字符串
- * @param {Object}
- * @return {String} 返回值
+    /*
+ * Export 为 CommonJS 模块
  */
-    function getValue(field) {
-        return typeof field === "string" ? field : field.value;
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = Validator;
     }
     return Validator;
 });
