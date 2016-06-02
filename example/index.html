@@ -5,7 +5,7 @@
         <meta charset="utf-8" />
         <title>validator.js演示</title>
         <link rel="stylesheet" href="bootstrap.css" />
-        <script src="../src/validator.js"></script>
+        <script src="../dist/validator.js"></script>
     </head>
 
     <body>
@@ -77,43 +77,44 @@
             </form>
         </div>
 
-        <script type="text/javascript">
+        <script>
             var validator = new Validator('validate_form', {
-                email: {
-                    rules: 'is_email | required | max_length(32)',
-                    message: "请输入合法邮箱 | 不能为空 | {{email}}太长"
+                fields: {
+                    email: {
+                        rules: 'is_email | required | max_length(32)',
+                        message: "请输入合法邮箱 | 不能为空 | 输入的文字太长"
+                    },
+                    phone: {
+                        rules: 'is_phone',
+                        message: "手机号： {{phone}} 不合法"
+                    },
+                    birthday: {
+                        rules: 'required | is_date',
+                        message: "不能为空 | 请输入合法日期"
+                    },
+                    sex: {
+                        rules: 'required',
+                        message: "不能为空"
+                    },
+                    city: {
+                        rules: 'required',
+                        message: "不能为空"
+                    },
+                    hobby: {
+                        rules: 'required',
+                        message: "不能为空"
+                    },
+                    remarks: {
+                        rules: 'max_length(48)',
+                        message: "输入的文字太长"
+                    }
                 },
-                phone: {
-                    rules: 'is_phone',
-                    message: "请输入合法的手机号"
-                },
-                birthday: {
-                    rules: 'is_date | required',
-                    message: "请输入合法日期 | 不能为空"
-                },
-                sex: {
-                    rules: 'required',
-                    message: "不能为空"
-                },
-                city: {
-                    rules: 'required',
-                    message: "不能为空"
-                },
-                hobby: {
-                    rules: 'required',
-                    message: "不能为空"
-                },
-                remarks: {
-                    rules: 'max_length(32)',
-                    message: "{{remarks}}太长"
-                }
-            }, {
-                callback: function(error, event) {
-                    // 回调操作
-                    console.log('执行回调操作');
-                }
+                // 参数：errorEl 错误信息节点，fieldEl 表单节点
+//              errorPlacement: function(errorEl, fieldEl) {
+//                  console.log(errorEl);
+//              },
+                callback: function(errors, event) {}
             });
-            validator.validate();
         </script>
     </body>
 
