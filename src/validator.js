@@ -226,6 +226,7 @@ Validator.prototype = {
             field.checked = attributeValue(el, 'checked');
         }
 
+        var isRequired = field.rules.indexOf('required'),
         var rules = field.rules.split(/\s*\|\s*/g);
 
         // 删除之前验证过的信息
@@ -243,6 +244,11 @@ Validator.prototype = {
             if (parts) {
                 method = parts[1];
                 param = parts[2];
+            }
+
+            // 如果不是 required 这个字段，并且该值是空的，继续到下一个规则。
+            if (isRequired === -1 && isEmpty) {
+                continue;
             }
 
             // 验证
