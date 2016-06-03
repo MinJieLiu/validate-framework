@@ -1,6 +1,6 @@
 {
   "name": "validator.js",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "轻量级JavaScript表单验证，字符串验证。",
   "homepage": "https://github.com/MinJieLiu/validator.js",
   "main": "dist/validator.js",

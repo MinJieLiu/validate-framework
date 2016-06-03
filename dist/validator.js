@@ -176,19 +176,19 @@
     };
     /**
  * Validator 对象
- * @param {Object} form节点
+ * @param {Object} form 名称
  * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
-    var Validator = function(formEl, options) {
+    var Validator = function(formName, options) {
         // 将验证方法绑到 Validator 对象上
         for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
         this.options = options || {};
-        this.form = _formElement(formEl) || {};
+        this.form = _formElement(formName) || {};
         this.errors = {};
         this.fields = {};
         this.handles = {};
         // 如果不存在 form 对象
-        if (!formEl) {
+        if (!formName) {
             return this;
         }
         var fields = typeof options.fields === "object" ? options.fields : {};
