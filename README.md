@@ -1,204 +1,154 @@
-validator.js
-===================================
-### 特性
- * 轻量级
- * 无依赖
- * 表单验证
- * 字符串验证
+#validator.js
 
-安装使用
------------------------------------
+validator.js 是一个轻量级 JavaScript 表单、字符串验证库
 
-html:
+## 特性
 
-```html 
-<script src="dist/validator.min.js"></script>
+ 1. 轻量级
+ 2. 无依赖
+ 3. 表单验证
+ 4. 字符串验证
+
+## 快速上手
+
+表单验证：
+
+```html
+<form id="validate_form" novalidate="">
+    <div class="form-group">
+        <label for="email">邮箱：</label>
+        <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
+    </div>
+    <div class="form-group">
+        <label for="phone">手机：</label>
+        <input class="form-control" id="phone" name="phone" type="text" placeholder="请输入手机号" />
+    </div>
+    <input class="btn btn-primary" id="submit" type="submit" value="提交" />
+</form>
 ```
 
-js:
 ```js
-// 字符串验证
-var validator = require('validator.js');
-var v = new validator();
-v.isEmail('example@example.com');
-v.isIp('192.168.1.1');
-
-// 表单验证
-var a = new validator('example_form', [{
-    // 业务逻辑
-}], function(obj, evt) {
-    if (obj.errors) {
-        // 判断是否错误
+var validator = new Validator('validate_form', {
+    fields: {
+        email: {
+            rules: 'required | is_email | max_length(32)',
+            messages: "不能为空 | 请输入合法邮箱 | 输入的文字太长"
+        },
+        phone: {
+            rules: 'is_phone',
+            messages: "手机号： {{phone}} 不合法"
+        }
     }
 });
 ```
 
+字符串验证：
 
-应用在表单中的方法。
-
-```html 
-<form id="example_form">
-    <div>
-        <label for="email">邮箱验证</label>
-        <input type="email" name="email" id="email" class="form-control" placeholder="Email">
-    </div>
-</form>
-<script type="text/javascript">
-    var validator = new Validator('example_form', [{
-        name: 'email',
-        display: "你输入的{{email}}不是合法邮箱|不能为空|太长|太短",
-        rules: 'valid_email|required|max_length(12)|min_length(2)'
-    }, {
-        name: 'sex',
-        display: "请你选择性别{{sex}}",
-        rules: 'required'
-    }], function(obj, evt) {
-        if (obj.errors) {
-            // 判断是否错误
-        }
-    });
-</script>
+```js
+// 返回布尔值
+var v = new Validator();
+v.isEmail('example@qq.com');
+v.isIp('192.168.1.1');
+v.isPhone('17011122223');
+v.lessThan('11', '22');
+v.greaterThanDate('2010-01-02', '2010-01-01');
 ```
 
 
 ## 说明文档
 
-> new Validator(formName, option, callback)
+> new Validator(formName, options)
 
-### formName
+### 参数（可选，无参为字符串验证）
 
-`formName` 是标签中`<form>` 中的 `id` 或者 `name` 的值，如上面的`example_form`
+`formName` （必需） 是标签中 `<form>` 中的 `id` 或者 `name` 的值
 
-### option
+`options` （必需） 是 Validator 的第二个参数
 
-- `name` -> input 中 `name` 对应的值
-- `display` -> 验证错误要提示的文字 `{{这个中间是name对应的值}}` 
-- `rules` -> 一个或多个规则(中间用`|`间隔)
+  * `fields` 表单验证域 `rules` 和 `messages` 集合
+  * `errorPlacement` （可选） 错误信息位置
+  * `callback` （可选） 验证成功后回调函数
 
-    - `is_email` -> 验证合法邮箱
-    - `is_ip` -> 验证合法 ip 地址
-    - `is_fax` -> 验证传真
-    - `is_tel` -> 验证座机
-    - `is_phone` -> 验证手机
-    - `is_url` -> 验证URL
-    - `required` -> 是否为必填
-    - `max_length` -> 最大字符长度
-    - `min_length` -> 最小字符长度
+### 参数详细
 
-```js 
-{
-    //name 字段
-    name: 'email',
-    display:"你输入的不{{email}}是合法邮箱|不能为空|太长|太短",
-    // 验证条件
-    rules: 'is_email|max_length(12)'
-    // rules: 'valid_email|required|max_length(12)|min_length(2)'
+`fields` ：
+
+```js
+fields: {
+    email: {
+        rules: 'required | is_email | max_length(32)',
+        messages: "不能为空 | 请输入合法邮箱 | 输入的文字太长"
+    }
 }
 ```
 
-### callback
+注：'email' 为表单 'name' 属性<br />
+`rules` ： 一个或多个规则（中间用` | `间隔）<br />
+`messages` ： 验证错误要提示的文字（多条中间用` | `间隔） `{{这个中间是name对应的值}}` <br />
 
-```js 
-var validator = new Validator('example_form',[
-    {...},{...}
-],function(obj,evt){
-    //obj = {
-    //  callback:(error, evt, handles)
-    //  errors:Array[2]
-    //  fields:Object
-    //  form:form#example_form
-    //  handles:Object
-    //  isCallback:true
-    //  isEmail:(field)
-    //  isFax:(field)
-    //  isIp:(field)
-    //  isPhone:(field)
-    //  isTel:(field)
-    //  isUrl:(field)
-    //  maxLength:(field, length)
-    //  minLength:(field, length)
-    //  required:(field)
-    //} 
-    if(obj.errors.length>0){
-        // 判断是否错误
-    }
-})
-```
-
-## 例子
-
-### 字符串验证 
+`errorPlacement`：
 
 ```js
-var v = new Validator();
-v.isEmail('wowohoo@qq.com'); // -> 验证合法邮箱  |=> 返回布尔值
-v.isIp('192.168.23.3'); // -> 验证合法 ip 地址  |=> 返回布尔值
-v.isFax(''); // -> 验证传真  |=> 返回布尔值
-v.isPhone('13622667263'); // -> 验证手机  |=> 返回布尔值
-v.isTel('021－324234-234'); // -> 验证座机  |=> 返回布尔值
-v.isUrl('http://JSLite.io'); // -> 验证URL  |=> 返回布尔值
-v.maxLength('JSLite',12); // -> 最大长度  |=> 返回布尔值
-v.minLength('JSLite',3); // -> 最小长度  |=> 返回布尔值
-v.required('23'); // -> 是否为必填(是否为空)  |=> 返回布尔值
+errorPlacement: function(errorEl, fieldEl) {
+    // 非 label 、radio 元素
+    if (fieldEl.parentNode !== undefined) {
+        fieldEl.parentNode.appendChild(errorEl);
+    } else {
+        fieldEl[0].parentNode.parentNode.parentNode.appendChild(errorEl);
+    }
+},
 ```
 
-### 表单中验证
+注： 'errorEl' 为错误信息节点，'fieldEl' 为出现错误的表单节点
 
-**点击按submit按钮验证** 
+`callback`：
 
-```js 
-var validator = new Validator('example_form',[
-    {
-        //name 字段
-        name: 'email',
-        display:"你输入的不{{email}}是合法邮箱|不能为空|太长|太短",
-        // 验证条件
-        rules: 'is_email|max_length(12)'
-        // rules: 'valid_email|required|max_length(12)|min_length(2)'
-    },{
-        //name 字段
-        name: 'sex',
-        display:"请你选择性别{{sex}}",
-        // 验证条件
-        rules: 'required'
-    }
-],function(obj,evt){
-    if(obj.errors){
-        // 判断是否错误
-    }
-})
+```js
+callback: function(event) {
+    // 阻止提交
+    event.preventDefault();
+    // 自定义逻辑
+}
 ```
 
-**没有submit验证**
+注： 'event' 事件
 
-```js 
-var validator = new Validator('example_form',[
-    {
-        //name 字段
-        name: 'email',
-        display:"你输入的不{{email}}是合法邮箱|不能为空|太长|太短",
-        // 验证条件
-        rules: 'is_email|max_length(12)'
-        // rules: 'valid_email|required|max_length(12)|min_length(2)'
-    },{
-        //name 字段
-        name: 'sex',
-        display:"请你选择性别{{sex}}",
-        // 验证条件
-        rules: 'required'
+
+
+### 方法
+
+`.validate()`
+
+注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证 form 所有定义过的元素
+
+`.validateByName(name)`
+
+注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域， 'name' 参数为 表单域的 'name' 属性
+
+`.addMethod(name, method)`
+
+注： 当遇到 validator.js 提供的默认方法无法实现验证的时候，添加`.addMethod(name, method)`方法进行扩展<br />
+'name' 为校验名称，格式： is_date<br />
+'method' 为自定义方法
+
+如：
+```js
+// checkbox 至少选择两项 方法
+// 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)
+validator.addMethod('select_limit', function(field, param) {
+    // 选择的条目数
+    var checkedNum = 0;
+    for (var i = 0, elLength = field.el.length; i < elLength; i++) {
+        if (field.el[i].checked) {
+            checkedNum += 1;
+        }
     }
-],function(obj,evt){
-    if(obj.errors){
-        // 判断是否错误
-    }
-})
-validator.validate()
+    return checkedNum >= param;
+});
 ```
 
 
 ## 参考
-
-借鉴优秀的库
 
 - [jaywcjlove/validator.js](https://github.com/jaywcjlove/validator.js)一个字符串验证器和表单验证的库
 - [chriso/validator.js](https://github.com/chriso/validator.js)一个字符串验证器和转换类型的库

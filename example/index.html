@@ -95,35 +95,35 @@
             var validator = new Validator('validate_form', {
                 fields: {
                     email: {
-                        rules: 'is_email | required | max_length(32)',
-                        message: "请输入合法邮箱 | 不能为空 | 输入的文字太长"
+                        rules: 'required | is_email | max_length(32)',
+                        messages: "不能为空 | 请输入合法邮箱 | 输入的文字太长"
                     },
                     phone: {
                         rules: 'is_phone',
-                        message: "手机号： {{phone}} 不合法"
+                        messages: "手机号： {{phone}} 不合法"
                     },
                     birthday: {
                         rules: 'required | is_date',
-                        message: "不能为空 | 请输入合法日期"
+                        messages: "不能为空 | 请输入合法日期"
                     },
                     sex: {
                         rules: 'required',
-                        message: "不能为空"
+                        messages: "不能为空"
                     },
                     city: {
                         rules: 'required',
-                        message: "不能为空"
+                        messages: "不能为空"
                     },
                     hobby: {
                         rules: 'required | select_limit(2)',
-                        message: "不能为空 | 至少选择两项"
+                        messages: "不能为空 | 至少选择两项"
                     },
                     remarks: {
                         rules: 'max_length(48)',
-                        message: "输入的文字太长"
+                        messages: "输入的文字太长"
                     }
                 },
-                // 参数：errorEl 错误信息节点，fieldEl 表单节点
+                // 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点
                 errorPlacement: function(errorEl, fieldEl) {
                     // 非 label 、radio 元素
                     if (fieldEl.parentNode !== undefined) {
@@ -132,7 +132,7 @@
                         fieldEl[0].parentNode.parentNode.parentNode.appendChild(errorEl);
                     }
                 },
-                callback: function(errors, event) {
+                callback: function(event) {
                     // 阻止提交
                     event.preventDefault();
                     // 设置按钮样式

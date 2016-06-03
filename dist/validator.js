@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.6
+ * validator.js v1.0.8
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -250,7 +250,7 @@
             }
             // 执行回调函数
             if (typeof this.options === "object" && typeof this.options.callback === "function") {
-                this.options.callback(this.errors, evt);
+                this.options.callback(evt);
             }
             return this;
         },
@@ -323,7 +323,7 @@
                 // 解析错误信息
                 if (failed) {
                     var message = function() {
-                        return field.message.split(/\s*\|\s*/g)[i] && field.message.split(/\s*\|\s*/g)[i].replace("{{" + field.name + "}}", field.value);
+                        return field.messages.split(/\s*\|\s*/g)[i] && field.messages.split(/\s*\|\s*/g)[i].replace("{{" + field.name + "}}", field.value);
                     }();
                     var existingError;
                     for (var j = 0, errorsLength = this.errors.length; j < errorsLength; j += 1) {
@@ -355,7 +355,7 @@
         _addField: function(name, field) {
             this.fields[name] = {
                 name: name,
-                message: field.message,
+                messages: field.messages,
                 rules: field.rules,
                 id: null,
                 el: null,
@@ -475,12 +475,6 @@
  */
     function getValue(field) {
         return typeof field === "string" ? field : field.value;
-    }
-    /*
- * Export 为 CommonJS 模块
- */
-    if (typeof module !== "undefined" && module.exports) {
-        module.exports = Validator;
     }
     return Validator;
 });

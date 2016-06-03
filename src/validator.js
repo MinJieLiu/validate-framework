@@ -272,7 +272,7 @@ Validator.prototype = {
 
         // 执行回调函数
         if (typeof this.options === 'object' && typeof this.options.callback === 'function') {
-            this.options.callback(this.errors, evt);
+            this.options.callback(evt);
         }
 
         return this;
@@ -363,7 +363,7 @@ Validator.prototype = {
             // 解析错误信息
             if (failed) {
                 var message = (function() {
-                    return field.message.split(/\s*\|\s*/g)[i] && field.message.split(/\s*\|\s*/g)[i].replace('{{' + field.name + '}}', field.value);
+                    return field.messages.split(/\s*\|\s*/g)[i] && field.messages.split(/\s*\|\s*/g)[i].replace('{{' + field.name + '}}', field.value);
                 })();
 
                 var existingError;
@@ -401,7 +401,7 @@ Validator.prototype = {
     _addField: function(name, field) {
         this.fields[name] = {
             name: name,
-            message: field.message,
+            messages: field.messages,
             rules: field.rules,
             id: null,
             el: null,
@@ -536,13 +536,6 @@ function _paseToDate(paramDate) {
  */
 function getValue(field) {
     return (typeof field === 'string') ? field : field.value;
-}
-
-/*
- * Export 为 CommonJS 模块
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Validator;
 }
 
 return Validator;
