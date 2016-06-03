@@ -61,9 +61,9 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 
 ### 参数（可选，无参为字符串验证）
 
-`formName` （必需） 是标签中 `<form>` 中的 `id` 或者 `name` 的值
+**`formName`** （必需） 是标签中 `<form>` 中的 `id` 或者 `name` 的值
 
-`options` （必需） 是 Validator 的第二个参数
+**`options`** （必需） 是 Validator 的第二个参数
 
   * `fields` 表单验证域 `rules` 和 `messages` 集合
   * `errorPlacement` （可选） 错误信息位置
@@ -71,7 +71,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 
 ### 参数详细
 
-`fields` ：
+**`fields`** ：
 
 ```js
 fields: {
@@ -86,7 +86,7 @@ fields: {
 `rules` ： 一个或多个规则（中间用` | `间隔）<br />
 `messages` ： 验证错误要提示的文字（多条中间用` | `间隔） `{{这个中间是name对应的值}}` <br />
 
-`errorPlacement`：
+**`errorPlacement`** ：
 
 ```js
 errorPlacement: function(errorEl, fieldEl) {
@@ -101,7 +101,7 @@ errorPlacement: function(errorEl, fieldEl) {
 
 注： `errorEl` 为错误信息节点，`fieldEl` 为出现错误的表单节点
 
-`callback`：
+**`callback`** ：
 
 ```js
 callback: function(event) {
@@ -117,15 +117,15 @@ callback: function(event) {
 
 ### 方法
 
-`.validate()`
+**`.validate()` 手动验证**
 
 注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证 form 所有定义过的元素
 
-`.validateByName(name)`
+**`.validateByName(name)` 手动验证单个表单域**
 
 注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域， `name` 参数为 表单域的 `name` 属性
 
-`.addMethod(name, method)`
+**`.addMethod(name, method)` 自定义验证方法**
 
 注： 当遇到 validator.js 提供的默认方法无法实现验证的时候，添加`.addMethod(name, method)`方法进行扩展<br />
 `name` 为校验名称，格式： is_date<br />
