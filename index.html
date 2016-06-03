@@ -1,195 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Validator.js by MinJieLiu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Validator.js</h1>
+      <h2 class="project-tagline">JavaScript表单验证，字符串验证</h2>
+      <a href="https://github.com/MinJieLiu/validator.js" class="btn">View on GitHub</a>
+      <a href="https://github.com/MinJieLiu/validator.js/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/MinJieLiu/validator.js/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <head>
-        <meta charset="utf-8" />
-        <title>validator.js演示</title>
-        <link rel="stylesheet" href="bootstrap.css" />
-        <script src="validator.min.js"></script>
-    </head>
-    <style>
+    <section class="main-content">
+      <h1>
+<a id="validatorjs" class="anchor" href="#validatorjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>validator.js</h1>
 
-    .valid-error {
-        border-color: #a94442;
-        color: #a94442;
-        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+<p>validator.js 是一个轻量级 JavaScript 表单、字符串验证库</p>
+
+<h2>
+<a id="特性" class="anchor" href="#%E7%89%B9%E6%80%A7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>特性</h2>
+
+<ol>
+<li>轻量级</li>
+<li>无依赖</li>
+<li>表单验证</li>
+<li>字符串验证</li>
+</ol>
+
+<h2>
+<a id="快速上手" class="anchor" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>快速上手</h2>
+
+<p>表单验证：</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>validate_form<span class="pl-pds">"</span></span> <span class="pl-e">novalidate</span>=<span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
+        &lt;<span class="pl-ent">label</span> <span class="pl-e">for</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>&gt;邮箱：&lt;/<span class="pl-ent">label</span>&gt;
+        &lt;<span class="pl-ent">input</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-control<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">placeholder</span>=<span class="pl-s"><span class="pl-pds">"</span>请输入邮箱<span class="pl-pds">"</span></span> /&gt;
+    &lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
+        &lt;<span class="pl-ent">label</span> <span class="pl-e">for</span>=<span class="pl-s"><span class="pl-pds">"</span>phone<span class="pl-pds">"</span></span>&gt;手机：&lt;/<span class="pl-ent">label</span>&gt;
+        &lt;<span class="pl-ent">input</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-control<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>phone<span class="pl-pds">"</span></span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>phone<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span> <span class="pl-e">placeholder</span>=<span class="pl-s"><span class="pl-pds">"</span>请输入手机号<span class="pl-pds">"</span></span> /&gt;
+    &lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">input</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>btn btn-primary<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>submit<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>submit<span class="pl-pds">"</span></span> <span class="pl-e">value</span>=<span class="pl-s"><span class="pl-pds">"</span>提交<span class="pl-pds">"</span></span> /&gt;
+&lt;/<span class="pl-ent">form</span>&gt;</pre></div>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> validator <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>(<span class="pl-s"><span class="pl-pds">'</span>validate_form<span class="pl-pds">'</span></span>, {
+    fields<span class="pl-k">:</span> {
+        email<span class="pl-k">:</span> {
+            rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_email | max_length(32)<span class="pl-pds">'</span></span>,
+            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 输入的文字太长<span class="pl-pds">"</span></span>
+        },
+        phone<span class="pl-k">:</span> {
+            rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>is_phone<span class="pl-pds">'</span></span>,
+            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>手机号： {{phone}} 不合法<span class="pl-pds">"</span></span>
+        }
+    },
+    <span class="pl-c">// 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点</span>
+    <span class="pl-en">errorPlacement</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errorEl</span>, <span class="pl-smi">fieldEl</span>) {
+        <span class="pl-c">// 错误位置</span>
+    },
+    <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>) {
+        <span class="pl-c">// 回调函数</span>
     }
+});</pre></div>
 
-    .valid-error:focus {
-        border-color: #843534;
-        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
-        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+<p>字符串验证：</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// 返回布尔值</span>
+<span class="pl-k">var</span> v <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>();
+<span class="pl-smi">v</span>.<span class="pl-en">isEmail</span>(<span class="pl-s"><span class="pl-pds">'</span>example@qq.com<span class="pl-pds">'</span></span>);
+<span class="pl-smi">v</span>.<span class="pl-en">isIp</span>(<span class="pl-s"><span class="pl-pds">'</span>192.168.1.1<span class="pl-pds">'</span></span>);
+<span class="pl-smi">v</span>.<span class="pl-en">isPhone</span>(<span class="pl-s"><span class="pl-pds">'</span>17011122223<span class="pl-pds">'</span></span>);
+<span class="pl-smi">v</span>.<span class="pl-en">lessThan</span>(<span class="pl-s"><span class="pl-pds">'</span>11<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>22<span class="pl-pds">'</span></span>);
+<span class="pl-smi">v</span>.<span class="pl-en">greaterThanDate</span>(<span class="pl-s"><span class="pl-pds">'</span>2010-01-02<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>2010-01-01<span class="pl-pds">'</span></span>);</pre></div>
+
+<h2>
+<a id="说明文档" class="anchor" href="#%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>说明文档</h2>
+
+<blockquote>
+<p>new Validator(formName, options)</p>
+</blockquote>
+
+<h3>
+<a id="参数可选无参为字符串验证" class="anchor" href="#%E5%8F%82%E6%95%B0%E5%8F%AF%E9%80%89%E6%97%A0%E5%8F%82%E4%B8%BA%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%AA%8C%E8%AF%81" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参数（可选，无参为字符串验证）</h3>
+
+<p><strong><code>formName</code></strong> （必需） 是标签中 <code>&lt;form&gt;</code> 中的 <code>id</code> 或者 <code>name</code> 的值</p>
+
+<p><strong><code>options</code></strong> （必需） 是 Validator 的第二个参数</p>
+
+<ul>
+<li>
+<code>fields</code> 表单验证域 <code>rules</code> 和 <code>messages</code> 集合</li>
+<li>
+<code>errorPlacement</code> （可选） 错误信息位置</li>
+<li>
+<code>callback</code> （可选） 验证成功后回调函数</li>
+</ul>
+
+<h3>
+<a id="参数详细" class="anchor" href="#%E5%8F%82%E6%95%B0%E8%AF%A6%E7%BB%86" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参数详细</h3>
+
+<p><strong><code>fields</code></strong> ：</p>
+
+<div class="highlight highlight-source-js"><pre>fields<span class="pl-k">:</span> {
+    email<span class="pl-k">:</span> {
+        rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_email | max_length(32)<span class="pl-pds">'</span></span>,
+        messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 输入的文字太长<span class="pl-pds">"</span></span>
     }
+}</pre></div>
 
-    .valid-error-message {
-        display: block;
-        margin: 5px 0;
-        font-style: normal;
-        color: #a94442;
+<p>注：<code>email</code> 为表单 <code>name</code> 属性<br>
+<code>rules</code> ： 一个或多个规则（中间用<code>|</code>间隔）<br>
+<code>messages</code> ： 验证错误要提示的文字（多条中间用<code>|</code>间隔） <code>{{这个中间是name对应的值}}</code> <br></p>
+
+<p><strong><code>errorPlacement</code></strong> ：</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">errorPlacement</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errorEl</span>, <span class="pl-smi">fieldEl</span>) {
+    <span class="pl-c">// 非 label 、radio 元素</span>
+    <span class="pl-k">if</span> (<span class="pl-smi">fieldEl</span>.<span class="pl-c1">parentNode</span> <span class="pl-k">!==</span> <span class="pl-c1">undefined</span>) {
+        <span class="pl-smi">fieldEl</span>.<span class="pl-c1">parentNode</span>.<span class="pl-c1">appendChild</span>(errorEl);
     }
+},</pre></div>
 
-    </style>
+<p>注： <code>errorEl</code> 为错误信息节点，<code>fieldEl</code> 为出现错误的表单节点</p>
 
-    <body>
-        <div class="container">
+<p><strong><code>callback</code></strong> ：</p>
 
-            <h2>表单验证</h2>
-            <form id="validate_form" novalidate="">
+<div class="highlight highlight-source-js"><pre><span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>) {
+    <span class="pl-c">// 阻止提交</span>
+    <span class="pl-c1">event</span>.<span class="pl-en">preventDefault</span>();
+    <span class="pl-c">// 自定义逻辑</span>
+}</pre></div>
 
-                <div class="form-group">
-                    <label for="email">邮箱：</label>
-                    <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
-                </div>
+<p>注： <code>event</code> 事件</p>
 
-                <div class="form-group">
-                    <button class="btn btn-default" id="setErrorEmail" type="button">设置错误邮箱</button> 
-                    <button class="btn btn-default" id="setRightEmail" type="button">设置正确邮箱</button> 
-                    <button class="btn btn-info" id="validEmail" type="button">验证邮箱</button>
-                </div>
+<h3>
+<a id="方法" class="anchor" href="#%E6%96%B9%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>方法</h3>
 
-                <div class="form-group">
-                    <label for="phone">手机：</label>
-                    <input class="form-control" id="phone" name="phone" type="text" placeholder="请输入手机号" />
-                </div>
+<p><strong><code>.validate()</code> 手动验证</strong></p>
 
-                <div class="form-group">
-                    <label for="birthday">生日：</label>
-                    <input class="form-control" id="birthday" name="birthday" type="text" placeholder="请填写生日">
-                </div>
+<p>注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 <code>.validate()</code> 调用验证 form 所有定义过的元素</p>
 
-                <div class="form-group">
-                    <label>性别：</label>
-                    <div class="radio">
-                        <label>
-                            <input id="male" type="radio" name="sex" value="0" /> 男
-                        </label>
-                        <label>
-                            <input id="female" type="radio" name="sex" value="1" /> 女
-                        </label>
-                    </div>
-                </div>
+<p><strong><code>.validateByName(name)</code> 手动验证单个表单域</strong></p>
 
-                <div class="form-group">
-                    <label for="city">城市：</label>
-                    <select class="form-control" id="city" name="city">
-                        <option value="">请选择</option>
-                        <option value="0">北京</option>
-                        <option value="1">上海</option>
-                        <option value="2">重庆</option>
-                        <option value="3">成都</option>
-                    </select>
-                </div>
+<p>注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 <code>.validateByName(name)</code> 进行验证单个域， <code>name</code> 参数为 表单域的 <code>name</code> 属性</p>
 
-                <div class="form-group">
-                    <label>爱好：</label>
-                    <div class="checkbox">
-                        <label>
-                            <input id="badminton" name="hobby" type="checkbox" value="1" /> 羽毛球
-                        </label>
-                        <label>
-                            <input id="swim" name="hobby" type="checkbox" value="2" /> 游泳
-                        </label>
-                        <label>
-                            <input id="run" name="hobby" type="checkbox" value="3" /> 跑步
-                        </label>
-                    </div>
-                </div>
+<p><strong><code>.addMethod(name, method)</code> 自定义验证方法</strong></p>
 
-                <div class="form-group">
-                    <label for="remarks">简介：</label>
-                    <textarea class="form-control" id="remarks" name="remarks" rows="3" placeholder="一句话描述自己"></textarea>
-                </div>
+<p>注： 当遇到 validator.js 提供的默认方法无法实现验证的时候，添加<code>.addMethod(name, method)</code>方法进行扩展<br>
+<code>name</code> 为校验名称，格式： is_date<br>
+<code>method</code> 为自定义方法</p>
 
-                <input class="btn btn-primary" id="submit" type="submit" value="提交" />
+<p>如：</p>
 
-            </form>
-        </div>
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// checkbox 至少选择两项 方法</span>
+<span class="pl-c">// 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)</span>
+<span class="pl-smi">validator</span>.<span class="pl-en">addMethod</span>(<span class="pl-s"><span class="pl-pds">'</span>select_limit<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">field</span>, <span class="pl-smi">param</span>) {
+    <span class="pl-c">// 选择的条目数</span>
+    <span class="pl-k">var</span> checkedNum <span class="pl-k">=</span> <span class="pl-c1">0</span>;
+    <span class="pl-k">for</span> (<span class="pl-k">var</span> i <span class="pl-k">=</span> <span class="pl-c1">0</span>, elLength <span class="pl-k">=</span> <span class="pl-smi">field</span>.<span class="pl-smi">el</span>.<span class="pl-c1">length</span>; i <span class="pl-k">&lt;</span> elLength; i<span class="pl-k">++</span>) {
+        <span class="pl-k">if</span> (<span class="pl-smi">field</span>.<span class="pl-smi">el</span>[i].<span class="pl-c1">checked</span>) {
+            checkedNum <span class="pl-k">+=</span> <span class="pl-c1">1</span>;
+        }
+    }
+    <span class="pl-k">return</span> checkedNum <span class="pl-k">&gt;=</span> param;
+});</pre></div>
 
-        <script>
-            var validator = new Validator('validate_form', {
-                fields: {
-                    email: {
-                        rules: 'required | is_email | max_length(32)',
-                        messages: "不能为空 | 请输入合法邮箱 | 输入的文字太长"
-                    },
-                    phone: {
-                        rules: 'is_phone',
-                        messages: "手机号： {{phone}} 不合法"
-                    },
-                    birthday: {
-                        rules: 'required | is_date',
-                        messages: "不能为空 | 请输入合法日期"
-                    },
-                    sex: {
-                        rules: 'required',
-                        messages: "不能为空"
-                    },
-                    city: {
-                        rules: 'required',
-                        messages: "不能为空"
-                    },
-                    hobby: {
-                        rules: 'required | select_limit(2)',
-                        messages: "不能为空 | 至少选择两项"
-                    },
-                    remarks: {
-                        rules: 'max_length(48)',
-                        messages: "输入的文字太长"
-                    }
-                },
-                // 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点
-                errorPlacement: function(errorEl, fieldEl) {
-                    // 非 label 、radio 元素
-                    if (fieldEl.parentNode !== undefined) {
-                        fieldEl.parentNode.appendChild(errorEl);
-                    } else {
-                        fieldEl[0].parentNode.parentNode.parentNode.appendChild(errorEl);
-                    }
-                },
-                callback: function(event) {
-                    // 阻止提交
-                    event.preventDefault();
-                    // 设置按钮样式
-                    var submitButton = event.target['submit'];
-                    submitButton.classList.remove('btn-primary');
-                    submitButton.classList.add('btn-success');
-                    submitButton.value = '已验证成功';
-                }
-            });
+<h2>
+<a id="参考" class="anchor" href="#%E5%8F%82%E8%80%83" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参考</h2>
 
-            // 至少选择两项
-            // 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)
-            validator.addMethod('select_limit', function(field, param) {
-                // 选择的条目数
-                var checkedNum = 0;
-                for (var i = 0, elLength = field.el.length; i < elLength; i++) {
-                    if (field.el[i].checked) {
-                        checkedNum += 1;
-                    }
-                }
-                return checkedNum >= param;
-            });
+<ul>
+<li>
+<a href="https://github.com/jaywcjlove/validator.js">jaywcjlove/validator.js</a>一个字符串验证器和表单验证的库</li>
+<li>
+<a href="https://github.com/chriso/validator.js">chriso/validator.js</a>一个字符串验证器和转换类型的库</li>
+</ul>
 
-            // 设置邮箱值
-            var emailEL = document.getElementById('email');
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/MinJieLiu/validator.js">Validator.js</a> is maintained by <a href="https://github.com/MinJieLiu">MinJieLiu</a>.</span>
 
-            document.getElementById('setErrorEmail').addEventListener('click', function(e) {
-                emailEL.value = 'anonymous#qq.com';
-            });
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
 
-            document.getElementById('setRightEmail').addEventListener('click', function(e) {
-                emailEL.value = 'anonymous@qq.com';
-            });
+    </section>
 
-            // 验证邮箱值
-            var validEmailButton = document.getElementById('validEmail');
-            validEmailButton.addEventListener('click', function(e) {
-                // 通过 name 验证单个表单域
-                validator.validateByName('email');
-            });
-
-        </script>
-    </body>
-
+  
+  </body>
 </html>
