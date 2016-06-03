@@ -82,7 +82,7 @@ fields: {
 }
 ```
 
-注：'email' 为表单 'name' 属性<br />
+注：`email` 为表单 `name` 属性<br />
 `rules` ： 一个或多个规则（中间用` | `间隔）<br />
 `messages` ： 验证错误要提示的文字（多条中间用` | `间隔） `{{这个中间是name对应的值}}` <br />
 
@@ -99,7 +99,7 @@ errorPlacement: function(errorEl, fieldEl) {
 },
 ```
 
-注： 'errorEl' 为错误信息节点，'fieldEl' 为出现错误的表单节点
+注： `errorEl` 为错误信息节点，`fieldEl` 为出现错误的表单节点
 
 `callback`：
 
@@ -111,7 +111,7 @@ callback: function(event) {
 }
 ```
 
-注： 'event' 事件
+注： `event` 事件
 
 
 
@@ -123,13 +123,13 @@ callback: function(event) {
 
 `.validateByName(name)`
 
-注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域， 'name' 参数为 表单域的 'name' 属性
+注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域， `name` 参数为 表单域的 `name` 属性
 
 `.addMethod(name, method)`
 
 注： 当遇到 validator.js 提供的默认方法无法实现验证的时候，添加`.addMethod(name, method)`方法进行扩展<br />
-'name' 为校验名称，格式： is_date<br />
-'method' 为自定义方法
+`name` 为校验名称，格式： is_date<br />
+`method` 为自定义方法
 
 如：
 ```js
