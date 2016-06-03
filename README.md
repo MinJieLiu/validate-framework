@@ -38,6 +38,13 @@ var validator = new Validator('validate_form', {
             rules: 'is_phone',
             messages: "手机号： {{phone}} 不合法"
         }
+    },
+    // 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点
+    errorPlacement: function(errorEl, fieldEl) {
+        // 错误位置
+    },
+    callback: function(event) {
+        // 回调函数
     }
 });
 ```
@@ -93,8 +100,6 @@ errorPlacement: function(errorEl, fieldEl) {
     // 非 label 、radio 元素
     if (fieldEl.parentNode !== undefined) {
         fieldEl.parentNode.appendChild(errorEl);
-    } else {
-        fieldEl[0].parentNode.parentNode.parentNode.appendChild(errorEl);
     }
 },
 ```
