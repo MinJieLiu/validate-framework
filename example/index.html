@@ -8,12 +8,27 @@
         <script src="../dist/validator.js"></script>
     </head>
     <style>
-        .valid-error {
-            display: block;
-            margin: 5px 0;
-            font-style: normal;
-            color: orangered;
-        }
+
+    .valid-error {
+        border-color: #a94442;
+        color: #a94442;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    }
+
+    .valid-error:focus {
+        border-color: #843534;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+    }
+
+    .valid-error-message {
+        display: block;
+        margin: 5px 0;
+        font-style: normal;
+        color: #a94442;
+    }
+
     </style>
 
     <body>

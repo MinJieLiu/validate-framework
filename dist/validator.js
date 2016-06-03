@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.8
+ * validator.js v1.0.9
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -369,6 +369,15 @@
      * @param {Object} 验证信息域
      */
         _removeErrorMessage: function(field) {
+            // 移除表单域错误类
+            if (isNormalEl(field.el)) {
+                field.el.classList.remove("valid-error");
+            } else {
+                for (var i = 0, elLength = field.el.length; i < elLength; i++) {
+                    field.el[i].classList.remove("valid-label-error");
+                }
+            }
+            // 移除错误信息节点
             var errorEl = document.getElementById("valid_error_" + field.name);
             if (errorEl) {
                 errorEl.parentNode.removeChild(errorEl);
@@ -385,9 +394,17 @@
             }
             // 清除之前保留的错误信息
             this._removeErrorMessage(field);
+            // 当前表单域添加错误类
+            if (isNormalEl(field.el)) {
+                field.el.classList.add("valid-error");
+            } else {
+                for (var i = 0, elLength = field.el.length; i < elLength; i++) {
+                    field.el[i].classList.add("valid-label-error");
+                }
+            }
             // 创建元素
             var errorEl = document.createElement("em");
-            errorEl.classList.add("valid-error");
+            errorEl.classList.add("valid-error-message");
             errorEl.setAttribute("id", "valid_error_" + field.name);
             errorEl.innerHTML = this.errors[field.name].message;
             // 错误信息位置
@@ -396,9 +413,8 @@
                 this.options.errorPlacement(errorEl, field.el);
             } else {
                 // 默认错误信息位置
-                // 非 label 、radio 元素
                 // label 、 radio 元素错误位置不固定，默认暂不设置
-                if (field.el.parentNode !== undefined) {
+                if (isNormalEl(field.el)) {
                     field.el.parentNode.appendChild(errorEl);
                 }
             }
@@ -448,6 +464,16 @@
     function isEmptyObject(obj) {
         for (var name in obj) {
             return !name;
+        }
+        return true;
+    }
+    /**
+ * 判断是否为非 checkbox 、radio 的表单元素
+ * @param {Object} 节点对象
+ */
+    function isNormalEl(el) {
+        if (el.parentNode === undefined) {
+            return false;
         }
         return true;
     }
