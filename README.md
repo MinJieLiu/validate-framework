@@ -159,7 +159,7 @@ validator.addMethod('select_limit', function(field, param) {
 
 ## 备注
 
-validator.js 只包含验证实现，不包括 UI，因此 UI 不分可以自由发挥。
+validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。
 
 
 ## 参考
