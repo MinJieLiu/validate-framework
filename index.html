@@ -55,11 +55,11 @@
     fields<span class="pl-k">:</span> {
         email<span class="pl-k">:</span> {
             rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_email | max_length(32)<span class="pl-pds">'</span></span>,
-            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 输入的文字太长<span class="pl-pds">"</span></span>
+            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符<span class="pl-pds">"</span></span>
         },
         phone<span class="pl-k">:</span> {
             rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>is_phone<span class="pl-pds">'</span></span>,
-            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>手机号： {{phone}} 不合法<span class="pl-pds">"</span></span>
+            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>手机号： {{value}} 不合法<span class="pl-pds">"</span></span>
         }
     },
     <span class="pl-c">// 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点</span>
@@ -112,13 +112,17 @@
 <div class="highlight highlight-source-js"><pre>fields<span class="pl-k">:</span> {
     email<span class="pl-k">:</span> {
         rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_email | max_length(32)<span class="pl-pds">'</span></span>,
-        messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 输入的文字太长<span class="pl-pds">"</span></span>
+        messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符<span class="pl-pds">"</span></span>
+    },
+    phone<span class="pl-k">:</span> {
+        rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>is_phone<span class="pl-pds">'</span></span>,
+        messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>手机号： {{value}} 不合法<span class="pl-pds">"</span></span>
     }
 }</pre></div>
 
-<p>注：<code>email</code> 为表单 <code>name</code> 属性<br>
-<code>rules</code> ： 一个或多个规则（中间用<code>|</code>间隔）<br>
-<code>messages</code> ： 验证错误要提示的文字（多条中间用<code>|</code>间隔） <code>{{这个中间是name对应的值}}</code> <br></p>
+<p>注： <code>email</code> 、<code>phone</code> 为表单 <code>name</code> 属性<br>
+<code>rules</code> ： 一个或多个规则（中间用 <code>|</code> 分隔）<br>
+<code>messages</code> ： 相对应的错误提示（中间用 <code>|</code> 分隔） <code>{{value}}</code> 为表单中的 value 值， <code>{{param}}</code> 为 <code>max_length(32)</code> 的参数 <br></p>
 
 <p><strong><code>errorPlacement</code></strong> ：</p>
 
@@ -134,8 +138,6 @@
 <p><strong><code>callback</code></strong> ：</p>
 
 <div class="highlight highlight-source-js"><pre><span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>) {
-    <span class="pl-c">// 阻止提交</span>
-    <span class="pl-c1">event</span>.<span class="pl-en">preventDefault</span>();
     <span class="pl-c">// 自定义逻辑</span>
 }</pre></div>
 
@@ -163,7 +165,7 @@
 <div class="highlight highlight-source-js"><pre><span class="pl-c">// checkbox 至少选择两项 方法</span>
 <span class="pl-c">// 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)</span>
 <span class="pl-smi">validator</span>.<span class="pl-en">addMethod</span>(<span class="pl-s"><span class="pl-pds">'</span>select_limit<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">field</span>, <span class="pl-smi">param</span>) {
-    <span class="pl-c">// 选择的条目数</span>
+    <span class="pl-c">// checkbox 至少选择两项</span>
     <span class="pl-k">var</span> checkedNum <span class="pl-k">=</span> <span class="pl-c1">0</span>;
     <span class="pl-k">for</span> (<span class="pl-k">var</span> i <span class="pl-k">=</span> <span class="pl-c1">0</span>, elLength <span class="pl-k">=</span> <span class="pl-smi">field</span>.<span class="pl-smi">el</span>.<span class="pl-c1">length</span>; i <span class="pl-k">&lt;</span> elLength; i<span class="pl-k">++</span>) {
         <span class="pl-k">if</span> (<span class="pl-smi">field</span>.<span class="pl-smi">el</span>[i].<span class="pl-c1">checked</span>) {
@@ -172,6 +174,11 @@
     }
     <span class="pl-k">return</span> checkedNum <span class="pl-k">&gt;=</span> param;
 });</pre></div>
+
+<h2>
+<a id="备注" class="anchor" href="#%E5%A4%87%E6%B3%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>备注</h2>
+
+<p>validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。</p>
 
 <h2>
 <a id="参考" class="anchor" href="#%E5%8F%82%E8%80%83" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参考</h2>
