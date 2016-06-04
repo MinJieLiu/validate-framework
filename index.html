@@ -24,6 +24,8 @@
 
 <p>validator.js 是一个轻量级 JavaScript 表单、字符串验证库</p>
 
+<p>Demo： <a href="http://minjieliu.github.io/validator.js/example">http://minjieliu.github.io/validator.js/example</a></p>
+
 <h2>
 <a id="特性" class="anchor" href="#%E7%89%B9%E6%80%A7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>特性</h2>
 
@@ -67,6 +69,8 @@
         <span class="pl-c">// 错误位置</span>
     },
     <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>) {
+        <span class="pl-c">// 阻止表单提交</span>
+        <span class="pl-smi">validator</span>.<span class="pl-en">preventSubmit</span>();
         <span class="pl-c">// 回调函数</span>
     }
 });</pre></div>
@@ -133,7 +137,8 @@
     }
 },</pre></div>
 
-<p>注： <code>errorEl</code> 为错误信息节点，<code>fieldEl</code> 为出现错误的表单节点</p>
+<p>注： <code>errorEl</code> 为错误信息节点，<code>fieldEl</code> 为出现错误的表单节点
+验证失败后 validator.js 会在类似文本框表单中添加 <code>valid-error</code> ， checkbox、radio 中添加 <code>valid-label-error</code> 错误信息中添加 <code>valid-error-message</code> class 类</p>
 
 <p><strong><code>callback</code></strong> ：</p>
 
@@ -146,6 +151,10 @@
 <h3>
 <a id="方法" class="anchor" href="#%E6%96%B9%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>方法</h3>
 
+<p>例如：</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">validator</span>.<span class="pl-en">validate</span>();</pre></div>
+
 <p><strong><code>.validate()</code> 手动验证</strong></p>
 
 <p>注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 <code>.validate()</code> 调用验证 form 所有定义过的元素</p>
@@ -153,6 +162,8 @@
 <p><strong><code>.validateByName(name)</code> 手动验证单个表单域</strong></p>
 
 <p>注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 <code>.validateByName(name)</code> 进行验证单个域， <code>name</code> 参数为 表单域的 <code>name</code> 属性</p>
+
+<p><strong><code>.preventSubmit()</code> 阻止表单提交</strong></p>
 
 <p><strong><code>.addMethod(name, method)</code> 自定义验证方法</strong></p>
 
@@ -178,7 +189,9 @@
 <h2>
 <a id="备注" class="anchor" href="#%E5%A4%87%E6%B3%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>备注</h2>
 
-<p>validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。</p>
+<p>validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。<br>
+因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性。（Demo 中只是为了演示并没有将结构和逻辑分离）<br>
+validator.js 支持 chrome、firfox、IE9 以上浏览器，暂不准备为兼容低版本浏览器而牺牲更大体积，但表单提交验证支持 IE6 以上浏览器</p>
 
 <h2>
 <a id="参考" class="anchor" href="#%E5%8F%82%E8%80%83" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参考</h2>
