@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.1.0
+ * validator.js v1.1.1
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -56,6 +56,9 @@
         // 日期
         date: /^\d{4}-\d{1,2}-\d{1,2}$/
     };
+    /**
+ * 验证方法
+ */
     var _testHook = {
         // 验证自然数
         is_numeric: function(field) {
@@ -176,7 +179,7 @@
     };
     /**
  * Validator 对象
- * @param {Object} form 名称
+ * @param {String} form 名称
  * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
     var Validator = function(formName, options) {
@@ -238,15 +241,9 @@
                     this._validateField(field);
                 }
             }
-            // 如果有错误，停止 submit 提交
+            // 如果有错误，停止 submit 提交，并停止执行回调函数
             if (!isEmptyObject(this.errors)) {
-                if (evt && evt.preventDefault) {
-                    evt.preventDefault();
-                } else if (event) {
-                    // IE 使用的全局变量
-                    event.returnValue = false;
-                }
-                return false;
+                return this.preventSubmit();
             }
             // 执行回调函数
             if (typeof this.options === "object" && typeof this.options.callback === "function") {
@@ -256,7 +253,7 @@
         },
         /**
      * 验证单个表单域
-     * @param 表单域 name 属性
+     * @param {String} 表单域 name 属性
      */
         validateByName: function(name) {
             var field = this.fields[name];
@@ -266,9 +263,23 @@
             return this;
         },
         /**
+     * 阻止表单提交
+     * @param {Event}
+     */
+        preventSubmit: function() {
+            var evt = this.handles["evt"];
+            if (evt && evt.preventDefault) {
+                evt.preventDefault();
+            } else if (evt) {
+                // IE 使用的全局变量
+                evt.returnValue = false;
+            }
+            return false;
+        },
+        /**
      * 扩展校验方法
-     * @param 校验名称 格式： is_date
-     * @param 校验方法
+     * @param {String} 校验名称 格式： is_date
+     * @param {Function} 校验方法
      */
         addMethod: function(name, method) {
             _testHook[name] = method;
@@ -355,7 +366,7 @@
         /**
      * 构建具有所有需要验证的信息域数组
      * @param {String} 表单域 name 属性名称
-     * @param {Object} 当前验证对象
+     * @param {Object} 验证信息域
      */
         _addField: function(name, field) {
             this.fields[name] = {
@@ -376,10 +387,10 @@
         _removeErrorMessage: function(field) {
             // 移除表单域错误类
             if (isNormalEl(field.el)) {
-                field.el.classList.remove("valid-error");
+                removeClass(field.el, "valid-error");
             } else {
                 for (var i = 0, elLength = field.el.length; i < elLength; i++) {
-                    field.el[i].classList.remove("valid-label-error");
+                    removeClass(field.el[i], "valid-label-error");
                 }
             }
             // 移除错误信息节点
@@ -401,15 +412,15 @@
             this._removeErrorMessage(field);
             // 当前表单域添加错误类
             if (isNormalEl(field.el)) {
-                field.el.classList.add("valid-error");
+                addClass(field.el, "valid-error");
             } else {
                 for (var i = 0, elLength = field.el.length; i < elLength; i++) {
-                    field.el[i].classList.add("valid-label-error");
+                    addClass(field.el[i], "valid-label-error");
                 }
             }
             // 创建元素
             var errorEl = document.createElement("em");
-            errorEl.classList.add("valid-error-message");
+            addClass(errorEl, "valid-error-message");
             errorEl.setAttribute("id", "valid_error_" + field.name);
             errorEl.innerHTML = this.errors[field.name].message;
             // 错误信息位置
@@ -437,6 +448,45 @@
         });
     }
     /**
+ * 是否为空对象
+ * @param {Object} obj
+ */
+    function isEmptyObject(obj) {
+        for (var name in obj) {
+            return !name;
+        }
+        return true;
+    }
+    /**
+ * 判断是否包含 class
+ * @param {Element} el
+ * @param {String} class 名称
+ */
+    function hasClass(el, cls) {
+        return el.className.match(new RegExp("(\\s|^)" + cls + "(\\s|$)"));
+    }
+    /**
+ * 添加 class
+ * @param {Element} el
+ * @param {String} class 名称
+ */
+    function addClass(el, cls) {
+        if (!hasClass(el, cls)) {
+            el.className += " " + cls;
+        }
+    }
+    /**
+ * 移除 class
+ * @param {Element} el
+ * @param {String} class 名称
+ */
+    function removeClass(el, cls) {
+        if (hasClass(el, cls)) {
+            var reg = new RegExp("(\\s|^)" + cls + "(\\s|$)");
+            el.className = el.className.replace(reg, " ");
+        }
+    }
+    /**
  * 获取节点对象的属性
  * @param {Object} 传入节点
  * @param {String} 需要获取的属性
@@ -457,20 +507,10 @@
     /**
  * 获取 dom 节点对象
  * @param {Object} 字符串或者节点对象
- * @return {Object} 返回 DOM 节点
+ * @return {Element} 返回 DOM 节点
  */
     function _formElement(el) {
         return typeof el === "object" ? el : document.forms[el];
-    }
-    /**
- * 是否为空对象
- * @param {Object} obj
- */
-    function isEmptyObject(obj) {
-        for (var name in obj) {
-            return !name;
-        }
-        return true;
     }
     /**
  * 判断是否为非 checkbox 、radio 的表单元素

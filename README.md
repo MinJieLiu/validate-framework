@@ -46,6 +46,8 @@ var validator = new Validator('validate_form', {
         // 错误位置
     },
     callback: function(event) {
+        // 阻止表单提交
+        validator.preventSubmit();
         // 回调函数
     }
 });
@@ -127,6 +129,11 @@ callback: function(event) {
 
 ### 方法
 
+例如：
+```js
+validator.validate();
+```
+
 **`.validate()` 手动验证**
 
 注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证 form 所有定义过的元素
@@ -134,6 +141,8 @@ callback: function(event) {
 **`.validateByName(name)` 手动验证单个表单域**
 
 注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域， `name` 参数为 表单域的 `name` 属性
+
+**`.preventSubmit()` 阻止表单提交**
 
 **`.addMethod(name, method)` 自定义验证方法**
 
@@ -160,7 +169,8 @@ validator.addMethod('select_limit', function(field, param) {
 ## 备注
 
 validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。<br />
-因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性。（Demo 中只是为了演示并没有将结构和逻辑分离）
+因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性。（Demo 中只是为了演示并没有将结构和逻辑分离）<br />
+validator.js 支持 chrome、firfox、IE9 以上浏览器，暂不准备为兼容低版本浏览器而牺牲更大体积，但表单提交验证支持 IE6 以上浏览器
 
 
 ## 参考
