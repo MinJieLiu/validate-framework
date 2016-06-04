@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.0.9
+ * validator.js v1.1.0
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -304,7 +304,7 @@
                 }
                 var method = rules[i];
                 var parts = regexs.rule.exec(method);
-                var param = null;
+                var param = "";
                 // 解析带参数的验证如 max_length(12)
                 if (parts) {
                     method = parts[1];
@@ -323,7 +323,12 @@
                 // 解析错误信息
                 if (failed) {
                     var message = function() {
-                        return field.messages.split(/\s*\|\s*/g)[i] && field.messages.split(/\s*\|\s*/g)[i].replace("{{" + field.name + "}}", field.value);
+                        var seqText = field.messages.split(/\s*\|\s*/g)[i];
+                        if (seqText) {
+                            // 替换 {{value}} 和 {{param}} 为指定值
+                            return seqText.replace(/\{\{\s*value\s*\}\}/g, field.value).replace(/\{\{\s*param\s*\}\}/g, param);
+                        }
+                        return seqText;
                     }();
                     var existingError;
                     for (var j = 0, errorsLength = this.errors.length; j < errorsLength; j += 1) {

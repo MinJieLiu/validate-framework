@@ -2,12 +2,14 @@
 
 validator.js 是一个轻量级 JavaScript 表单、字符串验证库
 
+
 ## 特性
 
  1. 轻量级
  2. 无依赖
  3. 表单验证
  4. 字符串验证
+
 
 ## 快速上手
 
@@ -32,11 +34,11 @@ var validator = new Validator('validate_form', {
     fields: {
         email: {
             rules: 'required | is_email | max_length(32)',
-            messages: "不能为空 | 请输入合法邮箱 | 输入的文字太长"
+            messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
         },
         phone: {
             rules: 'is_phone',
-            messages: "手机号： {{phone}} 不合法"
+            messages: "手机号： {{value}} 不合法"
         }
     },
     // 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点
@@ -62,6 +64,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 ```
 
 
+
 ## 说明文档
 
 > new Validator(formName, options)
@@ -84,14 +87,18 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 fields: {
     email: {
         rules: 'required | is_email | max_length(32)',
-        messages: "不能为空 | 请输入合法邮箱 | 输入的文字太长"
+        messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
+    },
+    phone: {
+        rules: 'is_phone',
+        messages: "手机号： {{value}} 不合法"
     }
 }
 ```
 
-注：`email` 为表单 `name` 属性<br />
-`rules` ： 一个或多个规则（中间用` | `间隔）<br />
-`messages` ： 验证错误要提示的文字（多条中间用` | `间隔） `{{这个中间是name对应的值}}` <br />
+注： `email` 、`phone` 为表单 `name` 属性<br />
+`rules` ： 一个或多个规则（中间用 ` | ` 分隔）<br />
+`messages` ： 相对应的错误提示（中间用 ` | ` 分隔） `{{value}}` 为表单中的 value 值， `{{param}}` 为 `max_length(32)` 的参数 <br />
 
 **`errorPlacement`** ：
 
@@ -110,8 +117,6 @@ errorPlacement: function(errorEl, fieldEl) {
 
 ```js
 callback: function(event) {
-    // 阻止提交
-    event.preventDefault();
     // 自定义逻辑
 }
 ```
@@ -141,7 +146,7 @@ callback: function(event) {
 // checkbox 至少选择两项 方法
 // 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)
 validator.addMethod('select_limit', function(field, param) {
-    // 选择的条目数
+    // checkbox 至少选择两项
     var checkedNum = 0;
     for (var i = 0, elLength = field.el.length; i < elLength; i++) {
         if (field.el[i].checked) {
@@ -151,6 +156,10 @@ validator.addMethod('select_limit', function(field, param) {
     return checkedNum >= param;
 });
 ```
+
+## 备注
+
+validator.js 只包含验证实现，不包括 UI，因此 UI 不分可以自由发挥。
 
 
 ## 参考
