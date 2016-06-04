@@ -159,7 +159,8 @@ validator.addMethod('select_limit', function(field, param) {
 
 ## 备注
 
-validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。
+validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。<br />
+因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性。（Demo 中只是为了演示并没有将结构和逻辑分离）
 
 
 ## 参考
