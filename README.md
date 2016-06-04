@@ -114,6 +114,7 @@ errorPlacement: function(errorEl, fieldEl) {
 ```
 
 注： `errorEl` 为错误信息节点，`fieldEl` 为出现错误的表单节点
+验证失败后 validator.js 会在类似文本框表单中添加 `valid-error` ， checkbox、radio 中添加 `valid-label-error` 错误信息中添加 `valid-error-message` class 类
 
 **`callback`** ：
 

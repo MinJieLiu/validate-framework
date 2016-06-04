@@ -36,7 +36,8 @@
     <body>
         <div class="container">
 
-            <h2>validator.js表单验证</h2>
+            <h1>validator.js</h1>
+            <h2>表单验证</h2>
             <form id="validate_form" novalidate="">
 
                 <div class="form-group">
@@ -108,6 +109,12 @@
             </form>
 
             <p>Demo不兼容 IE10 以下浏览器。</p>
+
+            <h2>字符串验证</h2>
+            <div class="panel panel-default">
+                <div class="panel-body" id="stringValidate">
+                </div>
+            </div>
 
         </div>
 
@@ -195,6 +202,15 @@
                 validator.validateByName('email');
             });
 
+            // 字符串验证
+            var v = new Validator();
+            var stringMessage = '';
+            stringMessage += '邮箱验证 -&gt; isEmail(\'example@qq.com\'): ' + v.isEmail('example@qq.com') + '<br />';
+            stringMessage += '手机验证 -&gt; isPhone(\'170123456789\'): ' + v.isPhone('170123456789') + '<br />';
+            stringMessage += '日期验证 -&gt; isDate(\'2010-13-10\'): ' + v.isDate('2010-13-10') + '<br />';
+            stringMessage += '小于某个日期 -&gt; lessThanDate(\'2010-01-02\', \'2010-01-01\'): ' + v.lessThanDate('2010-01-02', '2010-01-01') + '<br />';
+            stringMessage += '更多……';
+            document.getElementById('stringValidate').innerHTML = stringMessage;
         </script>
     </body>
 

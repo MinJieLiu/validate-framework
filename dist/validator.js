@@ -1,5 +1,5 @@
 /*!
- * validator.js v1.1.1
+ * validator.js v1.1.2
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -242,6 +242,7 @@
                 }
             }
             // 如果有错误，停止 submit 提交，并停止执行回调函数
+            console.log(this.errors);
             if (!isEmptyObject(this.errors)) {
                 return this.preventSubmit();
             }
