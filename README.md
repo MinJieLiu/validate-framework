@@ -206,6 +206,7 @@ v.isPhone('170111222231');
 - [x] greaterThanDate(date1, date2)  大于某个日期
 - [x] lessThanDate(date1, date2)  小于某个日期
 
+验证方法不够？ `.addMethod(name, method)` 添加自定义验证方法（与表单验证自定义方法类似）
 
 
 ## 备注
