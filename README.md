@@ -19,7 +19,11 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
 
 通过 `bower` 安装
 
-    bower install validator-framework
+    bower install validate-framework
+
+通过 `npm` 安装
+
+    npm install validate-framework
 
 
 表单验证：

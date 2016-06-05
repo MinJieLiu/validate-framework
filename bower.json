@@ -1,5 +1,5 @@
 {
-  "name": "validator-framework",
+  "name": "validate-framework",
   "description": "轻量级JavaScript表单验证，字符串验证。",
   "main": "dist/validator.js",
   "authors": [
@@ -7,6 +7,7 @@
   ],
   "license": "MIT",
   "keywords": [
+    "validate-framework",
     "validator",
     "validator.js",
     "validation",
