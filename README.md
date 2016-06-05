@@ -73,14 +73,14 @@ var validator = new Validator('validate_form', {
 var v = new Validator();
 v.isEmail('example@qq.com');
 v.isIp('192.168.1.1');
-v.isPhone('17011122223');
+v.isPhone('170111222231');
 v.lessThan('11', '22');
 v.greaterThanDate('2010-01-02', '2010-01-01');
 ```
 
 
 
-## 说明文档
+## 表单验证说明文档
 
 > new Validator(formName, options)
 
@@ -140,7 +140,6 @@ callback: function(event) {
 注： `event` 事件
 
 
-
 ### 方法
 
 例如：
@@ -179,6 +178,35 @@ validator.addMethod('select_limit', function(field, param) {
     return checkedNum >= param;
 });
 ```
+
+## 字符串验证说明文档
+
+如：
+```js
+var v = new Validator();
+v.isEmail('example@qq.com');
+v.isPhone('170111222231');
+```
+
+- [x] required(field) 验证必填
+- [x] isAbc(field) 验证字母数字下划线
+- [x] isDate(field) 验证日期
+- [x] isDecimal(field) 验证浮点数
+- [x] isEmail(field) 验证邮箱
+- [x] isInteger(field) 验证整数
+- [x] isIp(field) 验证 ip 地址
+- [x] isNumeric(field) 验证自然数
+- [x] isPhone(field) 验证手机
+- [x] isTel(field) 验证座机
+- [x] isUrl(field) 验证URL
+- [x] maxLength(field, length) 最大长度
+- [x] minLength(field, length) 最小长度
+- [x] greaterThan(field, param) 多于某个数
+- [x] lessThan(field, param) 少于某个数
+- [x] greaterThanDate(field, date) 大于某个日期
+- [x] lessThanDate(field, date) 小于某个日期
+
+
 
 ## 备注
 
