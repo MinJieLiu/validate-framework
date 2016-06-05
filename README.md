@@ -188,23 +188,23 @@ v.isEmail('example@qq.com');
 v.isPhone('170111222231');
 ```
 
-- [x] required(field) 验证必填
-- [x] isAbc(field) 验证字母数字下划线
-- [x] isDate(field) 验证日期
-- [x] isDecimal(field) 验证浮点数
-- [x] isEmail(field) 验证邮箱
-- [x] isInteger(field) 验证整数
-- [x] isIp(field) 验证 ip 地址
-- [x] isNumeric(field) 验证自然数
-- [x] isPhone(field) 验证手机
-- [x] isTel(field) 验证座机
-- [x] isUrl(field) 验证URL
-- [x] maxLength(field, length) 最大长度
-- [x] minLength(field, length) 最小长度
-- [x] greaterThan(field, param) 多于某个数
-- [x] lessThan(field, param) 少于某个数
-- [x] greaterThanDate(field, date) 大于某个日期
-- [x] lessThanDate(field, date) 小于某个日期
+- [x] required(param)  验证必填
+- [x] isAbc(param)  验证字母数字下划线
+- [x] isDate(param)  验证日期
+- [x] isDecimal(param)  验证浮点数
+- [x] isEmail(param)  验证邮箱
+- [x] isInteger(param)  验证整数
+- [x] isIp(param)  验证 ip 地址
+- [x] isNumeric(param)  验证自然数
+- [x] isPhone(param)  验证手机
+- [x] isTel(param)  验证座机
+- [x] isUrl(param)  验证URL
+- [x] maxLength(param, length)  最大长度
+- [x] minLength(param, length)  最小长度
+- [x] greaterThan(param1, param2)  多于某个数
+- [x] lessThan(param1, param2)  少于某个数
+- [x] greaterThanDate(date1, date2)  大于某个日期
+- [x] lessThanDate(date1, date2)  小于某个日期
 
 
 
