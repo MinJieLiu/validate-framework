@@ -1,11 +1,11 @@
 /*!
- * validator.js v1.1.2
+ * validate-framework v1.1.5
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
  * https://github.com/MinJieLiu/validator.js
  * 
- * Licensed under the Apache License 2 license.
+ * Licensed under the MIT license.
  */
 
 (function(f) {
@@ -185,15 +185,15 @@
     var Validator = function(formName, options) {
         // 将验证方法绑到 Validator 对象上
         for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
+        // 如果不存在 form 对象
+        if (!formName) {
+            return this;
+        }
         this.options = options || {};
         this.form = _formElement(formName) || {};
         this.errors = {};
         this.fields = {};
         this.handles = {};
-        // 如果不存在 form 对象
-        if (!formName) {
-            return this;
-        }
         var fields = typeof options.fields === "object" ? options.fields : {};
         for (var name in fields) {
             if (fields.hasOwnProperty(name)) {
@@ -242,7 +242,6 @@
                 }
             }
             // 如果有错误，停止 submit 提交，并停止执行回调函数
-            console.log(this.errors);
             if (!isEmptyObject(this.errors)) {
                 return this.preventSubmit();
             }
