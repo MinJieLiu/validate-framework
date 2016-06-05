@@ -175,7 +175,6 @@ validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由
 validator.js 支持 chrome、firfox、IE9 以上浏览器，暂不准备为兼容低版本浏览器而牺牲更大体积，但表单提交验证支持 IE6 以上浏览器
 
 
-## 参考
+## LICENSE
 
-- [jaywcjlove/validator.js](https://github.com/jaywcjlove/validator.js)一个字符串验证器和表单验证的库
-- [chriso/validator.js](https://github.com/chriso/validator.js)一个字符串验证器和转换类型的库
+MIT
