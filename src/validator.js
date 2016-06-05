@@ -193,16 +193,16 @@ var Validator = function(formName, options) {
     // 将验证方法绑到 Validator 对象上
     for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
 
+    // 如果不存在 form 对象
+    if (!formName) {
+        return this;
+    }
+
     this.options = options || {};
     this.form = _formElement(formName) || {};
     this.errors = {};
     this.fields = {};
     this.handles = {};
-
-    // 如果不存在 form 对象
-    if (!formName) {
-        return this;
-    }
 
     var fields = typeof options.fields === 'object' ? options.fields : {};
 
