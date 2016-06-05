@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/MinJieLiu/validator.js.svg?branch=master)](https://travis-ci.org/MinJieLiu/validator.js)
 
-<br />
+
 validator.js 是一个轻量级 JavaScript 表单、字符串验证库
 
 Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.github.io/validator.js/example)
