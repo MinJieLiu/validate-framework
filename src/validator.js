@@ -206,6 +206,9 @@ var Validator = function(formName, options) {
 
     var fields = typeof options.fields === 'object' ? options.fields : {};
 
+    // HTML5 添加 novalidate
+    this.form.setAttribute('novalidate', 'novalidate');
+
     for (var name in fields) {
 
         if (fields.hasOwnProperty(name)) {

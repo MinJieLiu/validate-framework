@@ -195,6 +195,8 @@
         this.fields = {};
         this.handles = {};
         var fields = typeof options.fields === "object" ? options.fields : {};
+        // HTML5 添加 novalidate
+        this.form.setAttribute("novalidate", "novalidate");
         for (var name in fields) {
             if (fields.hasOwnProperty(name)) {
                 var field = fields[name];

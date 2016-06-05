@@ -29,7 +29,7 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
 表单验证：
 
 ```html
-<form id="validate_form" novalidate="">
+<form id="validate_form">
     <div class="form-group">
         <label for="email">邮箱：</label>
         <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
