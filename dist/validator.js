@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.1.5
+ * validate-framework v1.1.6
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -474,7 +474,7 @@
  */
     function addClass(el, cls) {
         if (!hasClass(el, cls)) {
-            el.className += " " + cls;
+            el.classList ? el.classList.add(cls) : el.className += " " + cls;
         }
     }
     /**
@@ -485,7 +485,7 @@
     function removeClass(el, cls) {
         if (hasClass(el, cls)) {
             var reg = new RegExp("(\\s|^)" + cls + "(\\s|$)");
-            el.className = el.className.replace(reg, " ");
+            el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, " ");
         }
     }
     /**
