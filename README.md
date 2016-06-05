@@ -14,6 +14,11 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
 
 ## 快速上手
 
+通过 `bower` 安装
+
+    bower install validator-framework
+
+
 表单验证：
 
 ```html

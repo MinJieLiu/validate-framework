@@ -1,0 +1,28 @@
+{
+  "name": "validator-framework",
+  "description": "轻量级JavaScript表单验证，字符串验证。",
+  "main": "dist/validator.js",
+  "authors": [
+    "LMY"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "validator",
+    "validator.js",
+    "validation",
+    "validate",
+    "validate.js",
+    "form"
+  ],
+  "homepage": "https://github.com/MinJieLiu/validator.js",
+  "moduleType": [
+    "amd"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
