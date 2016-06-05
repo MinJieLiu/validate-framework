@@ -93,12 +93,12 @@
 <span class="pl-k">var</span> v <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>();
 <span class="pl-smi">v</span>.<span class="pl-en">isEmail</span>(<span class="pl-s"><span class="pl-pds">'</span>example@qq.com<span class="pl-pds">'</span></span>);
 <span class="pl-smi">v</span>.<span class="pl-en">isIp</span>(<span class="pl-s"><span class="pl-pds">'</span>192.168.1.1<span class="pl-pds">'</span></span>);
-<span class="pl-smi">v</span>.<span class="pl-en">isPhone</span>(<span class="pl-s"><span class="pl-pds">'</span>17011122223<span class="pl-pds">'</span></span>);
+<span class="pl-smi">v</span>.<span class="pl-en">isPhone</span>(<span class="pl-s"><span class="pl-pds">'</span>170111222231<span class="pl-pds">'</span></span>);
 <span class="pl-smi">v</span>.<span class="pl-en">lessThan</span>(<span class="pl-s"><span class="pl-pds">'</span>11<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>22<span class="pl-pds">'</span></span>);
 <span class="pl-smi">v</span>.<span class="pl-en">greaterThanDate</span>(<span class="pl-s"><span class="pl-pds">'</span>2010-01-02<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>2010-01-01<span class="pl-pds">'</span></span>);</pre></div>
 
 <h2>
-<a id="说明文档" class="anchor" href="#%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>说明文档</h2>
+<a id="表单验证说明文档" class="anchor" href="#%E8%A1%A8%E5%8D%95%E9%AA%8C%E8%AF%81%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>表单验证说明文档</h2>
 
 <blockquote>
 <p>new Validator(formName, options)</p>
@@ -197,6 +197,37 @@
     }
     <span class="pl-k">return</span> checkedNum <span class="pl-k">&gt;=</span> param;
 });</pre></div>
+
+<h2>
+<a id="字符串验证说明文档" class="anchor" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%AA%8C%E8%AF%81%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>字符串验证说明文档</h2>
+
+<p>如：</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> v <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>();
+<span class="pl-smi">v</span>.<span class="pl-en">isEmail</span>(<span class="pl-s"><span class="pl-pds">'</span>example@qq.com<span class="pl-pds">'</span></span>);
+<span class="pl-smi">v</span>.<span class="pl-en">isPhone</span>(<span class="pl-s"><span class="pl-pds">'</span>170111222231<span class="pl-pds">'</span></span>);</pre></div>
+
+<ul>
+<li>[x] required(param)  验证必填</li>
+<li>[x] isAbc(param)  验证字母数字下划线</li>
+<li>[x] isDate(param)  验证日期</li>
+<li>[x] isDecimal(param)  验证浮点数</li>
+<li>[x] isEmail(param)  验证邮箱</li>
+<li>[x] isInteger(param)  验证整数</li>
+<li>[x] isIp(param)  验证 ip 地址</li>
+<li>[x] isNumeric(param)  验证自然数</li>
+<li>[x] isPhone(param)  验证手机</li>
+<li>[x] isTel(param)  验证座机</li>
+<li>[x] isUrl(param)  验证URL</li>
+<li>[x] maxLength(param, length)  最大长度</li>
+<li>[x] minLength(param, length)  最小长度</li>
+<li>[x] greaterThan(param1, param2)  多于某个数</li>
+<li>[x] lessThan(param1, param2)  少于某个数</li>
+<li>[x] greaterThanDate(date1, date2)  大于某个日期</li>
+<li>[x] lessThanDate(date1, date2)  小于某个日期</li>
+</ul>
+
+<p>验证方法不够？ <code>.addMethod(name, method)</code> 添加自定义验证方法（与表单验证自定义方法类似）</p>
 
 <h2>
 <a id="备注" class="anchor" href="#%E5%A4%87%E6%B3%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>备注</h2>
