@@ -22,6 +22,8 @@
       <h1>
 <a id="validatorjs" class="anchor" href="#validatorjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>validator.js</h1>
 
+<p><a href="https://travis-ci.org/MinJieLiu/validator.js"><img src="https://travis-ci.org/MinJieLiu/validator.js.svg?branch=master" alt="Build Status"></a></p>
+
 <p>validator.js 是一个轻量级 JavaScript 表单、字符串验证库</p>
 
 <p>Demo： <a href="http://minjieliu.github.io/validator.js/example">http://minjieliu.github.io/validator.js/example</a></p>
@@ -39,9 +41,19 @@
 <h2>
 <a id="快速上手" class="anchor" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>快速上手</h2>
 
+<p>通过 <code>bower</code> 安装</p>
+
+<pre><code>bower install validate-framework
+</code></pre>
+
+<p>通过 <code>npm</code> 安装</p>
+
+<pre><code>npm install validate-framework
+</code></pre>
+
 <p>表单验证：</p>
 
-<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>validate_form<span class="pl-pds">"</span></span> <span class="pl-e">novalidate</span>=<span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>&gt;
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>validate_form<span class="pl-pds">"</span></span>&gt;
     &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
         &lt;<span class="pl-ent">label</span> <span class="pl-e">for</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>&gt;邮箱：&lt;/<span class="pl-ent">label</span>&gt;
         &lt;<span class="pl-ent">input</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-control<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">placeholder</span>=<span class="pl-s"><span class="pl-pds">"</span>请输入邮箱<span class="pl-pds">"</span></span> /&gt;
@@ -194,14 +206,19 @@
 validator.js 支持 chrome、firfox、IE9 以上浏览器，暂不准备为兼容低版本浏览器而牺牲更大体积，但表单提交验证支持 IE6 以上浏览器</p>
 
 <h2>
+<a id="规范" class="anchor" href="#%E8%A7%84%E8%8C%83" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>规范</h2>
+
+<p>validator.js 采用 <code>eslint</code> 来保持代码的正确性和可读性，详情见 <code>.eslintrc</code> 文件</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LICENSE</h2>
+
+<p>MIT</p>
+
+<h2>
 <a id="参考" class="anchor" href="#%E5%8F%82%E8%80%83" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参考</h2>
 
-<ul>
-<li>
-<a href="https://github.com/jaywcjlove/validator.js">jaywcjlove/validator.js</a>一个字符串验证器和表单验证的库</li>
-<li>
-<a href="https://github.com/chriso/validator.js">chriso/validator.js</a>一个字符串验证器和转换类型的库</li>
-</ul>
+<p><a href="https://github.com/jaywcjlove/validator.js">https://github.com/jaywcjlove/validator.js</a></p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/MinJieLiu/validator.js">Validator.js</a> is maintained by <a href="https://github.com/MinJieLiu">MinJieLiu</a>.</span>
