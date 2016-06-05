@@ -189,3 +189,7 @@ validator.js 采用 `eslint` 来保持代码的正确性和可读性，详情见
 ## LICENSE
 
 MIT
+
+## 参考
+
+https://github.com/jaywcjlove/validator.js
