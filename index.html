@@ -80,7 +80,7 @@
     <span class="pl-en">errorPlacement</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errorEl</span>, <span class="pl-smi">fieldEl</span>) {
         <span class="pl-c">// 错误位置</span>
     },
-    <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>) {
+    <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>, <span class="pl-smi">errors</span>) {
         <span class="pl-c">// 阻止表单提交</span>
         <span class="pl-smi">validator</span>.<span class="pl-en">preventSubmit</span>();
         <span class="pl-c">// 回调函数</span>
@@ -117,7 +117,7 @@
 <li>
 <code>errorPlacement</code> （可选） 错误信息位置</li>
 <li>
-<code>callback</code> （可选） 验证成功后回调函数</li>
+<code>callback</code> （可选） 验证成功或失败后回调函数</li>
 </ul>
 
 <h3>
@@ -138,7 +138,7 @@
 
 <p>注： <code>email</code> 、<code>phone</code> 为表单 <code>name</code> 属性<br>
 <code>rules</code> ： 一个或多个规则（中间用 <code>|</code> 分隔）<br>
-<code>messages</code> ： 相对应的错误提示（中间用 <code>|</code> 分隔） <code>{{value}}</code> 为表单中的 value 值， <code>{{param}}</code> 为 <code>max_length(32)</code> 的参数 <br></p>
+<code>messages</code> ： 相对应的错误提示（中间用 <code>|</code> 分隔） <code>{{value}}</code> 为表单中的 value 值， <code>{{param}}</code> 为 <code>max_length(32)</code> 的参数 <br> （不填写则没有提示）</p>
 
 <p><strong><code>errorPlacement</code></strong> ：</p>
 
@@ -154,11 +154,11 @@
 
 <p><strong><code>callback</code></strong> ：</p>
 
-<div class="highlight highlight-source-js"><pre><span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>) {
+<div class="highlight highlight-source-js"><pre><span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>, <span class="pl-smi">errors</span>) {
     <span class="pl-c">// 自定义逻辑</span>
 }</pre></div>
 
-<p>注： <code>event</code> 事件</p>
+<p>注： <code>event</code> 当前事件， <code>errors</code> 验证失败的表单域</p>
 
 <h3>
 <a id="方法" class="anchor" href="#%E6%96%B9%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>方法</h3>
