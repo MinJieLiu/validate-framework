@@ -162,14 +162,24 @@
                     }
                 },
                 callback: function(event, errors) {
-                    // 阻止表单提交
-                    validator.preventSubmit();
 
-                    // 设置按钮样式
                     var submitButton = event.target['submit'];
                     submitButton.classList.remove('btn-primary');
-                    submitButton.classList.add('btn-success');
-                    submitButton.value = '已验证成功';
+                    // 如果错误为空
+                    if (isEmptyObject(errors)) {
+                        // 演示阻止表单提交
+                        validator.preventSubmit();
+                        // 设置成功按钮样式
+                        submitButton.classList.remove('btn-danger');
+                        submitButton.classList.add('btn-success');
+                        submitButton.value = '已验证成功';
+                    } else {
+                        // 设置按钮样式
+                        submitButton.classList.remove('btn-success');
+                        submitButton.classList.add('btn-danger');
+                        submitButton.value = '验证失败';
+                    }
+                    
                 }
             });
 
@@ -213,6 +223,18 @@
             stringMessage += '小于某个日期 -&gt; lessThanDate(\'2010-01-02\', \'2010-01-01\'): ' + v.lessThanDate('2010-01-02', '2010-01-01') + '<br />';
             stringMessage += '更多……';
             document.getElementById('stringValidate').innerHTML = stringMessage;
+
+            /**
+             * 是否为空对象
+             * @param {Object} obj
+             */
+            function isEmptyObject(obj) {
+                for (var name in obj) {
+                    return !name;
+                }
+                return true;
+            }
+
         </script>
     </body>
 
