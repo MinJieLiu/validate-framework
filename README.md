@@ -58,7 +58,7 @@ var validator = new Validator('validate_form', {
     errorPlacement: function(errorEl, fieldEl) {
         // 错误位置
     },
-    callback: function(event) {
+    callback: function(event, errors) {
         // 阻止表单提交
         validator.preventSubmit();
         // 回调函数
@@ -92,7 +92,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 
   * `fields` 表单验证域 `rules` 和 `messages` 集合
   * `errorPlacement` （可选） 错误信息位置
-  * `callback` （可选） 验证成功后回调函数
+  * `callback` （可选） 验证成功或失败后回调函数
 
 ### 参数详细
 
@@ -113,7 +113,7 @@ fields: {
 
 注： `email` 、`phone` 为表单 `name` 属性<br />
 `rules` ： 一个或多个规则（中间用 ` | ` 分隔）<br />
-`messages` ： 相对应的错误提示（中间用 ` | ` 分隔） `{{value}}` 为表单中的 value 值， `{{param}}` 为 `max_length(32)` 的参数 <br />
+`messages` ： 相对应的错误提示（中间用 ` | ` 分隔） `{{value}}` 为表单中的 value 值， `{{param}}` 为 `max_length(32)` 的参数 <br /> （不填写则没有提示）
 
 **`errorPlacement`** ：
 
@@ -132,12 +132,12 @@ errorPlacement: function(errorEl, fieldEl) {
 **`callback`** ：
 
 ```js
-callback: function(event) {
+callback: function(event, errors) {
     // 自定义逻辑
 }
 ```
 
-注： `event` 事件
+注： `event` 当前事件， `errors` 验证失败的表单域
 
 
 ### 方法

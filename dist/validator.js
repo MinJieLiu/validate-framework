@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.1.7
+ * validate-framework v1.1.8
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -245,11 +245,11 @@
             }
             // 如果有错误，停止 submit 提交，并停止执行回调函数
             if (!isEmptyObject(this.errors)) {
-                return this.preventSubmit();
+                this.preventSubmit();
             }
             // 执行回调函数
             if (typeof this.options === "object" && typeof this.options.callback === "function") {
-                this.options.callback(evt);
+                this.options.callback(evt, this.errors);
             }
             return this;
         },
@@ -336,7 +336,7 @@
                 // 解析错误信息
                 if (failed) {
                     var message = function() {
-                        var seqText = field.messages.split(/\s*\|\s*/g)[i];
+                        var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[i] : "";
                         if (seqText) {
                             // 替换 {{value}} 和 {{param}} 为指定值
                             return seqText.replace(/\{\{\s*value\s*\}\}/g, field.value).replace(/\{\{\s*param\s*\}\}/g, param);
