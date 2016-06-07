@@ -174,7 +174,7 @@
                         submitButton.classList.add('btn-success');
                         submitButton.value = '已验证成功';
                     } else {
-                        // 设置按钮样式
+                        // 设置错误按钮样式
                         submitButton.classList.remove('btn-success');
                         submitButton.classList.add('btn-danger');
                         submitButton.value = '验证失败';
@@ -230,7 +230,7 @@
              */
             function isEmptyObject(obj) {
                 for (var name in obj) {
-                    return !name;
+                    return false;
                 }
                 return true;
             }
