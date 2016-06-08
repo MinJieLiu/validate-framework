@@ -132,8 +132,6 @@
 
             </form>
 
-            <h5>Demo 不兼容 IE10 以下浏览器。</h5>
-
             <h3>字符串验证</h3>
             <div class="panel panel-default">
                 <div class="panel-body" id="stringValidate">
@@ -186,19 +184,19 @@
                 callback: function(event, errors) {
 
                     var submitButton = event.target['submit'];
-                    submitButton.classList.remove('btn-primary');
+                    removeClass(submitButton, 'btn-primary');
                     // 如果错误为空
                     if (isEmptyObject(errors)) {
                         // 演示阻止表单提交
                         validator.preventSubmit();
                         // 设置成功按钮样式
-                        submitButton.classList.remove('btn-danger');
-                        submitButton.classList.add('btn-success');
+                        removeClass(submitButton, 'btn-danger');
+                        addClass(submitButton, 'btn-success');
                         submitButton.value = '验证成功';
                     } else {
                         // 设置错误按钮样式
-                        submitButton.classList.remove('btn-success');
-                        submitButton.classList.add('btn-danger');
+                        removeClass(submitButton, 'btn-success');
+                        addClass(submitButton, 'btn-danger');
                         submitButton.value = '验证失败';
                     }
                     
@@ -221,17 +219,19 @@
             // 设置邮箱值
             var emailEL = document.getElementById('email');
 
-            document.getElementById('setErrorEmail').addEventListener('click', function(e) {
+            var setErrorEmail = document.getElementById('setErrorEmail');
+            addEvent(setErrorEmail, 'click', function() {
                 emailEL.value = 'anonymous#qq.com';
             });
 
-            document.getElementById('setRightEmail').addEventListener('click', function(e) {
+            var setRightEmail = document.getElementById('setRightEmail');
+            addEvent(setRightEmail, 'click', function() {
                 emailEL.value = 'anonymous@qq.com';
             });
 
             // 验证邮箱值
             var validEmailButton = document.getElementById('validEmail');
-            validEmailButton.addEventListener('click', function(e) {
+            addEvent(validEmailButton, 'click', function() {
                 // 通过 name 验证单个表单域
                 validator.validateByName('email');
             });
@@ -248,13 +248,51 @@
 
             /**
              * 是否为空对象
-             * @param {Object} obj
              */
             function isEmptyObject(obj) {
                 for (var name in obj) {
                     return false;
                 }
                 return true;
+            }
+
+            /**
+             * 判断是否包含 class
+             */
+            function hasClass(el, cls) {
+                return el.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+            }
+
+            /**
+             * 添加 class
+             */
+            function addClass(el, cls) {
+                if (!hasClass(el, cls)) {
+                    el.classList ? el.classList.add(cls) : el.className += ' ' + cls;
+                }
+            }
+
+            /**
+             * 移除 class
+             */
+            function removeClass(el, cls) {
+                if (hasClass(el, cls)) {
+                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                    el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, ' ');
+                }
+            }
+
+            /**
+             * 添加事件
+             */
+            function addEvent(el, type, fn) {
+                if (typeof el.addEventListener != 'undefined') {
+                    el.addEventListener(type, fn, false);
+                } else if (typeof el.attachEvent != 'undefined') {
+                    el.attachEvent('on' + type, fn);
+                } else {
+                    el['on' + type] = fn;
+                };
             }
 
         </script>
