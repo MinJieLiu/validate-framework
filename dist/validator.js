@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.1.8
+ * validate-framework v1.1.9
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
