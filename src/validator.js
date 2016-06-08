@@ -193,18 +193,23 @@ var Validator = function(formName, options) {
     // 将验证方法绑到 Validator 对象上
     for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
 
-    // 如果不存在 form 对象
-    if (!formName) {
-        return this;
-    }
-
     this.options = options || {};
-    this.form = _formElement(formName) || {};
+    this.form = formName && _formElement(formName);
     this.errors = {};
     this.fields = {};
     this.handles = {};
 
-    var fields = typeof options.fields === 'object' ? options.fields : {};
+    // 不存在 form 对象
+    if (!this.form) {
+        return this;
+    }
+
+    // fields 不合法
+    if (typeof options.fields !== 'object') {
+        return this;
+    }
+
+    var fields = options.fields;
 
     // HTML5 添加 novalidate
     this.form.setAttribute('novalidate', 'novalidate');
@@ -225,8 +230,8 @@ var Validator = function(formName, options) {
         }
     }
 
-    // 使用表单值改变拦截
-    this.form.onchange = (function(that) {
+    // 验证单个表单方法
+    var validateFieldFunc = (function(that) {
         return function(evt) {
             try {
                 // 验证单个表单
@@ -234,6 +239,10 @@ var Validator = function(formName, options) {
             } catch (e) {}
         };
     })(this);
+
+    // 使用表单值改变拦截
+    this.form.oninput = validateFieldFunc;
+    this.form.onchange = validateFieldFunc;
 
     // 使用 submit 按钮拦截
     var _onsubmit = this.form.onsubmit;
@@ -254,8 +263,7 @@ Validator.prototype = {
      */
     validate: function(evt) {
 
-        this.handles['ok'] = true;
-        this.handles['evt'] = evt;
+        this.handles['evt'] = evt || event;
         this.errors = {};
 
         for (var name in this.fields) {
@@ -272,7 +280,7 @@ Validator.prototype = {
 
         // 执行回调函数
         if (typeof this.options === 'object' && typeof this.options.callback === 'function') {
-            this.options.callback(evt, this.errors);
+            this.options.callback(this.handles['evt'], this.errors);
         }
 
         return this;
@@ -304,7 +312,7 @@ Validator.prototype = {
             // IE 使用的全局变量
             evt.returnValue = false;
         }
-        return false;
+        return this;
     },
 
     /**
@@ -449,9 +457,7 @@ Validator.prototype = {
 
         // 移除错误信息节点
         var errorEl = document.getElementById('valid_error_' + field.name);
-        if (errorEl) {
-            errorEl.parentNode.removeChild(errorEl);
-        }
+        errorEl && errorEl.parentNode.removeChild(errorEl);
     },
 
     /**

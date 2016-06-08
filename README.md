@@ -212,8 +212,8 @@ v.isPhone('170111222231');
 ## 备注
 
 validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。<br />
-因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性。（Demo 中只是为了演示并没有将结构和逻辑分离）<br />
-validator.js 支持 chrome、firfox、IE9 以上浏览器，暂不准备为兼容低版本浏览器而牺牲更大体积，但表单提交验证支持 IE6 以上浏览器
+因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性。
+validator.js 支持 chrome、firfox、IE8 以上浏览器
 
 ## 规范
 
