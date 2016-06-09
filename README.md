@@ -13,6 +13,8 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
  2. 无依赖
  3. 表单验证
  4. 字符串验证
+ 5. 易扩展
+ 6. 支持 chrome 、firfox 、IE6 +
 
 
 ## 快速上手
@@ -211,9 +213,10 @@ v.isPhone('170111222231');
 
 ## 备注
 
-validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥。<br />
-因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性。
-validator.js 支持 chrome、firfox、IE8 以上浏览器
+validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
+因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性<br />
+validator.js 不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
+
 
 ## 规范
 

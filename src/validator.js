@@ -26,7 +26,7 @@ var regexs = {
     tel: /^(([0\+]\d{2,3}-)?(0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/,
 
     // 手机号码
-    phone: /^((\+?[0-9]{1,4})|(\(\+86\)))?(13[0-9]|14[57]|15[012356789]|17[0678]|18[0-9])\d{8}$/,
+    phone: /^1[3-9]\d{9}$/,
 
     // 字母数字或下划线
     abc: /^[a-zA-Z0-9_]*$/,
@@ -235,20 +235,35 @@ var Validator = function(formName, options) {
         return function(evt) {
             try {
                 // 验证单个表单
-                return that._validateField(that.fields[evt.target.name]);
-            } catch (e) {}
+                // 兼容低版本浏览器
+                evt = evt || event;
+                var targetEl = evt.target || evt.srcElement;
+                return that._validateField(that.fields[targetEl.name]);
+            } catch (e) {
+                console.warn(e);
+            }
         };
     })(this);
 
     // 使用表单值改变拦截
-    this.form.oninput = validateFieldFunc;
-    this.form.onchange = validateFieldFunc;
+    // 非 IE 浏览器使用标准 oninput 事件
+    if (!!window.ActiveXObject || 'ActiveXObject' in window) {
+        var formEls = this.form.elements;
+        for (var i = 0, formElsLength = this.form.length; i < formElsLength; i++) {
+            this.form[i].onkeyup = validateFieldFunc;
+            formEls[i].onchange = validateFieldFunc;
+        }
+    } else {
+        this.form.oninput = validateFieldFunc;
+        this.form.onchange = validateFieldFunc;
+    }
 
     // 使用 submit 按钮拦截
     var _onsubmit = this.form.onsubmit;
     this.form.onsubmit = (function(that) {
         return function(evt) {
             try {
+                evt = evt || event;
                 return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
             } catch (e) {}
         };
