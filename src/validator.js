@@ -265,7 +265,9 @@ var Validator = function(formName, options) {
             try {
                 evt = evt || event;
                 return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
-            } catch (e) {}
+            } catch (e) {
+                console.warn(e);
+            }
         };
     })(this);
 };
@@ -306,10 +308,13 @@ Validator.prototype = {
      * @param {String} 表单域 name 属性
      */
     validateByName: function(name) {
+
         var field = this.fields[name];
+
         if (!isEmptyObject(field)) {
             this._validateField(field);
         }
+
         return this;
     },
 
@@ -327,6 +332,7 @@ Validator.prototype = {
             // IE 使用的全局变量
             evt.returnValue = false;
         }
+
         return this;
     },
 
@@ -340,6 +346,8 @@ Validator.prototype = {
 
         // 绑定验证方法
         this[toCamelCase(name)] = _testHook[name];
+
+        return this;
     },
 
     /**

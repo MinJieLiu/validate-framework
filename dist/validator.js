@@ -246,7 +246,9 @@
                 try {
                     evt = evt || event;
                     return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
-                } catch (e) {}
+                } catch (e) {
+                    console.warn(e);
+                }
             };
         }(this);
     };
@@ -308,6 +310,7 @@
             _testHook[name] = method;
             // 绑定验证方法
             this[toCamelCase(name)] = _testHook[name];
+            return this;
         },
         /**
      * 验证当前节点
