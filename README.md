@@ -1,7 +1,7 @@
 #validator.js
 
 [![Build Status](https://travis-ci.org/MinJieLiu/validator.js.svg?branch=master)](https://travis-ci.org/MinJieLiu/validator.js)
-
+[![npm version](https://badge.fury.io/js/validate-framework.svg)](https://badge.fury.io/js/validate-framework)
 
 validator.js 是一个轻量级 JavaScript 表单、字符串验证库
 
