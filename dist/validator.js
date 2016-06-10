@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.2.1
+ * validate-framework v1.2.3
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -269,6 +269,9 @@
             // 如果有错误，停止 submit 提交，并停止执行回调函数
             if (!isEmptyObject(this.errors)) {
                 this.preventSubmit();
+            } else {
+                // 将 null 暴露到 callback 函数中
+                this.errors = null;
             }
             // 执行回调函数
             if (typeof this.options === "object" && typeof this.options.callback === "function") {
