@@ -159,9 +159,13 @@
 
 <div class="highlight highlight-source-js"><pre><span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>, <span class="pl-smi">errors</span>) {
     <span class="pl-c">// 自定义逻辑</span>
+    <span class="pl-k">if</span> (errors) {
+        <span class="pl-c">// 验证失败逻辑</span>
+    }
 }</pre></div>
 
-<p>注： <code>event</code> 当前事件， <code>errors</code> 验证失败的表单域</p>
+<p>注： <code>event</code> 当前事件<br>
+<code>errors</code> 验证失败的表单域对象。表单验证成功， <code>errors</code> 的值为 <code>null</code></p>
 
 <h3>
 <a id="方法" class="anchor" href="#%E6%96%B9%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>方法</h3>
