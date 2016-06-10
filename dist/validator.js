@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.2.0
+ * validate-framework v1.2.1
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -186,7 +186,7 @@
         // 将验证方法绑到 Validator 对象上
         for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
         this.options = options || {};
-        this.form = formName && _formElement(formName);
+        this.form = formName && _getFormEl(formName);
         this.errors = {};
         this.fields = {};
         this.handles = {};
@@ -246,7 +246,9 @@
                 try {
                     evt = evt || event;
                     return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
-                } catch (e) {}
+                } catch (e) {
+                    console.warn(e);
+                }
             };
         }(this);
     };
@@ -308,6 +310,7 @@
             _testHook[name] = method;
             // 绑定验证方法
             this[toCamelCase(name)] = _testHook[name];
+            return this;
         },
         /**
      * 验证当前节点
@@ -358,11 +361,10 @@
                 if (failed) {
                     var message = function() {
                         var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[i] : "";
-                        if (seqText) {
-                            // 替换 {{value}} 和 {{param}} 为指定值
-                            return seqText.replace(/\{\{\s*value\s*\}\}/g, field.value).replace(/\{\{\s*param\s*\}\}/g, param);
-                        }
-                        return seqText;
+                        // 防止 xss 攻击
+                        var fieldValue = field.value && field.value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        // 替换 {{value}} 和 {{param}} 为指定值
+                        return seqText ? seqText.replace(/\{\{\s*value\s*\}\}/g, fieldValue).replace(/\{\{\s*param\s*\}\}/g, param) : seqText;
                     }();
                     var existingError;
                     for (var j = 0, errorsLength = this.errors.length; j < errorsLength; j += 1) {
@@ -409,7 +411,7 @@
      */
         _removeErrorMessage: function(field) {
             // 移除表单域错误类
-            if (isNormalEl(field.el)) {
+            if (!field.el.length) {
                 removeClass(field.el, "valid-error");
             } else {
                 for (var i = 0, elLength = field.el.length; i < elLength; i++) {
@@ -432,7 +434,7 @@
             // 清除之前保留的错误信息
             this._removeErrorMessage(field);
             // 当前表单域添加错误类
-            if (isNormalEl(field.el)) {
+            if (!field.el.length) {
                 addClass(field.el, "valid-error");
             } else {
                 for (var i = 0, elLength = field.el.length; i < elLength; i++) {
@@ -451,7 +453,7 @@
             } else {
                 // 默认错误信息位置
                 // label 、 radio 元素错误位置不固定，默认暂不设置
-                if (isNormalEl(field.el)) {
+                if (!field.el.length) {
                     field.el.parentNode.appendChild(errorEl);
                 }
             }
@@ -530,18 +532,8 @@
  * @param {Object} 字符串或者节点对象
  * @return {Element} 返回 DOM 节点
  */
-    function _formElement(el) {
+    function _getFormEl(el) {
         return typeof el === "object" ? el : document.forms[el];
-    }
-    /**
- * 判断是否为非 checkbox 、radio 的表单元素
- * @param {Object} 节点对象
- */
-    function isNormalEl(el) {
-        if (el.parentNode === undefined) {
-            return false;
-        }
-        return true;
     }
     /**
  * 转换为日期
