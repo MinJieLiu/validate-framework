@@ -536,7 +536,6 @@ Validator.prototype = {
  * @return {String}
  */
 function toCamelCase(caseName) {
-    // Support: IE9-11+
     return caseName.replace(/\_([a-z])/g, function(all, letter) {
         return letter.toUpperCase();
     });
