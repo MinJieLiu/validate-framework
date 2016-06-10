@@ -186,7 +186,7 @@
                     var submitButton = event.target['submit'];
                     removeClass(submitButton, 'btn-primary');
                     // 如果错误为空
-                    if (isEmptyObject(errors)) {
+                    if (!errors) {
                         // 演示阻止表单提交
                         validator.preventSubmit();
                         // 设置成功按钮样式
@@ -247,16 +247,6 @@
             document.getElementById('stringValidate').innerHTML = stringMessage;
 
             // Demo 中未使用 jQuery 类库，作为演示添加方法
-            /**
-             * 是否为空对象
-             */
-            function isEmptyObject(obj) {
-                for (var name in obj) {
-                    return false;
-                }
-                return true;
-            }
-
             /**
              * 判断是否包含 class
              */

@@ -136,10 +136,14 @@ errorPlacement: function(errorEl, fieldEl) {
 ```js
 callback: function(event, errors) {
     // 自定义逻辑
+    if (errors) {
+        // 验证失败逻辑
+    }
 }
 ```
 
-注： `event` 当前事件， `errors` 验证失败的表单域
+注： `event` 当前事件<br />
+`errors` 验证失败的表单域对象。表单验证成功， `errors` 的值为 `null`
 
 
 ### 方法

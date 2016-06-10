@@ -293,6 +293,9 @@ Validator.prototype = {
         // 如果有错误，停止 submit 提交，并停止执行回调函数
         if (!isEmptyObject(this.errors)) {
             this.preventSubmit();
+        } else {
+            // 将 null 暴露到 callback 函数中
+            this.errors = null;
         }
 
         // 执行回调函数
