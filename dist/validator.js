@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.2.3
+ * validate-framework v1.2.4
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -468,7 +468,6 @@
  * @return {String}
  */
     function toCamelCase(caseName) {
-        // Support: IE9-11+
         return caseName.replace(/\_([a-z])/g, function(all, letter) {
             return letter.toUpperCase();
         });
