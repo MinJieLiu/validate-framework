@@ -194,7 +194,7 @@ var Validator = function(formName, options) {
     for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
 
     this.options = options || {};
-    this.form = formName && _formElement(formName);
+    this.form = formName && _getFormEl(formName);
     this.errors = {};
     this.fields = {};
     this.handles = {};
@@ -411,11 +411,11 @@ Validator.prototype = {
             if (failed) {
                 var message = (function() {
                     var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[i] : '';
-                    if (seqText) {
-                        // 替换 {{value}} 和 {{param}} 为指定值
-                        return seqText.replace(/\{\{\s*value\s*\}\}/g, field.value).replace(/\{\{\s*param\s*\}\}/g, param);
-                    }
-                    return seqText;
+
+                    // 防止 xss 攻击
+                    var fieldValue = field.value && field.value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    // 替换 {{value}} 和 {{param}} 为指定值
+                    return seqText ? seqText.replace(/\{\{\s*value\s*\}\}/g, fieldValue).replace(/\{\{\s*param\s*\}\}/g, param) : seqText;
                 })();
 
                 var existingError;
@@ -470,7 +470,7 @@ Validator.prototype = {
     _removeErrorMessage: function(field) {
 
         // 移除表单域错误类
-        if (isNormalEl(field.el)) {
+        if (!field.el.length) {
             removeClass(field.el, 'valid-error');
         } else {
             for (var i = 0, elLength = field.el.length; i < elLength; i++) {
@@ -498,7 +498,7 @@ Validator.prototype = {
         this._removeErrorMessage(field);
 
         // 当前表单域添加错误类
-        if (isNormalEl(field.el)) {
+        if (!field.el.length) {
             addClass(field.el, 'valid-error');
         } else {
             for (var i = 0, elLength = field.el.length; i < elLength; i++) {
@@ -519,7 +519,7 @@ Validator.prototype = {
         } else {
             // 默认错误信息位置
             // label 、 radio 元素错误位置不固定，默认暂不设置
-            if (isNormalEl(field.el)) {
+            if (!field.el.length) {
                 field.el.parentNode.appendChild(errorEl);
             }
         }
@@ -606,19 +606,8 @@ function attributeValue(el, attributeName) {
  * @param {Object} 字符串或者节点对象
  * @return {Element} 返回 DOM 节点
  */
-function _formElement(el) {
+function _getFormEl(el) {
     return (typeof el === 'object') ? el : document.forms[el];
-}
-
-/**
- * 判断是否为非 checkbox 、radio 的表单元素
- * @param {Object} 节点对象
- */
-function isNormalEl(el) {
-    if (el.parentNode === undefined) {
-        return false;
-    }
-    return true;
 }
 
 /**
