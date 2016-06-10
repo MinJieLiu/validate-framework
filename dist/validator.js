@@ -160,8 +160,8 @@
         },
         // 大于某个日期
         greater_than_date: function(field, date) {
-            var currentDate = _paseToDate(getValue(field));
-            var paramDate = _paseToDate(date);
+            var currentDate = paseToDate(getValue(field));
+            var paramDate = paseToDate(date);
             if (!paramDate || !currentDate) {
                 return false;
             }
@@ -169,8 +169,8 @@
         },
         // 小于某个日期
         less_than_date: function(field, date) {
-            var currentDate = _paseToDate(getValue(field));
-            var paramDate = _paseToDate(date);
+            var currentDate = paseToDate(getValue(field));
+            var paramDate = paseToDate(date);
             if (!paramDate || !currentDate) {
                 return false;
             }
@@ -186,7 +186,7 @@
         // 将验证方法绑到 Validator 对象上
         for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
         this.options = options || {};
-        this.form = formName && _getFormEl(formName);
+        this.form = formName && getFormEl(formName);
         this.errors = {};
         this.fields = {};
         this.handles = {};
@@ -535,7 +535,7 @@
  * @param {Object} 字符串或者节点对象
  * @return {Element} 返回 DOM 节点
  */
-    function _getFormEl(el) {
+    function getFormEl(el) {
         return typeof el === "object" ? el : document.forms[el];
     }
     /**
@@ -543,7 +543,7 @@
  * @param {String} 日期格式：yyyy-MM-dd
  * @return {Date}
  */
-    function _paseToDate(paramDate) {
+    function paseToDate(paramDate) {
         if (!_testHook.is_date(paramDate)) {
             return false;
         }
