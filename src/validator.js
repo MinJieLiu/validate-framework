@@ -364,6 +364,11 @@ Validator.prototype = {
         // 成功标识
         var failed = false;
 
+        // 未存在表单域则不验证
+        if (!el) {
+            return this;
+        }
+
         // 设置验证信息域属性
         if (el && el !== undefined) {
             field.id = attributeValue(el, 'id');
