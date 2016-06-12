@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.2.4
+ * validate-framework v1.2.5
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -324,10 +324,6 @@
             var el = this.form[field.name];
             // 成功标识
             var failed = false;
-            // 未存在表单域则不验证
-            if (!el) {
-                return this;
-            }
             // 设置验证信息域属性
             if (el && el !== undefined) {
                 field.id = attributeValue(el, "id");
@@ -354,8 +350,8 @@
                     method = parts[1];
                     param = parts[2];
                 }
-                // 如果不是 required 这个字段，并且该值是空的，则不验证，继续下一个规则。
-                if (!isRequired && isEmpty) {
+                // 如果不是 required 这个字段，该值是空的，并且这个节点存在，则不验证，继续下一个规则。
+                if (!isRequired && isEmpty && el) {
                     continue;
                 }
                 // 匹配验证
@@ -390,6 +386,10 @@
                         this.errors[field.name] = errorObject;
                     }
                 }
+            }
+            // 节点不存在，则返回自定义处理
+            if (!field.el) {
+                return this;
             }
             // 当前条目所有条件验证结果
             failed ? this._addErrorPlacement(field) : this._removeErrorMessage(field);

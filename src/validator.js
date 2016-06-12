@@ -364,11 +364,6 @@ Validator.prototype = {
         // 成功标识
         var failed = false;
 
-        // 未存在表单域则不验证
-        if (!el) {
-            return this;
-        }
-
         // 设置验证信息域属性
         if (el && el !== undefined) {
             field.id = attributeValue(el, 'id');
@@ -403,8 +398,8 @@ Validator.prototype = {
                 param = parts[2];
             }
 
-            // 如果不是 required 这个字段，并且该值是空的，则不验证，继续下一个规则。
-            if (!isRequired && isEmpty) {
+            // 如果不是 required 这个字段，该值是空的，并且这个节点存在，则不验证，继续下一个规则。
+            if (!isRequired && isEmpty && el) {
                 continue;
             }
 
@@ -445,6 +440,11 @@ Validator.prototype = {
                     this.errors[field.name] = errorObject;
                 }
             }
+        }
+
+        // 节点不存在，则返回自定义处理
+        if (!field.el) {
+            return this;
         }
 
         // 当前条目所有条件验证结果
