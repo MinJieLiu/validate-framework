@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>validator.js 相同 name 验证</title>
+        <link rel="stylesheet" href="bootstrap.css" />
+        <script src="../dist/validator.js"></script>
+        <style>
+
+        .valid-error {
+            border-color: #a94442;
+            color: #a94442;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        }
+
+        .valid-error:focus {
+            border-color: #843534;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+        }
+
+        .valid-error-message {
+            display: block;
+            margin: 5px 0;
+            font-style: normal;
+            color: #a94442;
+        }
+
+        </style>
+    </head>
+
+    <body>
+
+
+        <div class="container">
+
+            <h3>相同 name 表单验证</h3>
+            <form id="validate_form">
+
+                <div class="form-group">
+                    <input class="btn btn-info" id="addField" type="button" value="添加一行" />
+                </div>
+
+                <div class="form-group">
+                    <label>邮箱：</label>
+                    <input class="form-control" name="email" type="email" placeholder="请输入邮箱" />
+                </div>
+
+                <div id="form_group_area"></div>
+
+                <input class="btn btn-primary" id="submit" type="submit" value="提交" />
+
+            </form>
+
+        </div>
+
+        <script id="add_field_tmpl" type="text/template">
+            <div class="form-group">
+                <label>邮箱：</label>
+                <input class="form-control" name="email" type="email" placeholder="请输入邮箱" />
+            </div>
+        </script>
+
+        <script>
+            var validator = new Validator('validate_form', {
+                fields: {
+                    email: {
+                        rules: 'required | is_email | max_length(32)',
+                        messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
+                    }
+                },
+                callback: function(event, errors) {
+
+                    var submitButton = event.target['submit'];
+                    removeClass(submitButton, 'btn-primary');
+                    // 如果错误为空
+                    if (!errors) {
+                        // 演示阻止表单提交
+                        validator.preventSubmit();
+                        // 设置成功按钮样式
+                        removeClass(submitButton, 'btn-danger');
+                        addClass(submitButton, 'btn-success');
+                        submitButton.value = '验证成功';
+                    } else {
+                        // 设置错误按钮样式
+                        removeClass(submitButton, 'btn-success');
+                        addClass(submitButton, 'btn-danger');
+                        submitButton.value = '验证失败';
+                    }
+                    
+                }
+            });
+
+            // 添加一行
+            var addFieldEl = document.getElementById('addField');
+            addEvent(addFieldEl, 'click', function() {
+                var emailHtml = document.getElementById('add_field_tmpl');
+                document.getElementById('form_group_area').innerHTML += emailHtml.innerHTML;
+            });
+
+
+            // Demo 中未使用 jQuery 类库，作为演示添加方法
+            /**
+             * 判断是否包含 class
+             */
+            function hasClass(el, cls) {
+                return el.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+            }
+
+            /**
+             * 添加 class
+             */
+            function addClass(el, cls) {
+                if (!hasClass(el, cls)) {
+                    el.classList ? el.classList.add(cls) : el.className += ' ' + cls;
+                }
+            }
+
+            /**
+             * 移除 class
+             */
+            function removeClass(el, cls) {
+                if (hasClass(el, cls)) {
+                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                    el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, ' ');
+                }
+            }
+
+            /**
+             * 添加事件
+             */
+            function addEvent(el, type, fn) {
+                if (typeof el.addEventListener != 'undefined') {
+                    el.addEventListener(type, fn, false);
+                } else if (typeof el.attachEvent != 'undefined') {
+                    el.attachEvent('on' + type, fn);
+                } else {
+                    el['on' + type] = fn;
+                };
+            }
+
+        </script>
+    </body>
+
+</html>

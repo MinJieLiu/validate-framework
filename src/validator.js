@@ -238,7 +238,7 @@ var Validator = function(formName, options) {
                 // 兼容低版本浏览器
                 evt = evt || event;
                 var targetEl = evt.target || evt.srcElement;
-                return that._validateField(that.fields[targetEl.name]);
+                return that._validateField(that.fields[targetEl.name], targetEl);
             } catch (e) {
                 console.warn(e);
             }
@@ -357,10 +357,10 @@ Validator.prototype = {
      * 验证当前节点
      * @param  {Object} 验证信息域
      */
-    _validateField: function(field) {
+    _validateField: function(field, targetEl) {
 
-        // 获得节点
-        var el = this.form[field.name];
+        // 获得节点。非 radio 或 checkbox 相同并且 name 属性的表单，使用 targetEl 获取
+        var el = targetEl && !isRadioOrCheckbox(targetEl) ? targetEl : this.form[field.name];
         // 成功标识
         var failed = false;
 
@@ -590,6 +590,14 @@ function removeClass(el, cls) {
 }
 
 /**
+ * 判断表单域为 radio 或者 checkbox
+ * @param {Object} 传入节点
+ */
+function isRadioOrCheckbox(el) {
+    return el.length ? el[0].type === 'radio' || el[0].type === 'checkbox' : el.type === 'radio' || el.type === 'checkbox';
+}
+
+/**
  * 获取节点对象的属性
  * @param {Object} 传入节点
  * @param {String} 需要获取的属性
@@ -597,16 +605,13 @@ function removeClass(el, cls) {
  */
 function attributeValue(el, attributeName) {
     var i, elLength;
-    if ((el.length > 0) && (el[0].type === 'radio' || el[0].type === 'checkbox')) {
-        for (i = 0, elLength = el.length; i < elLength; i++) {
-            if (el[i].checked) {
-                return el[i][attributeName];
-            }
+    for (i = 0, elLength = el.length; i < elLength; i++) {
+        if (el[i].checked) {
+            return el[i][attributeName];
         }
-        return;
     }
     return el[attributeName];
-};
+}
 
 /**
  * 获取 dom 节点对象
