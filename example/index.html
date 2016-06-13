@@ -33,7 +33,8 @@
             box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
         }
 
-        .valid-error-message {
+        .valid-error-message,
+        .valid-label-error-message {
             display: block;
             margin: 5px 0;
             font-style: normal;
@@ -54,12 +55,11 @@
                     <iframe src="https://ghbtns.com/github-btn.html?user=MinJieLiu&repo=validator.js&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
                 </h3>
             </div>
+            <!-- fork Me -->
+            <a href="https://github.com/MinJieLiu/validator.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
         </div>
 
         <div class="container">
-
-            <!-- fork Me -->
-            <a href="https://github.com/MinJieLiu/validator.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
 
             <h3>表单验证</h3>
             <form id="validate_form">
@@ -132,6 +132,11 @@
 
             </form>
 
+            <h3>更多</h3>
+            <ul>
+                <li><a href="same-name.html" target="_blank">相同 name 属性表单验证</a></li>
+            </ul>
+
             <h3>字符串验证</h3>
             <div class="panel panel-default">
                 <div class="panel-body" id="stringValidate">
@@ -183,7 +188,7 @@
                 },
                 callback: function(event, errors) {
 
-                    var submitButton = event.target['submit'];
+                    var submitButton = document.getElementById('submit');
                     removeClass(submitButton, 'btn-primary');
                     // 如果错误为空
                     if (!errors) {
@@ -235,6 +240,7 @@
                 // 通过 name 验证单个表单域
                 validator.validateByName('email');
             });
+
 
             // 字符串验证
             var v = new Validator();
