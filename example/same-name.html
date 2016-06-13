@@ -75,7 +75,7 @@
                 },
                 callback: function(event, errors) {
 
-                    var submitButton = event.target['submit'];
+                    var submitButton = document.getElementById('submit');
                     removeClass(submitButton, 'btn-primary');
                     // 如果错误为空
                     if (!errors) {
@@ -99,7 +99,8 @@
             var addFieldEl = document.getElementById('addField');
             addEvent(addFieldEl, 'click', function() {
                 var emailHtml = document.getElementById('add_field_tmpl');
-                document.getElementById('form_group_area').innerHTML += emailHtml.innerHTML;
+                var emailEL = parseToDom(emailHtml.innerHTML);
+                document.getElementById('form_group_area').appendChild(emailEL);
             });
 
 
@@ -141,6 +142,16 @@
                 } else {
                     el['on' + type] = fn;
                 };
+            }
+
+            /**
+             * 将字符串转换为 dom 对象
+             * @param {Object}
+             */
+            function parseToDom(arg) {
+            　　 var objEl = document.createElement("div");
+            　　 objEl.innerHTML = arg;
+            　　 return objEl.children[0];
             }
 
         </script>

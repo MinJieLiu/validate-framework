@@ -135,8 +135,6 @@
             <h3>更多</h3>
             <ul>
                 <li><a href="same-name.html" target="_blank">相同 name 属性表单验证</a></li>
-                <!--<li><a href="">动态表单验证</a></li>-->
-                <!--<li><a href="">弹出错误信息</a></li>-->
             </ul>
 
             <h3>字符串验证</h3>
@@ -190,7 +188,7 @@
                 },
                 callback: function(event, errors) {
 
-                    var submitButton = event.target['submit'];
+                    var submitButton = document.getElementById('submit');
                     removeClass(submitButton, 'btn-primary');
                     // 如果错误为空
                     if (!errors) {
