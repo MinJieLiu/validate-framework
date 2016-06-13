@@ -15,6 +15,7 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
  4. 字符串验证
  5. 易扩展
  6. 支持 chrome 、firfox 、IE6 +
+ 7. 支持相同 name 的表单验证
 
 
 ## 快速上手

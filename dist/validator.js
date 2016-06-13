@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.2.6
+ * validate-framework v1.3.0
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -222,9 +222,7 @@
                     evt = evt || event;
                     var targetEl = evt.target || evt.srcElement;
                     return that._validateField(that.fields[targetEl.name], targetEl);
-                } catch (e) {
-                    console.warn(e);
-                }
+                } catch (e) {}
             };
         }(this);
         // 使用表单值改变拦截
@@ -246,9 +244,7 @@
                 try {
                     evt = evt || event;
                     return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
-                } catch (e) {
-                    console.warn(e);
-                }
+                } catch (e) {}
             };
         }(this);
     };
@@ -259,11 +255,23 @@
      */
         validate: function(evt) {
             this.handles["evt"] = evt || event;
-            this.errors = {};
             for (var name in this.fields) {
                 if (this.fields.hasOwnProperty(name)) {
                     var field = this.fields[name];
-                    this._validateField(field);
+                    var el = this.form[field.name];
+                    // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+                    if (isSameNameField(el)) {
+                        // 默认通过验证，若有一个错误，则不通过
+                        field._multiFailed = false;
+                        for (var i = 0, elLength = el.length; i < elLength; i++) {
+                            // 当前验证的 field 对象
+                            field._multiIndex = i;
+                            this._validateField(field);
+                        }
+                    } else {
+                        // 正常验证
+                        this._validateField(field);
+                    }
                 }
             }
             // 如果有错误，停止 submit 提交，并停止执行回调函数
@@ -318,12 +326,18 @@
         /**
      * 验证当前节点
      * @param  {Object} 验证信息域
+     * @param {Element} 当前验证的单个表单域
      */
         _validateField: function(field, targetEl) {
-            // 获得节点。非 radio 或 checkbox 相同并且 name 属性的表单，使用 targetEl 获取
-            var el = targetEl && !isRadioOrCheckbox(targetEl) ? targetEl : this.form[field.name];
+            // 获得节点
+            var el = this.form[field.name];
             // 成功标识
             var failed = false;
+            // 错误对象
+            this.errors = this.errors || {};
+            var errorObj = this.errors[field.name];
+            // 验证 name 属性相同，当前验证的表单域处于表单数组的所在位置
+            var elIndex;
             // 设置验证信息域属性
             if (el && el !== undefined) {
                 field.id = attributeValue(el, "id");
@@ -331,14 +345,18 @@
                 field.type = el.length > 0 ? el[0].type : el.type;
                 field.value = attributeValue(el, "value");
                 field.checked = attributeValue(el, "checked");
+            } else {
+                // 动态删除表单域之后清空对象值
+                field.el = null;
+                field.type = null;
+                field.value = null;
+                field.checked = null;
             }
             var isRequired = field.rules.indexOf("required") !== -1;
             var isEmpty = !field.value || field.value === "" || field.value === undefined;
             var rules = field.rules.split(/\s*\|\s*/g);
-            // 删除之前验证过的信息
-            delete this.errors[field.name];
             for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
-                // 开启逐条验证，如果已经验证失败，则暂时不需要进入当前条目再次验证
+                // 逐条验证，如果已经验证失败，则暂时不需要进入当前条目再次验证
                 if (failed) {
                     break;
                 }
@@ -351,8 +369,23 @@
                     param = parts[2];
                 }
                 // 如果不是 required 这个字段，该值是空的，并且这个节点存在，则不验证，继续下一个规则。
-                if (!isRequired && isEmpty && el) {
+                if (el && !isRequired && isEmpty) {
                     continue;
+                }
+                // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+                if (isSameNameField(el)) {
+                    // 获取验证的表单域处于表单数组的所在位置
+                    for (var j = 0, elLength = el.length; j < elLength; j++) {
+                        if (targetEl && targetEl === el[j]) {
+                            elIndex = j;
+                        }
+                    }
+                    // 设置当前验证的表单域
+                    if (elIndex === undefined) {
+                        elIndex = field._multiIndex;
+                    }
+                    field.el = el[elIndex];
+                    field.value = attributeValue(el[elIndex], "value");
                 }
                 // 匹配验证
                 if (typeof _testHook[method] === "function") {
@@ -360,39 +393,57 @@
                         failed = true;
                     }
                 }
+                // 错误消息类和 id
+                var errorClass;
+                var messageId;
+                if (field.el) {
+                    errorClass = isRadioOrCheckbox(el) ? "valid-label-error" : "valid-error";
+                    messageId = "valid_error_" + field.name + "_" + (elIndex !== undefined ? elIndex : "0");
+                }
+                // 错误信息域
+                this.errors[field.name] = {
+                    el: field.el,
+                    name: field.name,
+                    rule: method,
+                    errorClass: errorClass,
+                    messageId: messageId
+                };
                 // 解析错误信息
                 if (failed) {
-                    var message = function() {
+                    // 错误提示
+                    this.errors[field.name].message = function() {
                         var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[i] : "";
                         // 防止 xss 攻击
                         var fieldValue = field.value && field.value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                         // 替换 {{value}} 和 {{param}} 为指定值
                         return seqText ? seqText.replace(/\{\{\s*value\s*\}\}/g, fieldValue).replace(/\{\{\s*param\s*\}\}/g, param) : seqText;
                     }();
-                    var existingError;
-                    for (var j = 0, errorsLength = this.errors.length; j < errorsLength; j += 1) {
-                        if (field.el === this.errors[j].el) {
-                            existingError = this.errors[j];
-                        }
-                    }
-                    // 错误信息域
-                    var errorObject = existingError || {
-                        el: field.el,
-                        name: field.name,
-                        message: message,
-                        rule: method
-                    };
-                    if (!existingError) {
-                        this.errors[field.name] = errorObject;
+                    // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+                    if (isSameNameField(el)) {
+                        field._multiFailed = true;
                     }
                 }
+                errorObj = this.errors[field.name];
             }
             // 节点不存在，则返回自定义处理
             if (!field.el) {
                 return this;
             }
-            // 当前条目所有条件验证结果
-            failed ? this._addErrorPlacement(field) : this._removeErrorMessage(field);
+            // 当前条目验证结果
+            if (failed) {
+                this._addErrorPlacement(errorObj);
+            } else {
+                this._removeErrorMessage(errorObj);
+                // 删除之前验证过的信息
+                // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+                if (isSameNameField(el)) {
+                    if (!field._multiFailed) {
+                        delete this.errors[field.name];
+                    }
+                } else {
+                    delete this.errors[field.name];
+                }
+            }
             return this;
         },
         /**
@@ -416,52 +467,55 @@
      * 移除当前条目错误信息
      * @param {Object} 验证信息域
      */
-        _removeErrorMessage: function(field) {
+        _removeErrorMessage: function(errorObj) {
+            if (!errorObj || !errorObj.el) {
+                return;
+            }
             // 移除表单域错误类
-            if (!field.el.length) {
-                removeClass(field.el, "valid-error");
+            if (!errorObj.el.length) {
+                removeClass(errorObj.el, errorObj.errorClass);
             } else {
-                for (var i = 0, elLength = field.el.length; i < elLength; i++) {
-                    removeClass(field.el[i], "valid-label-error");
+                for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
+                    removeClass(errorObj.el[i], errorObj.errorClass);
                 }
             }
             // 移除错误信息节点
-            var errorEl = document.getElementById("valid_error_" + field.name);
+            var errorEl = document.getElementById(errorObj.messageId);
             errorEl && errorEl.parentNode.removeChild(errorEl);
         },
         /**
      * 添加当前条目错误信息
      * @param {Object} 验证信息域
      */
-        _addErrorPlacement: function(field) {
+        _addErrorPlacement: function(errorObj) {
             // 无错误信息
-            if (!this.errors[field.name]) {
+            if (!errorObj || !errorObj.el) {
                 return;
             }
             // 清除之前保留的错误信息
-            this._removeErrorMessage(field);
+            this._removeErrorMessage(errorObj);
             // 当前表单域添加错误类
-            if (!field.el.length) {
-                addClass(field.el, "valid-error");
+            if (!errorObj.el.length) {
+                addClass(errorObj.el, errorObj.errorClass);
             } else {
-                for (var i = 0, elLength = field.el.length; i < elLength; i++) {
-                    addClass(field.el[i], "valid-label-error");
+                for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
+                    addClass(errorObj.el[i], errorObj.errorClass);
                 }
             }
             // 创建元素
             var errorEl = document.createElement("em");
-            addClass(errorEl, "valid-error-message");
-            errorEl.setAttribute("id", "valid_error_" + field.name);
-            errorEl.innerHTML = this.errors[field.name].message;
+            addClass(errorEl, errorObj.errorClass + "-message");
+            errorEl.setAttribute("id", errorObj.messageId);
+            errorEl.innerHTML = errorObj.message;
             // 错误信息位置
             if (typeof this.options === "object" && typeof this.options.errorPlacement === "function") {
                 // 参数：错误信息节点，当前表单 DOM
-                this.options.errorPlacement(errorEl, field.el);
+                this.options.errorPlacement(errorEl, errorObj.el);
             } else {
                 // 默认错误信息位置
                 // label 、 radio 元素错误位置不固定，默认暂不设置
-                if (!field.el.length) {
-                    field.el.parentNode.appendChild(errorEl);
+                if (!errorObj.el.length) {
+                    errorObj.el.parentNode.appendChild(errorEl);
                 }
             }
         }
@@ -516,11 +570,18 @@
         }
     }
     /**
+ * 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+ * @param {Object} 传入节点
+ */
+    function isSameNameField(el) {
+        return el && el.length && el[0].type !== "radio" && el[0].type !== "checkbox" && el[0].tagName !== "OPTION";
+    }
+    /**
  * 判断表单域为 radio 或者 checkbox
  * @param {Object} 传入节点
  */
     function isRadioOrCheckbox(el) {
-        return el.length ? el[0].type === "radio" || el[0].type === "checkbox" : el.type === "radio" || el.type === "checkbox";
+        return el && el.length && (el[0].type === "radio" || el[0].type === "checkbox");
     }
     /**
  * 获取节点对象的属性
