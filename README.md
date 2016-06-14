@@ -16,6 +16,7 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
  5. 易扩展
  6. 支持 chrome 、firfox 、IE6 +
  7. 支持相同 name 的表单验证
+ 8. 支持动态验证
 
 
 ## 快速上手
@@ -186,6 +187,32 @@ validator.addMethod('select_limit', function(field, param) {
 });
 ```
 
+**`.addFields(fields)` 动态添加 fields 方法**
+
+注： 满足更多动态验证表单的需求。可通过 `.addFields(fields)` 来动态新增一个或多个表单验证域
+
+```js
+validator.addFields({
+    userName: {
+        rules: 'required | is_real_name',
+        messages: "不能为空 | 请输入真实姓名"
+    }
+});
+```
+
+**`.removeFields(fieldNames)` 动态移除 fields 方法**
+
+注： 满足更多动态验证表单的需求。可通过 `.removeFields(fieldNames)` 来动态移除一个表单验证域，移除之后验证器则不验证移除的对象<br />
+`fieldNames` 可接受字符串或者一个数组
+
+```js
+// 移除单个
+validator.removeFields('userName');
+// 移除多个
+validator.removeFields(['userName', 'email']);
+```
+
+
 ## 字符串验证说明文档
 
 如：
@@ -226,6 +253,22 @@ validator.js 不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库
 ## 规范
 
 validator.js 采用 `eslint` 来保持代码的正确性和可读性，详情见 `.eslintrc` 文件
+
+
+## 更新日志
+
+### v1.4.0
+
+1.  [新增] `.addFields` 和 `.removeFields` 扩展方法
+2.  实现动态验证表单域
+3.  微调内部函数结构
+
+### v1.3.0
+
+1.  [新增] 相同 name 属性表单验证
+2.  兼容未在 dom 中的元素，可预先定义
+3.  微调内部函数名称
+
 
 ## LICENSE
 

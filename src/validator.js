@@ -204,31 +204,18 @@ var Validator = function(formName, options) {
         return this;
     }
 
+    var fields = options.fields;
+
     // fields 不合法
-    if (typeof options.fields !== 'object') {
+    if (typeof fields !== 'object') {
         return this;
     }
-
-    var fields = options.fields;
 
     // HTML5 添加 novalidate
     this.form.setAttribute('novalidate', 'novalidate');
 
-    for (var name in fields) {
-
-        if (fields.hasOwnProperty(name)) {
-            var field = fields[name];
-
-            // 规则不正确，则跳过
-            if (!field.rules) {
-                console.warn(field);
-                continue;
-            }
-
-            // 构建具有所有需要验证的信息的主域数组
-            this._addField(name, field);
-        }
-    }
+    // 构建具有所有需要验证的信息域
+    this._addFields(fields);
 
     // 验证单个表单方法
     var validateFieldFunc = (function(that) {
@@ -280,23 +267,8 @@ Validator.prototype = {
 
         for (var name in this.fields) {
             if (this.fields.hasOwnProperty(name)) {
-                var field = this.fields[name];
-                var el = this.form[field.name];
-
-                // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
-                if (isSameNameField(el)) {
-                    // 默认通过验证，若有一个错误，则不通过
-                    field._multiFailed = false;
-                    for (var i = 0, elLength = el.length; i < elLength; i++) {
-                        // 当前验证的 field 对象
-                        field._multiIndex = i;
-                        this._validateField(field);
-                    }
-                } else {
-                    // 正常验证
-                    this._validateField(field);
-                }
-
+                // 通过 name 验证
+                this.validateByName(name);
             }
         }
 
@@ -324,7 +296,24 @@ Validator.prototype = {
 
         var field = this.fields[name];
 
-        if (!isEmptyObject(field)) {
+        // 单个验证若无规则，则跳过
+        if (!field) {
+            return this;
+        }
+
+        var el = this.form[field.name];
+
+        // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+        if (isSameNameField(el)) {
+            // 默认通过验证，若有一个错误，则不通过
+            field._multiFailed = false;
+            for (var i = 0, elLength = el.length; i < elLength; i++) {
+                // 当前验证的 field 对象
+                field._multiIndex = i;
+                this._validateField(field);
+            }
+        } else {
+            // 正常验证
             this._validateField(field);
         }
 
@@ -361,6 +350,66 @@ Validator.prototype = {
         this[toCamelCase(name)] = _testHook[name];
 
         return this;
+    },
+
+    /**
+     * 动态添加 fields 方法
+     * @param {Object} fields 对象
+     */
+    addFields: function(fields) {
+        if (typeof fields === 'object') {
+            // 构建具有所有需要验证的信息域
+            this._addFields(fields);
+        }
+    },
+
+    /**
+     * 动态移除 fields 方法
+     * @param {String} fields 名称
+     */
+    removeFields: function(fieldNames) {
+
+        if (fieldNames instanceof Array) {
+            for (var i in fieldNames) {
+                // 移除对象
+                if (this.fields[fieldNames[i]]) {
+                    delete this.fields[fieldNames[i]];
+                }
+            }
+        } else if (fieldNames && this.fields[fieldNames]) {
+            delete this.fields[fieldNames];
+        }
+        return this;
+    },
+
+    /**
+     * 构建具有所有需要验证的信息域
+     * @param {Object} 验证信息域
+     */
+    _addFields: function(fields) {
+        for (var name in fields) {
+
+            if (fields.hasOwnProperty(name)) {
+                var field = fields[name];
+
+                // 规则不正确，则跳过
+                if (!field.rules) {
+                    console.warn(field);
+                    continue;
+                }
+                // 构建具有所有需要验证的信息的主域数组
+                this.fields[name] = {
+                    name: name,
+                    messages: field.messages,
+                    rules: field.rules,
+                    id: null,
+                    el: null,
+                    type: null,
+                    value: null,
+                    checked: null
+                };
+            }
+        }
     },
 
     /**
@@ -506,24 +555,6 @@ Validator.prototype = {
         }
 
         return this;
-    },
-
-    /**
-     * 构建具有所有需要验证的信息域数组
-     * @param {String} 表单域 name 属性名称
-     * @param {Object} 验证信息域
-     */
-    _addField: function(name, field) {
-        this.fields[name] = {
-            name: name,
-            messages: field.messages,
-            rules: field.rules,
-            id: null,
-            el: null,
-            type: null,
-            value: null,
-            checked: null
-        };
     },
 
     /**
