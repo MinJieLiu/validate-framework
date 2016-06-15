@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.4.0
+ * validate-framework v1.4.1
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -336,12 +336,12 @@
                     // 移除对象
                     if (this.fields[fieldNames[i]]) {
                         delete this.fields[fieldNames[i]];
-                        delete this.errors[fieldNames[i]];
+                        this.errors && delete this.errors[fieldNames[i]];
                     }
                 }
             } else if (fieldNames && this.fields[fieldNames]) {
                 delete this.fields[fieldNames];
-                delete this.errors[fieldNames];
+                this.errors && delete this.errors[fieldNames];
             }
             return this;
         },

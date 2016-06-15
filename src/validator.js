@@ -375,12 +375,12 @@ Validator.prototype = {
                 // 移除对象
                 if (this.fields[fieldNames[i]]) {
                     delete this.fields[fieldNames[i]];
-                    delete this.errors[fieldNames[i]];
+                    this.errors && delete this.errors[fieldNames[i]];
                 }
             }
         } else if (fieldNames && this.fields[fieldNames]) {
             delete this.fields[fieldNames];
-            delete this.errors[fieldNames];
+            this.errors && delete this.errors[fieldNames];
         }
         return this;
     },
