@@ -324,6 +324,7 @@
                 // 构建具有所有需要验证的信息域
                 this._addFields(fields);
             }
+            return this;
         },
         /**
      * 动态移除 fields 方法
@@ -355,7 +356,7 @@
                         console.warn(field);
                         continue;
                     }
-                    // 构建具有所有需要验证的信息的主域数组
+                    // 构建单个需要验证的信息域
                     this.fields[name] = {
                         name: name,
                         messages: field.messages,
