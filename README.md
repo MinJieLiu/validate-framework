@@ -257,6 +257,10 @@ validator.js 采用 `eslint` 来保持代码的正确性和可读性，详情见
 
 ## 更新日志
 
+### v1.4.1
+
+1.  变更 email 正则
+
 ### v1.4.0
 
 1.  [新增] `.addFields` 和 `.removeFields` 扩展方法

@@ -66,6 +66,9 @@ describe("validators", function() {
         expect(v.isUrl('http:/abs.abs.baidu.com')).to.be.false;
         expect(v.isUrl('http://abs.abs.baidu.com')).to.be.true;
         expect(v.isUrl('hps://www.baidu.com')).to.be.true;
+        expect(v.isUrl('hps://www.QQ.com')).to.be.true;
+        expect(v.isUrl('hps://www.Tentent.com')).to.be.true;
+        expect(v.isUrl('hps://')).to.be.true;
     });
 
     it("isAbc() 字母数字下划线验证", function() {
@@ -96,6 +99,8 @@ describe("validators", function() {
         expect(v.isEmail('wowo@asdf.中国')).to.be.false;
         expect(v.isEmail('wowo@中国.com')).to.be.false;
         expect(v.isEmail('中@qq.com')).to.be.false;
+        expect(v.isEmail('Asd@qq.com')).to.be.true;
+        expect(v.isEmail('Asd@QQ.com')).to.be.true;
     });
 
     it("isIp() IP验证", function() {
