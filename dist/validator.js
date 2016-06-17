@@ -195,10 +195,6 @@
             return this;
         }
         var fields = options.fields;
-        // fields 不合法
-        if (typeof fields !== "object") {
-            return this;
-        }
         // HTML5 添加 novalidate
         this.form.setAttribute("novalidate", "novalidate");
         // 构建具有所有需要验证的信息域

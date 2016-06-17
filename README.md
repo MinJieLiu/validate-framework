@@ -90,11 +90,11 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 
 ### 参数（可选，无参为字符串验证）
 
-**`formName`** （必需） 是标签中 `<form>` 中的 `id` 或者 `name` 的值
+**`formName`** （可选） 是标签中 `<form>` 中的 `id` 或者 `name` 的值
 
-**`options`** （必需） 是 Validator 的第二个参数
+**`options`** （可选） 是 Validator 的第二个参数
 
-  * `fields` 表单验证域 `rules` 和 `messages` 集合
+  * `fields` （可选） 表单验证域 `rules` 和 `messages` 集合
   * `errorPlacement` （可选） 错误信息位置
   * `callback` （可选） 验证成功或失败后回调函数
 
