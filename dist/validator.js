@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.4.1
+ * validate-framework v1.4.2
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -242,17 +242,21 @@
         /**
      * 验证整体表单域
      * @param  {Event} 当前事件
+     * @return {Boolean} 是否成功
      */
         validate: function(evt) {
             this.handles["evt"] = evt || event;
+            var successed = true;
             for (var name in this.fields) {
                 if (this.fields.hasOwnProperty(name)) {
                     // 通过 name 验证
-                    this.validateByName(name);
+                    if (!this.validateByName(name)) {
+                        successed = false;
+                    }
                 }
             }
             // 如果有错误，停止 submit 提交，并停止执行回调函数
-            if (!isEmptyObject(this.errors)) {
+            if (!successed) {
                 this.preventSubmit();
             } else {
                 // 将 null 暴露到 callback 函数中
@@ -262,33 +266,36 @@
             if (typeof this.options === "object" && typeof this.options.callback === "function") {
                 this.options.callback(this.handles["evt"], this.errors);
             }
-            return this;
+            return successed;
         },
         /**
      * 验证单个表单域
      * @param {String} 表单域 name 属性
+     * @return {Boolean} 是否成功
      */
         validateByName: function(name) {
             var field = this.fields[name];
-            // 单个验证若无规则，则跳过
+            var successed = false;
+            // 单个验证没找到规则
             if (!field) {
-                return this;
+                return successed;
             }
             var el = this.form[field.name];
             // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
             if (isSameNameField(el)) {
                 // 默认通过验证，若有一个错误，则不通过
-                field._multiFailed = false;
+                field._multiSuccessed = true;
                 for (var i = 0, elLength = el.length; i < elLength; i++) {
                     // 当前验证的 field 对象
                     field._multiIndex = i;
                     this._validateField(field);
                 }
+                successed = field._multiSuccessed;
             } else {
                 // 正常验证
-                this._validateField(field);
+                successed = this._validateField(field);
             }
-            return this;
+            return successed;
         },
         /**
      * 阻止表单提交
@@ -376,12 +383,13 @@
      * 验证当前节点
      * @param  {Object} 验证信息域
      * @param {Element} 当前验证的单个表单域
+     * @return {Boolean} 是否成功
      */
         _validateField: function(field, targetEl) {
             // 获得节点
             var el = this.form[field.name];
             // 成功标识
-            var failed = false;
+            var successed = true;
             // 错误对象
             this.errors = this.errors || {};
             var errorObj = this.errors[field.name];
@@ -406,7 +414,7 @@
             var rules = field.rules.split(/\s*\|\s*/g);
             for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
                 // 逐条验证，如果已经验证失败，则暂时不需要进入当前条目再次验证
-                if (failed) {
+                if (!successed) {
                     break;
                 }
                 var method = rules[i];
@@ -439,7 +447,7 @@
                 // 匹配验证
                 if (typeof _testHook[method] === "function") {
                     if (!_testHook[method].apply(this, [ field, param ])) {
-                        failed = true;
+                        successed = false;
                     }
                 }
                 // 错误消息类和 id
@@ -458,7 +466,7 @@
                     messageId: messageId
                 };
                 // 解析错误信息
-                if (failed) {
+                if (!successed) {
                     // 错误提示
                     this.errors[field.name].message = function() {
                         var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[i] : "";
@@ -469,31 +477,31 @@
                     }();
                     // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
                     if (isSameNameField(el)) {
-                        field._multiFailed = true;
+                        field._multiSuccessed = false;
                     }
                 }
                 errorObj = this.errors[field.name];
             }
-            // 节点不存在，则返回自定义处理
+            // 节点不存在，直接返回结果
             if (!field.el) {
-                return this;
+                return successed;
             }
             // 当前条目验证结果
-            if (failed) {
-                this._addErrorPlacement(errorObj);
-            } else {
-                this._removeErrorMessage(errorObj);
+            if (successed) {
                 // 删除之前验证过的信息
+                this._removeErrorMessage(errorObj);
                 // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
                 if (isSameNameField(el)) {
-                    if (!field._multiFailed) {
+                    if (field._multiSuccessed) {
                         delete this.errors[field.name];
                     }
                 } else {
                     delete this.errors[field.name];
                 }
+            } else {
+                this._addErrorPlacement(errorObj);
             }
-            return this;
+            return successed;
         },
         /**
      * 移除当前条目错误信息
@@ -561,16 +569,6 @@
         return caseName.replace(/\_([a-z])/g, function(all, letter) {
             return letter.toUpperCase();
         });
-    }
-    /**
- * 是否为空对象
- * @param {Object} obj
- */
-    function isEmptyObject(obj) {
-        for (var name in obj) {
-            return !name;
-        }
-        return true;
     }
     /**
  * 判断是否包含 class

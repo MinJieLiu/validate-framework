@@ -157,17 +157,20 @@ validator.validate();
 
 **`.validate()` 手动验证**
 
-注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证 form 所有定义过的元素
+注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证 form 所有定义过的元素，返回值为 `Boolean`
 
 **`.validateByName(name)` 手动验证单个表单域**
 
-注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域， `name` 参数为 表单域的 `name` 属性
+注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域<br />
+`name` 参数为 表单域的 `name` 属性，返回值为 `Boolean`
 
 **`.preventSubmit()` 阻止表单提交**
 
+注： 支持链式调用
+
 **`.addMethod(name, method)` 自定义验证方法**
 
-注： 当遇到 validator.js 提供的默认方法无法实现验证的时候，添加`.addMethod(name, method)`方法进行扩展<br />
+注： 当遇到 validator.js 提供的默认方法无法实现验证的时候，添加`.addMethod(name, method)`方法进行扩展，支持链式调用<br />
 `name` 为校验名称，格式： is_date<br />
 `method` 为自定义方法
 
@@ -189,7 +192,7 @@ validator.addMethod('select_limit', function(field, param) {
 
 **`.addFields(fields)` 动态添加 fields 方法**
 
-注： 满足更多动态验证表单的需求。可通过 `.addFields(fields)` 来动态新增一个或多个表单验证域
+注： 满足更多动态验证表单的需求。可通过 `.addFields(fields)` 来动态新增一个或多个表单验证域，支持链式调用
 
 ```js
 validator.addFields({
@@ -202,7 +205,7 @@ validator.addFields({
 
 **`.removeFields(fieldNames)` 动态移除 fields 方法**
 
-注： 满足更多动态验证表单的需求。可通过 `.removeFields(fieldNames)` 来动态移除一个表单验证域，移除之后验证器则不验证移除的对象<br />
+注： 满足更多动态验证表单的需求。可通过 `.removeFields(fieldNames)` 来动态移除一个表单验证域，移除之后验证器则不验证移除的对象，支持链式调用<br />
 `fieldNames` 可接受字符串或者一个数组
 
 ```js
@@ -256,6 +259,11 @@ validator.js 采用 `eslint` 来保持代码的正确性和可读性，详情见
 
 
 ## 更新日志
+
+### v1.4.2
+
+1.  [修正] `.validate()` 、`.validateByName(name)` 返回值为布尔类型，其他则为链式
+2.  微调内部函数
 
 ### v1.4.1
 
