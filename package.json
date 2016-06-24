@@ -7,11 +7,10 @@
   "scripts": {
     "lint": "eslint src/validator.js",
     "test": "mocha-phantomjs test/validators.html",
-    "clean": "rm -rf dist/validator*.js",
     "build:min": "umd Validator src/validator.js | uglifyjs -mc | bannerjs -o > dist/validator.min.js",
     "build:dist": "umd Validator src/validator.js | uglifyjs -b --comments all | bannerjs -m > dist/validator.js",
     "build": "npm run lint && npm run build:min && npm run build:dist",
-    "watch": "onchange 'src/validator.js' -v -- npm run build"
+    "watch": "onchange './src/validator.js' -- npm run build"
   },
   "repository": {
     "type": "git",

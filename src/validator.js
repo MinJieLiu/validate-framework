@@ -8,18 +8,18 @@ var regexs = {
     rule: /^(.+?)\((.+)\)$/,
 
     // 自然数
-    numeric: /^[0-9]+$/,
+    numeric: /^\d+$/,
 
     // 整数
-    integer: /^\-?[0-9]+$/,
+    integer: /^\-?\d+$/,
 
     // 浮点数
-    decimal: /^\-?[0-9]*\.?[0-9]+$/,
+    decimal: /^\-?\d*\.?\d+$/,
 
     // 邮箱
     email: /^[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?$/,
 
-    // IP地址 [ip ipv4、ipv6]
+    // IP 地址 [ip ipv4、ipv6]
     ip: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])((\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}|(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){5})$/,
 
     // 电话号码
@@ -29,7 +29,7 @@ var regexs = {
     phone: /^1[3-9]\d{9}$/,
 
     // 字母数字或下划线
-    abc: /^[a-zA-Z0-9_]*$/,
+    abc: /^\w+$/,
 
     // URL
     url: /[a-zA-Z]+:\/\/[^\s]*/,
@@ -63,7 +63,7 @@ var _testHook = {
         return regexs.email.test(getValue(field));
     },
 
-    // 验证 ip 地址
+    // 验证 IP 地址
     is_ip: function(field) {
         return regexs.ip.test(getValue(field));
     },
