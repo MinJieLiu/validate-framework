@@ -146,7 +146,8 @@
         </div>
 
         <script>
-            var validator = new Validator('validate_form', {
+            var validator = new Validator({
+                formName: 'validate_form',
                 fields: {
                     email: {
                         rules: 'required | is_email | max_length(32)',
