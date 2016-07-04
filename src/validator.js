@@ -192,9 +192,14 @@ var Validator = function(options) {
     // 将验证方法绑到 Validator 对象上
     for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
 
-    this.options = options || {};
+    // 无参数
+    if (!options) {
+        return this;
+    }
+
+    this.options = options;
     this.form = {};
-    this.body = options && options.body;
+    this.body = options.body;
     this.errors = {};
     this.fields = {};
     this.handles = {};
@@ -206,6 +211,8 @@ var Validator = function(options) {
 
     // 有 form 表单的验证
     if (options.formName) {
+
+        // 获取表单对象
         this.form = document.forms[options.formName];
 
         // HTML5 添加 novalidate
@@ -382,21 +389,23 @@ Validator.prototype = {
      */
     _bindInput: function() {
 
-        var validateFieldFunc = function(evt) {
-            try {
-                // 验证单个表单
-                evt = evt || event;
-                var target = evt.target || evt.srcElement;
-                return this._validateField(this.fields[target.name], target);
-            } catch (e) {};
-        };
+        var validateFieldFunc = (function(that) {
+            return function(evt) {
+                try {
+                    // 验证单个表单
+                    evt = evt || event;
+                    var target = evt.target || evt.srcElement;
+                    return that._validateField(that.fields[target.name], target);
+                } catch (e) {};
+            };
+        })(this);
 
         // 使用表单值改变拦截
         var formEls = this.form.elements;
 
         for (var i = 0, formElsLength = formEls.length; i < formElsLength; i++) {
             // 针对 IE 浏览器使用 onkeyup 事件
-            if (isIE) {
+            if (!!window.ActiveXObject || 'ActiveXObject' in window) {
                 formEls[i].onkeyup = validateFieldFunc;
             } else {
                 formEls[i].oninput = validateFieldFunc;
@@ -411,12 +420,14 @@ Validator.prototype = {
      */
     _bindSubmit: function() {
         var _onsubmit = this.form.onsubmit;
-        this.form.onsubmit = function(evt) {
-            try {
-                evt = evt || event;
-                return this.validate(evt) && (_onsubmit === undefined || _onsubmit());
-            } catch (e) {};
-        };
+        this.form.onsubmit = (function(that) {
+            return function(evt) {
+                try {
+                    evt = evt || event;
+                    return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
+                } catch (e) {};
+            };
+        })(this);
     },
 
     /**
@@ -703,13 +714,6 @@ function attributeValue(el, attributeName) {
         }
     }
     return el[attributeName];
-}
-
-/**
- * 是否为 IE 浏览器
- */
-function isIE() {
-    return !!window.ActiveXObject || 'ActiveXObject' in window;
 }
 
 /**
