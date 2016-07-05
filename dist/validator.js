@@ -179,60 +179,36 @@
     };
     /**
  * Validator 对象
- * @param {String} form 名称
  * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
-    var Validator = function(formName, options) {
+    var Validator = function(options) {
         // 将验证方法绑到 Validator 对象上
         for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
-        this.options = options || {};
-        this.form = formName && getFormEl(formName);
+        // 无参数
+        if (!options) {
+            return this;
+        }
+        this.options = options;
+        this.form = {};
+        this.body = options.body;
         this.errors = {};
         this.fields = {};
         this.handles = {};
-        // 不存在 form 对象
-        if (!this.form) {
-            return this;
-        }
         var fields = options.fields;
-        // HTML5 添加 novalidate
-        this.form.setAttribute("novalidate", "novalidate");
         // 构建具有所有需要验证的信息域
-        this._addFields(fields);
-        // 验证单个表单方法
-        var validateFieldFunc = function(that) {
-            return function(evt) {
-                try {
-                    // 验证单个表单
-                    // 兼容低版本浏览器
-                    evt = evt || event;
-                    var targetEl = evt.target || evt.srcElement;
-                    return that._validateField(that.fields[targetEl.name], targetEl);
-                } catch (e) {}
-            };
-        }(this);
-        // 使用表单值改变拦截
-        // 非 IE 浏览器使用标准 oninput 事件
-        if (!!window.ActiveXObject || "ActiveXObject" in window) {
-            var formEls = this.form.elements;
-            for (var i = 0, formElsLength = this.form.length; i < formElsLength; i++) {
-                this.form[i].onkeyup = validateFieldFunc;
-                formEls[i].onchange = validateFieldFunc;
-            }
-        } else {
-            this.form.oninput = validateFieldFunc;
-            this.form.onchange = validateFieldFunc;
+        this.addFields(fields);
+        // 有 form 表单的验证
+        if (options.formName) {
+            // 获取表单对象
+            this.form = document.forms[options.formName];
+            // HTML5 添加 novalidate
+            this.form.setAttribute("novalidate", "novalidate");
+            // 绑定用户输入事件
+            this._bindInput();
+            // 绑定提交事件
+            this._bindSubmit();
         }
-        // 使用 submit 按钮拦截
-        var _onsubmit = this.form.onsubmit;
-        this.form.onsubmit = function(that) {
-            return function(evt) {
-                try {
-                    evt = evt || event;
-                    return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
-                } catch (e) {}
-            };
-        }(this);
+        return this;
     };
     Validator.prototype = {
         /**
@@ -244,11 +220,9 @@
             this.handles["evt"] = evt || event;
             var successed = true;
             for (var name in this.fields) {
-                if (this.fields.hasOwnProperty(name)) {
-                    // 通过 name 验证
-                    if (!this.validateByName(name)) {
-                        successed = false;
-                    }
+                // 通过 name 验证
+                if (!this.validateByName(name)) {
+                    successed = false;
                 }
             }
             // 如果有错误，停止 submit 提交，并停止执行回调函数
@@ -325,40 +299,10 @@
         addFields: function(fields) {
             if (typeof fields === "object") {
                 // 构建具有所有需要验证的信息域
-                this._addFields(fields);
-            }
-            return this;
-        },
-        /**
-     * 动态移除 fields 方法
-     * @param {String} fields 名称
-     */
-        removeFields: function(fieldNames) {
-            if (fieldNames instanceof Array) {
-                for (var i in fieldNames) {
-                    // 移除对象
-                    if (this.fields[fieldNames[i]]) {
-                        delete this.fields[fieldNames[i]];
-                        this.errors && delete this.errors[fieldNames[i]];
-                    }
-                }
-            } else if (fieldNames && this.fields[fieldNames]) {
-                delete this.fields[fieldNames];
-                this.errors && delete this.errors[fieldNames];
-            }
-            return this;
-        },
-        /**
-     * 构建具有所有需要验证的信息域
-     * @param {Object} 验证信息域
-     */
-        _addFields: function(fields) {
-            for (var name in fields) {
-                if (fields.hasOwnProperty(name)) {
+                for (var name in fields) {
                     var field = fields[name];
                     // 规则不正确，则跳过
                     if (!field.rules) {
-                        console.warn(field);
                         continue;
                     }
                     // 构建单个需要验证的信息域
@@ -374,6 +318,66 @@
                     };
                 }
             }
+            return this;
+        },
+        /**
+     * 动态移除 fields 方法
+     * @param {String} fields 名称
+     */
+        removeFields: function(fieldNames) {
+            if (fieldNames instanceof Array) {
+                for (var i, namesLength = fieldNames.length; i < namesLength; i++) {
+                    // 移除对象
+                    if (this.fields[fieldNames[i]]) {
+                        delete this.fields[fieldNames[i]];
+                        this.errors && delete this.errors[fieldNames[i]];
+                    }
+                }
+            } else if (fieldNames && this.fields[fieldNames]) {
+                delete this.fields[fieldNames];
+                this.errors && delete this.errors[fieldNames];
+            }
+            return this;
+        },
+        /**
+     * 绑定用户输入事件
+     */
+        _bindInput: function() {
+            var validateFieldFunc = function(that) {
+                return function(evt) {
+                    try {
+                        // 验证单个表单
+                        evt = evt || event;
+                        var target = evt.target || evt.srcElement;
+                        return that._validateField(that.fields[target.name], target);
+                    } catch (e) {}
+                };
+            }(this);
+            // 使用表单值改变拦截
+            var formEls = this.form.elements;
+            for (var i = 0, formElsLength = formEls.length; i < formElsLength; i++) {
+                // 针对 IE 浏览器使用 onkeyup 事件
+                if (!!window.ActiveXObject || "ActiveXObject" in window) {
+                    formEls[i].onkeyup = validateFieldFunc;
+                } else {
+                    formEls[i].oninput = validateFieldFunc;
+                }
+                formEls[i].onchange = validateFieldFunc;
+            }
+        },
+        /**
+     * 绑定 submit 按钮提交事件
+     */
+        _bindSubmit: function() {
+            var _onsubmit = this.form.onsubmit;
+            this.form.onsubmit = function(that) {
+                return function(evt) {
+                    try {
+                        evt = evt || event;
+                        return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
+                    } catch (e) {}
+                };
+            }(this);
         },
         /**
      * 验证当前节点
@@ -389,8 +393,6 @@
             // 错误对象
             this.errors = this.errors || {};
             var errorObj = this.errors[field.name];
-            // 验证 name 属性相同，当前验证的表单域处于表单数组的所在位置
-            var elIndex;
             // 设置验证信息域属性
             if (el && el !== undefined) {
                 field.id = attributeValue(el, "id");
@@ -425,6 +427,8 @@
                 if (el && !isRequired && isEmpty) {
                     continue;
                 }
+                // 验证 name 属性相同，当前验证的表单域处于表单数组的所在位置
+                var elIndex;
                 // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
                 if (isSameNameField(el)) {
                     // 获取验证的表单域处于表单数组的所在位置
@@ -557,6 +561,31 @@
         }
     };
     /**
+ * 判断 field 是否为字符串
+ * @param {Object}
+ * @return {String} 返回值
+ */
+    function getValue(field) {
+        return typeof field === "string" ? field : field.value;
+    }
+    /**
+ * 转换为日期
+ * @param {String} 日期格式：yyyy-MM-dd
+ * @return {Date}
+ */
+    function paseToDate(paramDate) {
+        if (!_testHook.is_date(paramDate)) {
+            return false;
+        }
+        var thisDate = new Date();
+        var dateArray;
+        dateArray = paramDate.split("-");
+        thisDate.setFullYear(dateArray[0]);
+        thisDate.setMonth(dateArray[1] - 1);
+        thisDate.setDate(dateArray[2]);
+        return thisDate;
+    }
+    /**
  * 将样式属性字符转换成驼峰。
  * @param {String} 字符串
  * @return {String}
@@ -565,35 +594,6 @@
         return caseName.replace(/\_([a-z])/g, function(all, letter) {
             return letter.toUpperCase();
         });
-    }
-    /**
- * 判断是否包含 class
- * @param {Element} el
- * @param {String} class 名称
- */
-    function hasClass(el, cls) {
-        return el.className.match(new RegExp("(\\s|^)" + cls + "(\\s|$)"));
-    }
-    /**
- * 添加 class
- * @param {Element} el
- * @param {String} class 名称
- */
-    function addClass(el, cls) {
-        if (!hasClass(el, cls)) {
-            el.classList ? el.classList.add(cls) : el.className += " " + cls;
-        }
-    }
-    /**
- * 移除 class
- * @param {Element} el
- * @param {String} class 名称
- */
-    function removeClass(el, cls) {
-        if (hasClass(el, cls)) {
-            var reg = new RegExp("(\\s|^)" + cls + "(\\s|$)");
-            el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, " ");
-        }
     }
     /**
  * 表单 name 属性相同且不是 radio 或 checkbox 的表单域
@@ -625,37 +625,33 @@
         return el[attributeName];
     }
     /**
- * 获取 dom 节点对象
- * @param {Object} 字符串或者节点对象
- * @return {Element} 返回 DOM 节点
+ * 判断是否包含 class
+ * @param {Element} el
+ * @param {String} class 名称
  */
-    function getFormEl(el) {
-        return typeof el === "object" ? el : document.forms[el];
+    function hasClass(el, cls) {
+        return el.className.match(new RegExp("(\\s|^)" + cls + "(\\s|$)"));
     }
     /**
- * 转换为日期
- * @param {String} 日期格式：yyyy-MM-dd
- * @return {Date}
+ * 添加 class
+ * @param {Element} el
+ * @param {String} class 名称
  */
-    function paseToDate(paramDate) {
-        if (!_testHook.is_date(paramDate)) {
-            return false;
+    function addClass(el, cls) {
+        if (!hasClass(el, cls)) {
+            el.classList ? el.classList.add(cls) : el.className += " " + cls;
         }
-        var thisDate = new Date();
-        var dateArray;
-        dateArray = paramDate.split("-");
-        thisDate.setFullYear(dateArray[0]);
-        thisDate.setMonth(dateArray[1] - 1);
-        thisDate.setDate(dateArray[2]);
-        return thisDate;
     }
     /**
- * 判断 field 是否为字符串
- * @param {Object}
- * @return {String} 返回值
+ * 移除 class
+ * @param {Element} el
+ * @param {String} class 名称
  */
-    function getValue(field) {
-        return typeof field === "string" ? field : field.value;
+    function removeClass(el, cls) {
+        if (hasClass(el, cls)) {
+            var reg = new RegExp("(\\s|^)" + cls + "(\\s|$)");
+            el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, " ");
+        }
     }
     return Validator;
 });
