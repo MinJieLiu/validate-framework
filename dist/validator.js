@@ -33,8 +33,6 @@
  * 正则表达式
  */
     var regexs = {
-        // 匹配 max_length(12) => ['max_length', 12]
-        rule: /^(.+?)\((.+)\)$/,
         // 自然数
         numeric: /^\d+$/,
         // 整数
@@ -179,60 +177,36 @@
     };
     /**
  * Validator 对象
- * @param {String} form 名称
  * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
-    var Validator = function(formName, options) {
+    var Validator = function(options) {
         // 将验证方法绑到 Validator 对象上
         for (var a in _testHook) this[toCamelCase(a)] = _testHook[a];
-        this.options = options || {};
-        this.form = formName && getFormEl(formName);
+        // 无参数
+        if (!options) {
+            return this;
+        }
+        this.options = options;
+        this.form = {};
+        this.body = options.body;
         this.errors = {};
         this.fields = {};
         this.handles = {};
-        // 不存在 form 对象
-        if (!this.form) {
-            return this;
-        }
         var fields = options.fields;
-        // HTML5 添加 novalidate
-        this.form.setAttribute("novalidate", "novalidate");
         // 构建具有所有需要验证的信息域
-        this._addFields(fields);
-        // 验证单个表单方法
-        var validateFieldFunc = function(that) {
-            return function(evt) {
-                try {
-                    // 验证单个表单
-                    // 兼容低版本浏览器
-                    evt = evt || event;
-                    var targetEl = evt.target || evt.srcElement;
-                    return that._validateField(that.fields[targetEl.name], targetEl);
-                } catch (e) {}
-            };
-        }(this);
-        // 使用表单值改变拦截
-        // 非 IE 浏览器使用标准 oninput 事件
-        if (!!window.ActiveXObject || "ActiveXObject" in window) {
-            var formEls = this.form.elements;
-            for (var i = 0, formElsLength = this.form.length; i < formElsLength; i++) {
-                this.form[i].onkeyup = validateFieldFunc;
-                formEls[i].onchange = validateFieldFunc;
-            }
-        } else {
-            this.form.oninput = validateFieldFunc;
-            this.form.onchange = validateFieldFunc;
+        this.addFields(fields);
+        // 有 form 表单的验证
+        if (options.formName && isBrowser()) {
+            // 获取表单对象
+            this.form = document.forms[options.formName];
+            // HTML5 添加 novalidate
+            this.form.setAttribute("novalidate", "novalidate");
+            // 绑定用户输入事件
+            this._bindInput();
+            // 绑定提交事件
+            this._bindSubmit();
         }
-        // 使用 submit 按钮拦截
-        var _onsubmit = this.form.onsubmit;
-        this.form.onsubmit = function(that) {
-            return function(evt) {
-                try {
-                    evt = evt || event;
-                    return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
-                } catch (e) {}
-            };
-        }(this);
+        return this;
     };
     Validator.prototype = {
         /**
@@ -244,11 +218,9 @@
             this.handles["evt"] = evt || event;
             var successed = true;
             for (var name in this.fields) {
-                if (this.fields.hasOwnProperty(name)) {
-                    // 通过 name 验证
-                    if (!this.validateByName(name)) {
-                        successed = false;
-                    }
+                // 通过 name 验证
+                if (!this.validateByName(name)) {
+                    successed = false;
                 }
             }
             // 如果有错误，停止 submit 提交，并停止执行回调函数
@@ -276,19 +248,27 @@
             if (!field) {
                 return successed;
             }
-            var el = this.form[field.name];
+            // 获取验证的 DOM 节点
+            var el;
+            if (isBrowser()) {
+                el = this.form[field.name] || getElementByName(field.name);
+            }
             // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
             if (isSameNameField(el)) {
                 // 默认通过验证，若有一个错误，则不通过
-                field._multiSuccessed = true;
+                var multiSuccessed = true;
                 for (var i = 0, elLength = el.length; i < elLength; i++) {
                     // 当前验证的 field 对象
-                    field._multiIndex = i;
-                    this._validateField(field);
+                    field.el = el[i];
+                    // 若有一个错误，则不通过
+                    if (!this._validateField(field)) {
+                        multiSuccessed = false;
+                    }
                 }
-                successed = field._multiSuccessed;
+                successed = multiSuccessed;
             } else {
                 // 正常验证
+                field.el = el;
                 successed = this._validateField(field);
             }
             return successed;
@@ -325,40 +305,10 @@
         addFields: function(fields) {
             if (typeof fields === "object") {
                 // 构建具有所有需要验证的信息域
-                this._addFields(fields);
-            }
-            return this;
-        },
-        /**
-     * 动态移除 fields 方法
-     * @param {String} fields 名称
-     */
-        removeFields: function(fieldNames) {
-            if (fieldNames instanceof Array) {
-                for (var i in fieldNames) {
-                    // 移除对象
-                    if (this.fields[fieldNames[i]]) {
-                        delete this.fields[fieldNames[i]];
-                        this.errors && delete this.errors[fieldNames[i]];
-                    }
-                }
-            } else if (fieldNames && this.fields[fieldNames]) {
-                delete this.fields[fieldNames];
-                this.errors && delete this.errors[fieldNames];
-            }
-            return this;
-        },
-        /**
-     * 构建具有所有需要验证的信息域
-     * @param {Object} 验证信息域
-     */
-        _addFields: function(fields) {
-            for (var name in fields) {
-                if (fields.hasOwnProperty(name)) {
+                for (var name in fields) {
                     var field = fields[name];
                     // 规则不正确，则跳过
                     if (!field.rules) {
-                        console.warn(field);
                         continue;
                     }
                     // 构建单个需要验证的信息域
@@ -374,37 +324,83 @@
                     };
                 }
             }
+            return this;
+        },
+        /**
+     * 动态移除 fields 方法
+     * @param {String} fields 名称
+     */
+        removeFields: function(fieldNames) {
+            if (fieldNames instanceof Array) {
+                for (var i, namesLength = fieldNames.length; i < namesLength; i++) {
+                    // 移除对象
+                    if (this.fields[fieldNames[i]]) {
+                        delete this.fields[fieldNames[i]];
+                        this.errors && delete this.errors[fieldNames[i]];
+                    }
+                }
+            } else if (fieldNames && this.fields[fieldNames]) {
+                delete this.fields[fieldNames];
+                this.errors && delete this.errors[fieldNames];
+            }
+            return this;
+        },
+        /**
+     * 绑定用户输入事件
+     */
+        _bindInput: function() {
+            var validateFieldFunc = function(that) {
+                return function(evt) {
+                    try {
+                        evt = evt || event;
+                        var el = evt.el || evt.srcElement;
+                        var field = that.fields[el.name];
+                        // 设置触发事件的表单元素
+                        field.el = el;
+                        // 验证单个表单
+                        return that._validateField(field);
+                    } catch (e) {}
+                };
+            }(this);
+            // 使用表单值改变拦截
+            var formEls = this.form.elements;
+            for (var i = 0, formElsLength = formEls.length; i < formElsLength; i++) {
+                // 针对 IE 浏览器使用 onkeyup 事件
+                if (!!window.ActiveXObject || "ActiveXObject" in window) {
+                    formEls[i].onkeyup = validateFieldFunc;
+                } else {
+                    formEls[i].oninput = validateFieldFunc;
+                }
+                formEls[i].onchange = validateFieldFunc;
+            }
+        },
+        /**
+     * 绑定 submit 按钮提交事件
+     */
+        _bindSubmit: function() {
+            var _onsubmit = this.form.onsubmit;
+            this.form.onsubmit = function(that) {
+                return function(evt) {
+                    try {
+                        evt = evt || event;
+                        return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
+                    } catch (e) {}
+                };
+            }(this);
         },
         /**
      * 验证当前节点
      * @param  {Object} 验证信息域
-     * @param {Element} 当前验证的单个表单域
      * @return {Boolean} 是否成功
      */
-        _validateField: function(field, targetEl) {
-            // 获得节点
-            var el = this.form[field.name];
+        _validateField: function(field) {
             // 成功标识
             var successed = true;
             // 错误对象
             this.errors = this.errors || {};
             var errorObj = this.errors[field.name];
-            // 验证 name 属性相同，当前验证的表单域处于表单数组的所在位置
-            var elIndex;
-            // 设置验证信息域属性
-            if (el && el !== undefined) {
-                field.id = attributeValue(el, "id");
-                field.el = el;
-                field.type = el.length > 0 ? el[0].type : el.type;
-                field.value = attributeValue(el, "value");
-                field.checked = attributeValue(el, "checked");
-            } else {
-                // 动态删除表单域之后清空对象值
-                field.el = null;
-                field.type = null;
-                field.value = null;
-                field.checked = null;
-            }
+            // 更新验证域
+            this._updateField(field);
             var isRequired = field.rules.indexOf("required") !== -1;
             var isEmpty = !field.value || field.value === "" || field.value === undefined;
             var rules = field.rules.split(/\s*\|\s*/g);
@@ -413,32 +409,18 @@
                 if (!successed) {
                     break;
                 }
+                // 转换：max_length(12) => ['max_length', 12]
                 var method = rules[i];
-                var parts = regexs.rule.exec(method);
+                var parts = /^(.+?)\((.+)\)$/.exec(method);
                 var param = "";
                 // 解析带参数的验证如 max_length(12)
                 if (parts) {
                     method = parts[1];
                     param = parts[2];
                 }
-                // 如果不是 required 这个字段，该值是空的，并且这个节点存在，则不验证，继续下一个规则。
-                if (el && !isRequired && isEmpty) {
+                // 如果不是 required 这个字段，该值是空的，则不验证，继续下一个规则。
+                if (!isRequired && isEmpty) {
                     continue;
-                }
-                // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
-                if (isSameNameField(el)) {
-                    // 获取验证的表单域处于表单数组的所在位置
-                    for (var j = 0, elLength = el.length; j < elLength; j++) {
-                        if (targetEl && targetEl === el[j]) {
-                            elIndex = j;
-                        }
-                    }
-                    // 设置当前验证的表单域
-                    if (elIndex === undefined) {
-                        elIndex = field._multiIndex;
-                    }
-                    field.el = el[elIndex];
-                    field.value = attributeValue(el[elIndex], "value");
                 }
                 // 匹配验证
                 if (typeof _testHook[method] === "function") {
@@ -446,20 +428,11 @@
                         successed = false;
                     }
                 }
-                // 错误消息类和 id
-                var errorClass;
-                var messageId;
-                if (field.el) {
-                    errorClass = isRadioOrCheckbox(el) ? "valid-label-error" : "valid-error";
-                    messageId = "valid_error_" + field.name + "_" + (elIndex !== undefined ? elIndex : "0");
-                }
                 // 错误信息域
                 this.errors[field.name] = {
                     el: field.el,
                     name: field.name,
-                    rule: method,
-                    errorClass: errorClass,
-                    messageId: messageId
+                    rule: method
                 };
                 // 解析错误信息
                 if (!successed) {
@@ -471,33 +444,56 @@
                         // 替换 {{value}} 和 {{param}} 为指定值
                         return seqText ? seqText.replace(/\{\{\s*value\s*\}\}/g, fieldValue).replace(/\{\{\s*param\s*\}\}/g, param) : seqText;
                     }();
-                    // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
-                    if (isSameNameField(el)) {
-                        field._multiSuccessed = false;
-                    }
                 }
                 errorObj = this.errors[field.name];
+            }
+            // 验证成功后，删除之前验证过的信息
+            if (successed) {
+                delete this.errors[field.name];
             }
             // 节点不存在，直接返回结果
             if (!field.el) {
                 return successed;
             }
-            // 当前条目验证结果
+            // 错误信息操作
+            if (errorObj) {
+                // 添加错误类信息
+                errorObj.errorClass = isRadioOrCheckbox(field.el) ? "valid-label-error" : "valid-error";
+                errorObj.messageId = "valid_error_" + (field.id || field.name);
+            }
+            // 当前条目验证结果展示
             if (successed) {
-                // 删除之前验证过的信息
                 this._removeErrorMessage(errorObj);
-                // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
-                if (isSameNameField(el)) {
-                    if (field._multiSuccessed) {
-                        delete this.errors[field.name];
-                    }
-                } else {
-                    delete this.errors[field.name];
-                }
             } else {
                 this._addErrorPlacement(errorObj);
             }
             return successed;
+        },
+        /**
+     * 更新单个验证域
+     * @param {Object} 验证域
+     */
+        _updateField: function(field) {
+            // 数据验证模式
+            if (this.body) {
+                field.value = this.body[field.name];
+                return;
+            }
+            // 设置验证信息域属性
+            var el = field.el;
+            if (el) {
+                field.id = el.id;
+                field.type = el.length > 0 ? el[0].type : el.type;
+                field.value = attributeValue(el, "value");
+                field.checked = attributeValue(el, "checked");
+            } else {
+                // 动态删除表单域之后清空对象值
+                field.id = null;
+                field.el = null;
+                field.type = null;
+                field.value = null;
+                field.checked = null;
+            }
         },
         /**
      * 移除当前条目错误信息
@@ -557,6 +553,37 @@
         }
     };
     /**
+ * 判断 field 是否为字符串
+ * @param {Object}
+ * @return {String} 返回值
+ */
+    function getValue(field) {
+        return typeof field === "string" ? field : field.value;
+    }
+    /**
+ * 转换为日期
+ * @param {String} 日期格式：yyyy-MM-dd
+ * @return {Date}
+ */
+    function paseToDate(paramDate) {
+        if (!_testHook.is_date(paramDate)) {
+            return false;
+        }
+        var thisDate = new Date();
+        var dateArray;
+        dateArray = paramDate.split("-");
+        thisDate.setFullYear(dateArray[0]);
+        thisDate.setMonth(dateArray[1] - 1);
+        thisDate.setDate(dateArray[2]);
+        return thisDate;
+    }
+    /**
+ * 是否为浏览器环境
+ */
+    function isBrowser() {
+        return typeof window !== "undefined";
+    }
+    /**
  * 将样式属性字符转换成驼峰。
  * @param {String} 字符串
  * @return {String}
@@ -565,6 +592,50 @@
         return caseName.replace(/\_([a-z])/g, function(all, letter) {
             return letter.toUpperCase();
         });
+    }
+    /**
+ * 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+ * @param {Object} 传入节点
+ */
+    function isSameNameField(el) {
+        return el && el.length && el[0].type !== "radio" && el[0].type !== "checkbox" && el[0].tagName !== "OPTION";
+    }
+    /**
+ * 判断表单域为 radio 或者 checkbox
+ * @param {Object} 传入节点
+ */
+    function isRadioOrCheckbox(el) {
+        return el && el.length && (el[0].type === "radio" || el[0].type === "checkbox");
+    }
+    /**
+ * 通过 name 获取 非 form 表单元素
+ * @param {Object} name 属性
+ */
+    function getElementByName(name) {
+        var el = document.getElementsByName(name);
+        if (!el) {
+            return null;
+        }
+        if (isRadioOrCheckbox(el) || isSameNameField(el)) {
+            return el;
+        } else {
+            return el[0];
+        }
+    }
+    /**
+ * 获取节点对象的属性
+ * @param {Object} 传入节点
+ * @param {String} 需要获取的属性
+ * @return {String} 属性值
+ */
+    function attributeValue(el, attributeName) {
+        var i, elLength;
+        for (i = 0, elLength = el.length; i < elLength; i++) {
+            if (el[i].checked) {
+                return el[i][attributeName];
+            }
+        }
+        return el[attributeName];
     }
     /**
  * 判断是否包含 class
@@ -594,68 +665,6 @@
             var reg = new RegExp("(\\s|^)" + cls + "(\\s|$)");
             el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, " ");
         }
-    }
-    /**
- * 表单 name 属性相同且不是 radio 或 checkbox 的表单域
- * @param {Object} 传入节点
- */
-    function isSameNameField(el) {
-        return el && el.length && el[0].type !== "radio" && el[0].type !== "checkbox" && el[0].tagName !== "OPTION";
-    }
-    /**
- * 判断表单域为 radio 或者 checkbox
- * @param {Object} 传入节点
- */
-    function isRadioOrCheckbox(el) {
-        return el && el.length && (el[0].type === "radio" || el[0].type === "checkbox");
-    }
-    /**
- * 获取节点对象的属性
- * @param {Object} 传入节点
- * @param {String} 需要获取的属性
- * @return {String} 属性值
- */
-    function attributeValue(el, attributeName) {
-        var i, elLength;
-        for (i = 0, elLength = el.length; i < elLength; i++) {
-            if (el[i].checked) {
-                return el[i][attributeName];
-            }
-        }
-        return el[attributeName];
-    }
-    /**
- * 获取 dom 节点对象
- * @param {Object} 字符串或者节点对象
- * @return {Element} 返回 DOM 节点
- */
-    function getFormEl(el) {
-        return typeof el === "object" ? el : document.forms[el];
-    }
-    /**
- * 转换为日期
- * @param {String} 日期格式：yyyy-MM-dd
- * @return {Date}
- */
-    function paseToDate(paramDate) {
-        if (!_testHook.is_date(paramDate)) {
-            return false;
-        }
-        var thisDate = new Date();
-        var dateArray;
-        dateArray = paramDate.split("-");
-        thisDate.setFullYear(dateArray[0]);
-        thisDate.setMonth(dateArray[1] - 1);
-        thisDate.setDate(dateArray[2]);
-        return thisDate;
-    }
-    /**
- * 判断 field 是否为字符串
- * @param {Object}
- * @return {String} 返回值
- */
-    function getValue(field) {
-        return typeof field === "string" ? field : field.value;
     }
     return Validator;
 });
