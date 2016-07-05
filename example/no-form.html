@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
-        <title>validator.js演示</title>
+        <title>无 form 表单验证</title>
         <link rel="stylesheet" href="bootstrap.css" />
         <script src="../dist/validator.js"></script>
         <style>
@@ -201,6 +201,9 @@
                 }
                 return checkedNum >= param;
             });
+
+            // 绑定表单改变事件
+            validator.onInputEvent('email', 'all').onInputEvent('phone', 'change');
 
             // 点击验证
             document.getElementById('submit').onclick = function() {

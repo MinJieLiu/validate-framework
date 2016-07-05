@@ -216,10 +216,10 @@ var Validator = function(options) {
         this.form.setAttribute('novalidate', 'novalidate');
 
         // 绑定用户输入事件
-        this._bindInput();
+        this.onInputEvent();
 
         // 绑定提交事件
-        this._bindSubmit();
+        this._onSubmit();
     }
 
     return this;
@@ -390,9 +390,11 @@ Validator.prototype = {
     },
 
     /**
-     * 绑定用户输入事件
+     * 绑定用户输入事件和改变事件
+     * @param {String} 表单 name 属性
+     * @param {Enumerator} 事件级别 off/change/all
      */
-    _bindInput: function() {
+    onInputEvent: function(name, level) {
 
         var validateFieldFunc = (function(that) {
             return function(evt) {
@@ -409,25 +411,45 @@ Validator.prototype = {
             };
         })(this);
 
-        // 使用表单值改变拦截
-        var formEls = this.form.elements;
+        // 绑定表单值改变拦截
+        var formEls = name ? document.getElementsByName(name) : this.form.elements;
 
         for (var i = 0, formElsLength = formEls.length; i < formElsLength; i++) {
-            // 针对 IE 浏览器使用 onkeyup 事件
-            if (!!window.ActiveXObject || 'ActiveXObject' in window) {
-                formEls[i].onkeyup = validateFieldFunc;
-            } else {
-                formEls[i].oninput = validateFieldFunc;
-            }
-            formEls[i].onchange = validateFieldFunc;
-        }
 
+            var oninput;
+            var onchange;
+            var noop = function() {};
+            level = level || 'all';
+            // 触发事件绑定
+            switch (level) {
+                case 'off':
+                    oninput = noop;
+                    break;
+                case 'change':
+                    oninput = noop;
+                    onchange = validateFieldFunc;
+                    break;
+                case 'all':
+                    oninput = validateFieldFunc;
+                    onchange = validateFieldFunc;
+                    break;
+            }
+            // 针对 IE 浏览器使用 onkeyup 事件
+            var thisEl = formEls[i];
+            if (!!window.ActiveXObject || 'ActiveXObject' in window) {
+                thisEl.onkeyup = oninput;
+            } else {
+                thisEl.oninput = oninput;
+            }
+            thisEl.onchange = onchange;
+        }
+        return this;
     },
 
     /**
      * 绑定 submit 按钮提交事件
      */
-    _bindSubmit: function() {
+    _onSubmit: function() {
         var _onsubmit = this.form.onsubmit;
         this.form.onsubmit = (function(that) {
             return function(evt) {
