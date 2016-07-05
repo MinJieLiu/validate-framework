@@ -234,7 +234,7 @@ Validator.prototype = {
      */
     validate: function(evt) {
 
-        this.handles['evt'] = evt || event;
+        this.handles['evt'] = getCurrentEvent(evt);
         var successed = true;
 
         for (var name in this.fields) {
@@ -399,11 +399,15 @@ Validator.prototype = {
         var validateFieldFunc = (function(that) {
             return function(evt) {
                 try {
-                    evt = evt || event;
-                    var el = evt.el || evt.srcElement;
+                    evt = getCurrentEvent(evt);
+                    var el = evt.target || evt.srcElement;
                     var field = that.fields[el.name];
 
                     // 设置触发事件的表单元素
+                    // radio 和 checkbox 应为 nodelist 形式
+                    if (isRadioOrCheckbox(el)) {
+                        el = getElementByName(el.name);
+                    }
                     field.el = el;
                     // 验证单个表单
                     return that._validateField(field);
@@ -454,7 +458,7 @@ Validator.prototype = {
         this.form.onsubmit = (function(that) {
             return function(evt) {
                 try {
-                    evt = evt || event;
+                    evt = getCurrentEvent(evt);
                     return that.validate(evt) && (_onsubmit === undefined || _onsubmit());
                 } catch (e) {};
             };
@@ -549,7 +553,7 @@ Validator.prototype = {
         // 错误信息操作
         if (errorObj) {
             // 添加错误类信息
-            errorObj.errorClass = isRadioOrCheckbox(field.el) ? 'valid-label-error' : 'valid-error';
+            errorObj.errorClass = isRadioOrCheckboxList(field.el) ? 'valid-label-error' : 'valid-error';
             errorObj.messageId = 'valid_error_' + (field.id || field.name);
         }
 
@@ -696,6 +700,14 @@ function isBrowser() {
 }
 
 /**
+ * 获取当前事件
+ * firfox 浏览器 为 window.event
+ */
+function getCurrentEvent(evt) {
+    return isBrowser() ? (evt || window.event) : null;
+}
+
+/**
  * 将样式属性字符转换成驼峰。
  * @param {String} 字符串
  * @return {String}
@@ -715,11 +727,19 @@ function isSameNameField(el) {
 }
 
 /**
- * 判断表单域为 radio 或者 checkbox
- * @param {Object} 传入节点
+ * 判断 nodeList 是否为 radio 或者 checkbox
+ * @param {Object} 传入节点 nodeList
+ */
+function isRadioOrCheckboxList(el) {
+    return el && el.length && isRadioOrCheckbox(el[0]);
+}
+
+/**
+ * 判断节点是否为 radio 或者 checkbox
+ * @param {Element} 传入节点
  */
 function isRadioOrCheckbox(el) {
-    return el && el.length && (el[0].type === 'radio' || el[0].type === 'checkbox');
+    return el.type === 'radio' || el.type === 'checkbox';
 }
 
 /**
@@ -731,7 +751,7 @@ function getElementByName(name) {
     if (!el) {
         return null;
     }
-    if (isRadioOrCheckbox(el) || isSameNameField(el)) {
+    if (isRadioOrCheckboxList(el) || isSameNameField(el)) {
         return el;
     } else {
         return el[0];

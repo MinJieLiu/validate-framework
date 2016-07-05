@@ -27,7 +27,7 @@
 
             <input class="btn btn-primary" id="validate_button" type="button" value="数据验证" />
             
-            <h3>验证结果</h3>
+            <h3>序列化错误类</h3>
             <pre id="validate_result"></pre>
 
             <p>数据验证：用于 node.js express 框架作为服务器接收数据验证，数据格式采用中间件 'body-parser' 的格式。</p>
@@ -83,9 +83,15 @@
                         removeClass(submitButton, 'btn-success');
                         addClass(submitButton, 'btn-danger');
                         submitButton.value = '验证失败';
-
-                        var errorsString = JSON.stringify(errors);
-                        document.getElementById('validate_result').innerHTML = errorsString;
+                        
+                        // 结果显示
+                        var result;
+                        if (!!window.ActiveXObject || 'ActiveXObject' in window) {
+                            result = 'IE 内核浏览器不演示该结果，因为 IE 对 JSON 序列化支持不够好！';
+                        } else {
+                            result = JSON.stringify(errors);
+                        }
+                        document.getElementById('validate_result').innerHTML = result;
                     }
                     
                 }

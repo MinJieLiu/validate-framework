@@ -117,7 +117,7 @@
 
             <input class="btn btn-primary" id="submit" type="button" value="提交" />
 
-            <h3>验证结果</h3>
+            <h3>序列化错误类</h3>
 
             <pre id="validate_result"></pre>
 
@@ -184,7 +184,13 @@
                         
                     }
                     // 结果显示
-                    document.getElementById('validate_result').innerHTML = JSON.stringify(errors);
+                    var result;
+                    if (!!window.ActiveXObject || 'ActiveXObject' in window) {
+                        result = 'IE 内核浏览器不演示该结果，因为 IE 对 JSON 序列化支持不够好！';
+                    } else {
+                        result = JSON.stringify(errors);
+                    }
+                    document.getElementById('validate_result').innerHTML = result;
 
                 }
             });
