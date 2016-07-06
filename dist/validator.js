@@ -176,6 +176,17 @@
         }
     };
     /**
+ * 默认参数
+ */
+    var _default = {
+        // 错误信息类名称
+        errorClass: "valid-error",
+        // 错误信息节点
+        errorEl: "em",
+        // 表单触发事件级别
+        eventLevel: "all"
+    };
+    /**
  * Validator 对象
  * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
@@ -186,19 +197,22 @@
         if (!options) {
             return this;
         }
-        this.options = options;
+        // 替换默认参数
+        var opts = extend(_default, options);
+        // init
+        this.opts = opts;
         this.form = {};
-        this.body = options.body;
+        this.bodyData = options.bodyData;
         this.errors = {};
         this.fields = {};
         this.handles = {};
-        var fields = options.fields;
+        var fields = opts.fields;
         // 构建具有所有需要验证的信息域
         this.addFields(fields);
         // 有 form 表单的验证
-        if (options.formName && isBrowser()) {
+        if (opts.formName && isBrowser()) {
             // 获取表单对象
-            this.form = document.forms[options.formName];
+            this.form = document.forms[opts.formName];
             // HTML5 添加 novalidate
             this.form.setAttribute("novalidate", "novalidate");
             // 绑定用户输入事件
@@ -231,8 +245,8 @@
                 this.errors = null;
             }
             // 执行回调函数
-            if (typeof this.options === "object" && typeof this.options.callback === "function") {
-                this.options.callback(this.handles["evt"], this.errors);
+            if (typeof this.opts.callback === "function") {
+                this.opts.callback(this.handles["evt"], this.errors);
             }
             return successed;
         },
@@ -251,7 +265,7 @@
             // 获取验证的 DOM 节点
             var el;
             if (isBrowser()) {
-                el = this.form[field.name] || getElementByName(field.name);
+                el = this.form[field.name] || getFieldElByName(field.name);
             }
             // 表单 name 属性相同且不是 radio 或 checkbox 的表单域
             if (isSameNameField(el)) {
@@ -360,7 +374,7 @@
                         // 设置触发事件的表单元素
                         // radio 和 checkbox 应为 nodelist 形式
                         if (isRadioOrCheckbox(el)) {
-                            el = getElementByName(el.name);
+                            el = getFieldElByName(el.name);
                         }
                         field.el = el;
                         // 验证单个表单
@@ -369,12 +383,12 @@
                 };
             }(this);
             // 绑定表单值改变拦截
-            var formEls = name ? document.getElementsByName(name) : this.form.elements;
+            var formEls = name ? getElementsByName(name) : this.form.elements;
             for (var i = 0, formElsLength = formEls.length; i < formElsLength; i++) {
                 var oninput;
                 var onchange;
                 var noop = function() {};
-                level = level || "all";
+                level = level || this.opts.eventLevel;
                 // 触发事件绑定
                 switch (level) {
                   case "off":
@@ -486,14 +500,16 @@
             // 错误信息操作
             if (errorObj) {
                 // 添加错误类信息
-                errorObj.errorClass = isRadioOrCheckboxList(field.el) ? "valid-label-error" : "valid-error";
-                errorObj.messageId = "valid_error_" + (field.id || field.name);
+                var clazz = this.opts.errorClass;
+                errorObj.clazz = clazz;
+                // 设置 id 下划线规范
+                errorObj.placeId = (clazz + "_" + (field.id || field.name)).replace("-", "_");
             }
             // 当前条目验证结果展示
             if (successed) {
-                this._removeErrorMessage(errorObj);
+                this._removeErrorPlace(errorObj);
             } else {
-                this._addErrorPlacement(errorObj);
+                this._addErrorPlace(errorObj);
             }
             return successed;
         },
@@ -503,8 +519,8 @@
      */
         _updateField: function(field) {
             // 数据验证模式
-            if (this.body) {
-                field.value = this.body[field.name];
+            if (this.bodyData) {
+                field.value = this.bodyData[field.name];
                 return;
             }
             // 设置验证信息域属性
@@ -527,50 +543,50 @@
      * 移除当前条目错误信息
      * @param {Object} 验证信息域
      */
-        _removeErrorMessage: function(errorObj) {
+        _removeErrorPlace: function(errorObj) {
             if (!errorObj || !errorObj.el) {
                 return;
             }
             // 移除表单域错误类
             if (!errorObj.el.length) {
-                removeClass(errorObj.el, errorObj.errorClass);
+                removeClass(errorObj.el, errorObj.clazz);
             } else {
                 for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
-                    removeClass(errorObj.el[i], errorObj.errorClass);
+                    removeClass(errorObj.el[i], errorObj.clazz);
                 }
             }
             // 移除错误信息节点
-            var errorEl = document.getElementById(errorObj.messageId);
+            var errorEl = document.getElementById(errorObj.placeId);
             errorEl && errorEl.parentNode.removeChild(errorEl);
         },
         /**
      * 添加当前条目错误信息
      * @param {Object} 验证信息域
      */
-        _addErrorPlacement: function(errorObj) {
+        _addErrorPlace: function(errorObj) {
             // 无错误信息
             if (!errorObj || !errorObj.el) {
                 return;
             }
             // 清除之前保留的错误信息
-            this._removeErrorMessage(errorObj);
+            this._removeErrorPlace(errorObj);
             // 当前表单域添加错误类
             if (!errorObj.el.length) {
-                addClass(errorObj.el, errorObj.errorClass);
+                addClass(errorObj.el, errorObj.clazz);
             } else {
                 for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
-                    addClass(errorObj.el[i], errorObj.errorClass);
+                    addClass(errorObj.el[i], errorObj.clazz);
                 }
             }
             // 创建元素
-            var errorEl = document.createElement("em");
-            addClass(errorEl, errorObj.errorClass + "-message");
-            errorEl.setAttribute("id", errorObj.messageId);
+            var errorEl = document.createElement(this.opts.errorEl);
+            addClass(errorEl, errorObj.clazz + "-message");
+            errorEl.setAttribute("id", errorObj.placeId);
             errorEl.innerHTML = errorObj.message;
             // 错误信息位置
-            if (typeof this.options === "object" && typeof this.options.errorPlacement === "function") {
+            if (typeof this.opts.errorPlacement === "function") {
                 // 参数：错误信息节点，当前表单 DOM
-                this.options.errorPlacement(errorEl, errorObj.el);
+                this.opts.errorPlacement(errorEl, errorObj.el);
             } else {
                 // 默认错误信息位置
                 // label 、 radio 元素错误位置不固定，默认暂不设置
@@ -582,7 +598,7 @@
     };
     /**
  * 判断 field 是否为字符串
- * @param {Object}
+ * @param {Object} 验证域
  * @return {String} 返回值
  */
     function getValue(field) {
@@ -607,13 +623,15 @@
     }
     /**
  * 是否为浏览器环境
+ * @return {Boolean}
  */
     function isBrowser() {
         return typeof window !== "undefined";
     }
     /**
- * 获取当前事件
- * firfox 浏览器 为 window.event
+ * 获取当前事件，兼容 firfox 浏览器
+ * @param {Event}
+ * @return {Event}
  */
     function getCurrentEvent(evt) {
         return isBrowser() ? evt || window.event : null;
@@ -629,36 +647,51 @@
         });
     }
     /**
- * 表单 name 属性相同且不是 radio 或 checkbox 的表单域
- * @param {Object} 传入节点
+ * 对象继承
+ * @param {Object} target
+ * @param {Object} source
+ * @return {Object} target
  */
-    function isSameNameField(el) {
-        return el && el.length && el[0].type !== "radio" && el[0].type !== "checkbox" && el[0].tagName !== "OPTION";
-    }
-    /**
- * 判断 nodeList 是否为 radio 或者 checkbox
- * @param {Object} 传入节点 nodeList
- */
-    function isRadioOrCheckboxList(el) {
-        return el && el.length && isRadioOrCheckbox(el[0]);
+    function extend(target, source) {
+        for (var key in source) {
+            target[key] = source[key];
+        }
+        return target;
     }
     /**
  * 判断节点是否为 radio 或者 checkbox
  * @param {Element} 传入节点
+ * @return {Boolean}
  */
     function isRadioOrCheckbox(el) {
         return el.type === "radio" || el.type === "checkbox";
     }
     /**
- * 通过 name 获取 非 form 表单元素
+ * 表单 name 属性相同且不是 radio 或 checkbox 的表单域
+ * @param {NodeList} 传入节点
+ * @return {Boolean}
+ */
+    function isSameNameField(el) {
+        return el && el.length && !isRadioOrCheckbox(el[0]) && el[0].tagName !== "OPTION";
+    }
+    /**
+ * 通过 name 获取节点集合
  * @param {Object} name 属性
  */
-    function getElementByName(name) {
-        var el = document.getElementsByName(name);
+    function getElementsByName(name) {
+        return document.getElementsByName(name);
+    }
+    /**
+ * 通过 name 获取 非 form 表单元素
+ * @param {String} name 属性
+ * @return {Object} DOM 节点对象
+ */
+    function getFieldElByName(name) {
+        var el = getElementsByName(name);
         if (!el) {
             return null;
         }
-        if (isRadioOrCheckboxList(el) || isSameNameField(el)) {
+        if (isRadioOrCheckbox(el[0]) || isSameNameField(el)) {
             return el;
         } else {
             return el[0];
