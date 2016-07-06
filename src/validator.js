@@ -448,6 +448,7 @@ Validator.prototype = {
             switch (level) {
                 case 'off':
                     oninput = noop;
+                    onchange = noop;
                     break;
                 case 'change':
                     oninput = noop;
