@@ -688,7 +688,7 @@
  */
     function getFieldElByName(name) {
         var el = getElementsByName(name);
-        if (!el) {
+        if (!el.length) {
             return null;
         }
         if (isRadioOrCheckbox(el[0]) || isSameNameField(el)) {

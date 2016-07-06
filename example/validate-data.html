@@ -36,7 +36,7 @@
 
         <script>
 
-            var body = {
+            var bodyData = {
                 email: "example#example.com",
                 phone: "13600000000",
                 birthday: "2012-12-12",
@@ -45,7 +45,7 @@
             };
 
             var validator = new Validator({
-                body: body,
+                bodyData: bodyData,
                 fields: {
                     email: {
                         rules: 'required | is_email | max_length(32)',
