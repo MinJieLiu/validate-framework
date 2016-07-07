@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * 正则表达式
  */
@@ -372,17 +373,12 @@ Validator.prototype = {
                     continue;
                 }
 
+                // 初始化 其他属性
+                field.name = name;
+                this._initField(field);
+
                 // 构建单个需要验证的信息域
-                this.fields[name] = {
-                    name: name,
-                    messages: field.messages,
-                    rules: field.rules,
-                    id: null,
-                    el: null,
-                    type: null,
-                    value: null,
-                    checked: null
-                };
+                this.fields[name] = field;
             }
         }
         return this;
@@ -503,7 +499,7 @@ Validator.prototype = {
         this._updateField(field);
 
         var isRequired = field.rules.indexOf('required') !== -1;
-        var isEmpty = (!field.value || field.value === '' || field.value === undefined);
+        var isEmpty = field.value === '' || field.value === undefined;
 
         var rules = field.rules.split(/\s*\|\s*/g);
 
@@ -610,12 +606,20 @@ Validator.prototype = {
             field.checked = attributeValue(el, 'checked');
         } else {
             // 动态删除表单域之后清空对象值
-            field.id = null;
-            field.el = null;
-            field.type = null;
-            field.value = null;
-            field.checked = null;
+            this._initField(field);
         }
+    },
+
+    /**
+     * 设置除主属性的验证域为默认值
+     * @param {Object} 验证域
+     */
+    _initField: function(field) {
+        field.id = null;
+        field.el = null;
+        field.type = null;
+        field.value = null;
+        field.checked = null;
     },
 
     /**

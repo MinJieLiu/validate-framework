@@ -1,5 +1,5 @@
 /*!
- * validate-framework v1.4.2
+ * validate-framework v2.0.0
  * 轻量级JavaScript表单验证，字符串验证。
  * 
  * Copyright (c) 2016 LMY
@@ -325,17 +325,11 @@
                     if (!field.rules) {
                         continue;
                     }
+                    // 初始化 其他属性
+                    field.name = name;
+                    this._initField(field);
                     // 构建单个需要验证的信息域
-                    this.fields[name] = {
-                        name: name,
-                        messages: field.messages,
-                        rules: field.rules,
-                        id: null,
-                        el: null,
-                        type: null,
-                        value: null,
-                        checked: null
-                    };
+                    this.fields[name] = field;
                 }
             }
             return this;
@@ -393,6 +387,7 @@
                 switch (level) {
                   case "off":
                     oninput = noop;
+                    onchange = noop;
                     break;
 
                   case "change":
@@ -444,7 +439,7 @@
             // 更新验证域
             this._updateField(field);
             var isRequired = field.rules.indexOf("required") !== -1;
-            var isEmpty = !field.value || field.value === "" || field.value === undefined;
+            var isEmpty = field.value === "" || field.value === undefined;
             var rules = field.rules.split(/\s*\|\s*/g);
             for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
                 // 逐条验证，如果已经验证失败，则暂时不需要进入当前条目再次验证
@@ -532,12 +527,19 @@
                 field.checked = attributeValue(el, "checked");
             } else {
                 // 动态删除表单域之后清空对象值
-                field.id = null;
-                field.el = null;
-                field.type = null;
-                field.value = null;
-                field.checked = null;
+                this._initField(field);
             }
+        },
+        /**
+     * 设置除主属性的验证域为默认值
+     * @param {Object} 验证域
+     */
+        _initField: function(field) {
+            field.id = null;
+            field.el = null;
+            field.type = null;
+            field.value = null;
+            field.checked = null;
         },
         /**
      * 移除当前条目错误信息
