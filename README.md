@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/MinJieLiu/validator.js.svg?branch=master)](https://travis-ci.org/MinJieLiu/validator.js)
 [![npm version](https://badge.fury.io/js/validate-framework.svg)](https://badge.fury.io/js/validate-framework)
 
-轻量、强大、无依赖的 JavaScript 验证组件
+一款轻量、强大、无依赖、前后端通用的 JavaScript 验证组件
 
 Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.github.io/validator.js/example)
 
