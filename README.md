@@ -3,17 +3,17 @@
 [![Build Status](https://travis-ci.org/MinJieLiu/validator.js.svg?branch=master)](https://travis-ci.org/MinJieLiu/validator.js)
 [![npm version](https://badge.fury.io/js/validate-framework.svg)](https://badge.fury.io/js/validate-framework)
 
-一个轻量、强大、无依赖的 JavaScript 验证组件
+轻量、强大、无依赖的 JavaScript 验证组件
 
 Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.github.io/validator.js/example)
 
 ## 特性
 
  1. 轻量、无依赖
- 2. 不依赖 `<form>` 验证
+ 2. 可脱离 `<form>` 验证
  3. 前后端通用 （支持 express）
  4. 字符串验证
- 5. 易于扩展验证
+ 5. 易于扩展
  6. 相同 name 的表单验证
  7. 动态验证
  8. 兼容 chrome 、firfox 、IE6 +
@@ -62,7 +62,7 @@ var validator = new Validator({
     callback: function(event, errors) {
         // 阻止表单提交
         validator.preventSubmit();
-        // 回调函数
+        // do something...
     }
 });
 ```
@@ -144,7 +144,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 
   * `formName` （可选） 是 `<form>` 中的 `name` 或者 `id` 的值
   * `bodyData` （可选） 此参数用作 express 服务端的数据接收入口。使用此参数后，`formName` 、`errorPlacement` 等参数将失效
-  * `fields` （可选） 表单验证域 `rules` 和 `messages` 集合，后续可通过 `.addMethod(name, method)` 和 `.removeFields(fieldNames)` 进行添加和移除
+  * `fields` （可选） 表单验证域 `rules` 和 `messages` 集合，后续可通过 `.addMethod(name, method)` 和 `.removeFields(fieldNames)` 进行变更
   * `errorPlacement` （可选） 错误信息位置，默认位置为表单元素的后一个元素
   * `callback` （可选） 表单提交 或 `.validate()` 调用后触发
   * `errorClass` （可选） 验证错误 css 类，默认 `valid-error`
@@ -167,6 +167,8 @@ fields: {
     }
 }
 ```
+
+**`bodyData`** ： 遵循为 express 的 body-parser 表单数据格式：`{email: "example#example.com", birthday: "2012-12-12"}`
 
 注： `email` 、`phone` 为表单 `name` 属性<br />
 `rules` ：（必选） 一个或多个规则（中间用 ` | ` 分隔）<br />
@@ -192,7 +194,7 @@ errorPlacement: function(errorEl, fieldEl) {
 callback: function(event, errors) {
     // 自定义逻辑
     if (errors) {
-        // 验证失败逻辑
+        // do something...
     }
 }
 ```
@@ -203,25 +205,25 @@ callback: function(event, errors) {
 
 ### 方法
 
- * 支持链式调用
-
-例如：
-```js
-if (validator.validate()) {
-    // TODO
-};
-```
+ * 方法都支持链式调用
 
 **`.validate()` 手动验证**
 
 注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证所有定义过的元素，返回值为 `Boolean`
+
+如：
+```js
+if (validator.validate()) {
+    // do something...
+};
+```
 
 **`.validateByName(name)` 手动验证单个表单域**
 
 注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域<br />
 `name` 参数为 表单域的 `name` 属性，返回值为 `Boolean`
 
-**`.preventSubmit()` 阻止表单提交** 无 `<form>` 的表单验证，则参数无效
+**`.preventSubmit()` 阻止表单提交**  无 `<form>` 的表单验证，则参数无效
 
 **`.addMethod(name, method)` 自定义验证方法**
 
@@ -315,10 +317,12 @@ validator.js 采用 `eslint` 来保持代码的正确性和可读性，详情见
 
 ## 更新日志
 
-### v1.4.2
+### v2.0.0
 
-1.  [修正] `.validate()` 、`.validateByName(name)` 返回值为布尔类型，其他则为链式
-2.  微调内部函数
+1.  [新增] 服务端验证
+2.  [新增] 无 <form> 验证
+3.  [修改] `formName` 为非必选项
+4.  [修改] 多处重构
 
 ### v1.4.1
 
