@@ -74,7 +74,7 @@
                         messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
                     }
                 },
-                callback: function(event, errors) {
+                callback: function(errors, event) {
 
                     var submitButton = document.getElementById('submit');
                     removeClass(submitButton, 'btn-primary');

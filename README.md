@@ -59,7 +59,7 @@ var validator = new Validator({
             messages: "手机号： {{value}} 不合法"
         }
     },
-    callback: function(event, errors) {
+    callback: function(errors, event) {
         // 阻止表单提交
         validator.preventSubmit();
         // do something...
@@ -84,7 +84,7 @@ var validator = new Validator({
             messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
         }
     },
-    callback: function(event, errors) {
+    callback: function(errors, event) {
         // do something...
     }
 });
@@ -111,7 +111,7 @@ var validator = new Validator({
             messages: "不能为空 | 请输入合法日期"
         }
     },
-    callback: function(event, errors) {
+    callback: function(errors, event) {
         // do something...
     }
 });
@@ -191,7 +191,7 @@ errorPlacement: function(errorEl, fieldEl) {
 **`callback`** ：
 
 ```js
-callback: function(event, errors) {
+callback: function(errors, event) {
     // 自定义逻辑
     if (errors) {
         // do something...
@@ -247,6 +247,11 @@ validator.addMethod('select_limit', function(field, param) {
 });
 ```
 
+**`.onInputEvent(name, level)` 绑定用户输入事件和改变事件** 
+
+注：`name` name 属性， `level` 事件级别：有三种参数可选： `off` 不监听，`change` 监听改变事件， `all` 监听输入事件和改变事件，默认 `all`<br />
+如：ajax 验证不需要很高的触发频率，可设置为 `change` 或 `off` 进行手动验证
+
 **`.addFields(fields)` 动态添加 fields 方法**
 
 注： 满足更多动态验证表单的需求。可通过 `.addFields(fields)` 来动态新增一个或多个表单验证域，参数和上述 `fields` 用法一样
@@ -263,15 +268,20 @@ validator.addFields({
 **`.removeFields(fieldNames)` 动态移除 fields 方法**
 
 注： 满足更多动态验证表单的需求。可通过 `.removeFields(fieldNames)` 来动态移除一个表单验证域，移除之后，验证器不验证该元素<br />
-`fieldNames` 类型为 {String} 或 {Array}
+`fieldNames` 类型为 Array
 
 ```js
 // 移除单个
-validator.removeFields('userName');
+validator.removeFields(['userName']);
 // 移除多个
 validator.removeFields(['userName', 'email']);
 ```
 
+**其他**
+
+ 1. [动态验证] 当 `field` 验证条件存在，DOM节点不存在时，如果 `field` 包含 `required` 条件，则最终验证不通过，否则通过验证。
+ 2. [事件监听] 如果动态验证中，新增节点，默认不会有表单监听，这时需 手动调用 `.onInputEvent(name, level)` 添加监听，无 `<form>` 表单默认无监听
+ 3. [错误信息] 错误位置提示信息，`checkbox`、`radio` 元素对于 `label` 元素的位置不固定，各个 UI 组件不统一，默认不设置
 
 ## 字符串验证说明文档
 
@@ -323,6 +333,7 @@ validator.js 采用 `eslint` 来保持代码的正确性和可读性，详情见
 2.  [新增] 无 <form> 验证
 3.  [修改] `formName` 为非必选项
 4.  [修改] 多处重构
+5.  [修改] 调整 API
 
 ### v1.4.1
 

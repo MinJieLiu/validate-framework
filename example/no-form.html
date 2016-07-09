@@ -158,13 +158,13 @@
                 // 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点
                 errorPlacement: function(errorEl, fieldEl) {
                     // 非 label 、radio 元素
-                    if (fieldEl.parentNode !== undefined) {
+                    if (!isRadioOrCheckbox(fieldEl)) {
                         fieldEl.parentNode.appendChild(errorEl);
                     } else {
-                        fieldEl[0].parentNode.parentNode.parentNode.appendChild(errorEl);
+                        fieldEl.parentNode.parentNode.parentNode.appendChild(errorEl);
                     }
                 },
-                callback: function(event, errors) {
+                callback: function(errors, event) {
 
                     var submitButton = document.getElementById('submit');
                     removeClass(submitButton, 'btn-primary');
@@ -184,13 +184,7 @@
                         
                     }
                     // 结果显示
-                    var result;
-                    if (!!window.ActiveXObject || 'ActiveXObject' in window) {
-                        result = 'IE 内核浏览器不演示该结果，因为 IE 对 JSON 序列化支持不够好！';
-                    } else {
-                        result = JSON.stringify(errors);
-                    }
-                    document.getElementById('validate_result').innerHTML = result;
+                    document.getElementById('validate_result').innerHTML = JSON.stringify(errors);
 
                 }
             });
@@ -237,6 +231,16 @@
             });
 
             // Demo 中未使用 jQuery 类库，作为演示添加方法
+
+            /**
+             * 判断节点是否为 radio 或者 checkbox
+             * @param {Element} 传入节点
+             * @return {Boolean}
+             */
+            function isRadioOrCheckbox(el) {
+                return el.type === 'radio' || el.type === 'checkbox';
+            }
+
             /**
              * 判断是否包含 class
              */

@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
-        <title>validator.js 相同 name 验证</title>
+        <title>validator.js 数据验证</title>
         <link rel="stylesheet" href="bootstrap.css" />
         <script src="../dist/validator.js"></script>
     </head>
@@ -38,7 +38,7 @@
 
             var bodyData = {
                 email: "example#example.com",
-                phone: "13600000000",
+                phone: '17092366559',
                 birthday: "2012-12-12",
                 sex: "",
                 remarks: "123456"
@@ -68,7 +68,7 @@
                         messages: "不能少于 {{param}} 个字符 | 不能超过 {{param}} 个字符"
                     }
                 },
-                callback: function(event, errors) {
+                callback: function(errors, event) {
 
                     var submitButton = document.getElementById('validate_button');
                     removeClass(submitButton, 'btn-primary');
@@ -85,13 +85,7 @@
                         submitButton.value = '验证失败';
                         
                         // 结果显示
-                        var result;
-                        if (!!window.ActiveXObject || 'ActiveXObject' in window) {
-                            result = 'IE 内核浏览器不演示该结果，因为 IE 对 JSON 序列化支持不够好！';
-                        } else {
-                            result = JSON.stringify(errors);
-                        }
-                        document.getElementById('validate_result').innerHTML = result;
+                        document.getElementById('validate_result').innerHTML = JSON.stringify(errors);
                     }
                     
                 }

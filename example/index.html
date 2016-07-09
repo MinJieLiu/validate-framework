@@ -112,13 +112,13 @@
                     <label>爱好：</label>
                     <div class="checkbox">
                         <label>
-                            <input id="badminton" name="hobby" type="checkbox" value="1" /> 羽毛球
+                            <input name="hobby" type="checkbox" value="1" /> 羽毛球
                         </label>
                         <label>
-                            <input id="swim" name="hobby" type="checkbox" value="2" /> 游泳
+                            <input name="hobby" type="checkbox" value="2" /> 游泳
                         </label>
                         <label>
-                            <input id="run" name="hobby" type="checkbox" value="3" /> 跑步
+                            <input name="hobby" type="checkbox" value="3" /> 跑步
                         </label>
                     </div>
                 </div>
@@ -183,13 +183,13 @@
                 // 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点
                 errorPlacement: function(errorEl, fieldEl) {
                     // 非 label 、radio 元素
-                    if (fieldEl.parentNode !== undefined) {
+                    if (!isRadioOrCheckbox(fieldEl)) {
                         fieldEl.parentNode.appendChild(errorEl);
                     } else {
-                        fieldEl[0].parentNode.parentNode.parentNode.appendChild(errorEl);
+                        fieldEl.parentNode.parentNode.parentNode.appendChild(errorEl);
                     }
                 },
-                callback: function(event, errors) {
+                callback: function(errors, event) {
 
                     var submitButton = document.getElementById('submit');
                     removeClass(submitButton, 'btn-primary');
@@ -207,7 +207,7 @@
                         addClass(submitButton, 'btn-danger');
                         submitButton.value = '验证失败';
                     }
-                    
+
                 }
             });
 
@@ -280,6 +280,15 @@
                     var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
                     el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, ' ');
                 }
+            }
+
+            /**
+             * 判断节点是否为 radio 或者 checkbox
+             * @param {Element} 传入节点
+             * @return {Boolean}
+             */
+            function isRadioOrCheckbox(el) {
+                return el.type === 'radio' || el.type === 'checkbox';
             }
 
             /**
