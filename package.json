@@ -1,7 +1,7 @@
 {
   "name": "validate-framework",
   "version": "2.0.0",
-  "description": "轻量级JavaScript表单验证，字符串验证。",
+  "description": "轻量、强大、无依赖、前后端通用的 JavaScript 验证组件",
   "homepage": "https://github.com/MinJieLiu/validator.js",
   "main": "dist/validator.js",
   "scripts": {
