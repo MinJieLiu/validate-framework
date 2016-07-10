@@ -637,6 +637,7 @@ Validator.prototype = {
             var arr = [];
             var elLength = elObj.length;
 
+            // 排除 select， select 为数组形式
             if (elLength && !isSelect(elObj)) {
                 for (var i = 0; i < elLength; i++) {
                     arr.push(elObj[i]);
