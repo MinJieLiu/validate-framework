@@ -209,7 +209,7 @@ callback: function(errors, event) {
 
 **`.validate()` 手动验证**
 
-注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证所有定义过的元素，返回值为 `Boolean`
+注： 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证所有定义过的元素，返回值为 `Boolean`
 
 如：
 ```js
@@ -220,14 +220,14 @@ if (validator.validate()) {
 
 **`.validateByName(name)` 手动验证单个表单域**
 
-注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域<br />
+注： 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域<br />
 `name` 参数为 表单域的 `name` 属性，返回值为 `Boolean`
 
 **`.preventSubmit()` 阻止表单提交**  无 `<form>` 的表单验证，则参数无效
 
 **`.addMethod(name, method)` 自定义验证方法**
 
-注： 当遇到 validator.js 提供的默认方法无法实现验证的时候（大多数情况），添加`.addMethod(name, method)`方法进行扩展<br />
+注： 当遇到默认方法无法实现验证的时候（大多数情况），添加`.addMethod(name, method)`方法进行扩展<br />
 `name` 为校验名称，格式： is_date<br />
 `method` 为自定义方法
 
@@ -315,13 +315,13 @@ v.isPhone('170111222231');
 
 ## 备注
 
-validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
-validator.js 不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
+`validate-framework`组件只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
+`validate-framework`不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
 
 
 ## 规范
 
-validator.js 采用 `eslint` 来保持代码的正确性和可读性，详情见 `.eslintrc` 文件
+`validate-framework`采用 `eslint` 来保持代码的正确性和可读性，详情见 `.eslintrc` 文件
 
 
 ## 更新日志
