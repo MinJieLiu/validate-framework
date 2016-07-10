@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>数据验证</title>
+        <link rel="stylesheet" href="bootstrap.css" />
+        <script src="../dist/validator.js"></script>
+    </head>
+
+    <body>
+
+
+        <div class="container">
+
+            <h3>数据格式</h3>
+<pre>
+{
+    email: "example#example.com",
+    phone: "13600000000",
+    birthday: "2012-12-12",
+    sex: "",
+    remarks: "123456"
+}
+</pre>
+
+            <input class="btn btn-primary" id="validate_button" type="button" value="数据验证" />
+            
+            <h3>序列化错误类</h3>
+            <pre id="validate_result"></pre>
+
+            <p>数据验证：用于 node.js express 框架作为服务器接收数据验证，数据格式采用中间件 'body-parser' 的格式。</p>
+
+        </div>
+
+        <script>
+
+            var bodyData = {
+                email: "example#example.com",
+                phone: '17092366559',
+                birthday: "2012-12-12",
+                sex: "",
+                remarks: "123456"
+            };
+
+            var validator = new Validator({
+                bodyData: bodyData,
+                fields: {
+                    email: {
+                        rules: 'required | is_email | max_length(32)',
+                        messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
+                    },
+                    phone: {
+                        rules: 'is_phone',
+                        messages: "手机号： {{value}} 不合法"
+                    },
+                    birthday: {
+                        rules: 'required | is_date',
+                        messages: "不能为空 | 请输入合法日期"
+                    },
+                    sex: {
+                        rules: 'required',
+                        messages: "不能为空"
+                    },
+                    remarks: {
+                        rules: 'min_length(10) | max_length(60)',
+                        messages: "不能少于 {{param}} 个字符 | 不能超过 {{param}} 个字符"
+                    }
+                },
+                callback: function(errors, event) {
+
+                    var submitButton = document.getElementById('validate_button');
+                    removeClass(submitButton, 'btn-primary');
+                    // 如果错误为空
+                    if (!errors) {
+                        // 设置成功按钮样式
+                        removeClass(submitButton, 'btn-danger');
+                        addClass(submitButton, 'btn-success');
+                        submitButton.value = '验证成功';
+                    } else {
+                        // 设置错误按钮样式
+                        removeClass(submitButton, 'btn-success');
+                        addClass(submitButton, 'btn-danger');
+                        submitButton.value = '验证失败';
+                        
+                        // 结果显示
+                        document.getElementById('validate_result').innerHTML = JSON.stringify(errors);
+                    }
+                    
+                }
+            });
+            
+            document.getElementById('validate_button').onclick = function() {
+                validator.validate();
+            };
+
+            // Demo 中未使用 jQuery 类库，作为演示添加方法
+            /**
+             * 判断是否包含 class
+             */
+            function hasClass(el, cls) {
+                return el.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+            }
+
+            /**
+             * 添加 class
+             */
+            function addClass(el, cls) {
+                if (!hasClass(el, cls)) {
+                    el.classList ? el.classList.add(cls) : el.className += ' ' + cls;
+                }
+            }
+
+            /**
+             * 移除 class
+             */
+            function removeClass(el, cls) {
+                if (hasClass(el, cls)) {
+                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+                    el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, ' ');
+                }
+            }
+
+        </script>
+    </body>
+
+</html>

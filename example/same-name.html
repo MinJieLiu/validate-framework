@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
-        <title>validator.js 相同 name 验证</title>
+        <title>相同 name 验证</title>
         <link rel="stylesheet" href="bootstrap.css" />
         <script src="../dist/validator.js"></script>
         <style>
@@ -35,7 +35,6 @@
 
     <body>
 
-
         <div class="container">
 
             <h3>相同 name 表单验证</h3>
@@ -47,7 +46,7 @@
 
                 <div class="form-group">
                     <label>邮箱：</label>
-                    <input class="form-control" name="email" type="email" placeholder="请输入邮箱" />
+                    <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
                 </div>
 
                 <div id="form_group_area"></div>
@@ -66,14 +65,15 @@
         </script>
 
         <script>
-            var validator = new Validator('validate_form', {
+            var validator = new Validator({
+                formName: 'validate_form',
                 fields: {
                     email: {
                         rules: 'required | is_email | max_length(32)',
                         messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
                     }
                 },
-                callback: function(event, errors) {
+                callback: function(errors, event) {
 
                     var submitButton = document.getElementById('submit');
                     removeClass(submitButton, 'btn-primary');
@@ -97,9 +97,11 @@
 
             // 添加一行
             var addFieldEl = document.getElementById('addField');
+            var idIndex = 1;
             addEvent(addFieldEl, 'click', function() {
                 var emailHtml = document.getElementById('add_field_tmpl');
                 var emailEL = parseToDom(emailHtml.innerHTML);
+                emailEL.getElementsByClassName('form-control')[0].id = 'email_' + ++idIndex;
                 document.getElementById('form_group_area').appendChild(emailEL);
             });
 
@@ -149,9 +151,9 @@
              * @param {Object}
              */
             function parseToDom(arg) {
-            　　 var objEl = document.createElement("div");
-            　　 objEl.innerHTML = arg;
-            　　 return objEl.children[0];
+                var objEl = document.createElement("div");
+                objEl.innerHTML = arg;
+                return objEl.children[0];
             }
 
         </script>
