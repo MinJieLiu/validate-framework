@@ -25,7 +25,7 @@
 <p><a href="https://travis-ci.org/MinJieLiu/validator.js"><img src="https://travis-ci.org/MinJieLiu/validator.js.svg?branch=master" alt="Build Status"></a>
 <a href="https://badge.fury.io/js/validate-framework"><img src="https://badge.fury.io/js/validate-framework.svg" alt="npm version"></a></p>
 
-<p>validator.js 是一个轻量级 JavaScript 表单、字符串验证库</p>
+<p>一款轻量、强大、无依赖、前后端通用的 JavaScript 验证组件</p>
 
 <p>Demo： <a href="http://minjieliu.github.io/validator.js/example">http://minjieliu.github.io/validator.js/example</a></p>
 
@@ -33,13 +33,14 @@
 <a id="特性" class="anchor" href="#%E7%89%B9%E6%80%A7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>特性</h2>
 
 <ol>
-<li>轻量级</li>
-<li>无依赖</li>
-<li>表单验证</li>
+<li>轻量、无依赖</li>
+<li>自由，可脱离 <code>&lt;form&gt;</code> 验证</li>
+<li>前后端通用 （支持 express）</li>
 <li>字符串验证</li>
-<li>易扩展</li>
-<li>支持 chrome 、firfox 、IE6 +</li>
-<li>支持相同 name 的表单验证</li>
+<li>易于扩展</li>
+<li>相同 name 的表单验证</li>
+<li>动态验证</li>
+<li>兼容 chrome 、firfox 、IE6 +</li>
 </ol>
 
 <h2>
@@ -55,7 +56,7 @@
 <pre><code>npm install validate-framework
 </code></pre>
 
-<p>表单验证：</p>
+<p>基本用法：</p>
 
 <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>validate_form<span class="pl-pds">"</span></span>&gt;
     &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
@@ -69,7 +70,8 @@
     &lt;<span class="pl-ent">input</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>btn btn-primary<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>submit<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>submit<span class="pl-pds">"</span></span> <span class="pl-e">value</span>=<span class="pl-s"><span class="pl-pds">"</span>提交<span class="pl-pds">"</span></span> /&gt;
 &lt;/<span class="pl-ent">form</span>&gt;</pre></div>
 
-<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> validator <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>(<span class="pl-s"><span class="pl-pds">'</span>validate_form<span class="pl-pds">'</span></span>, {
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> validator <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>({
+    formName<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>validate_form<span class="pl-pds">'</span></span>,
     fields<span class="pl-k">:</span> {
         email<span class="pl-k">:</span> {
             rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_email | max_length(32)<span class="pl-pds">'</span></span>,
@@ -80,16 +82,58 @@
             messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>手机号： {{value}} 不合法<span class="pl-pds">"</span></span>
         }
     },
-    <span class="pl-c">// 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点</span>
-    <span class="pl-en">errorPlacement</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errorEl</span>, <span class="pl-smi">fieldEl</span>) {
-        <span class="pl-c">// 错误位置</span>
-    },
-    <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>, <span class="pl-smi">errors</span>) {
+    <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errors</span>, <span class="pl-c1">event</span>) {
         <span class="pl-c">// 阻止表单提交</span>
         <span class="pl-smi">validator</span>.<span class="pl-en">preventSubmit</span>();
-        <span class="pl-c">// 回调函数</span>
+        <span class="pl-c">// do something...</span>
     }
 });</pre></div>
+
+<p>无 <code>&lt;form&gt;</code> 用法：</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">label</span> <span class="pl-e">for</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>&gt;邮箱：&lt;/<span class="pl-ent">label</span>&gt;
+    &lt;<span class="pl-ent">input</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>form-control<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span> <span class="pl-e">placeholder</span>=<span class="pl-s"><span class="pl-pds">"</span>请输入邮箱<span class="pl-pds">"</span></span> /&gt;
+&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> validator <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>({
+    fields<span class="pl-k">:</span> {
+        email<span class="pl-k">:</span> {
+            rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_email | max_length(32)<span class="pl-pds">'</span></span>,
+            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符<span class="pl-pds">"</span></span>
+        }
+    },
+    <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errors</span>, <span class="pl-c1">event</span>) {
+        <span class="pl-c">// do something...</span>
+    }
+});
+<span class="pl-c">// 手动触发验证</span>
+<span class="pl-smi">validator</span>.<span class="pl-en">validate</span>();</pre></div>
+
+<p>服务端用法：</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> bodyData <span class="pl-k">=</span> {
+    email<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>example#example.com<span class="pl-pds">"</span></span>,
+    birthday<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>2012-12-12<span class="pl-pds">"</span></span>
+};
+<span class="pl-k">var</span> validator <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Validator</span>({
+    bodyData<span class="pl-k">:</span> bodyData,
+    fields<span class="pl-k">:</span> {
+        email<span class="pl-k">:</span> {
+            rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_email | max_length(32)<span class="pl-pds">'</span></span>,
+            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符<span class="pl-pds">"</span></span>
+        },
+        birthday<span class="pl-k">:</span> {
+            rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_date<span class="pl-pds">'</span></span>,
+            messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入合法日期<span class="pl-pds">"</span></span>
+        }
+    },
+    <span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errors</span>, <span class="pl-c1">event</span>) {
+        <span class="pl-c">// do something...</span>
+    }
+});
+<span class="pl-c">// 手动触发验证</span>
+<span class="pl-smi">validator</span>.<span class="pl-en">validate</span>();</pre></div>
 
 <p>字符串验证：</p>
 
@@ -102,30 +146,40 @@
 <span class="pl-smi">v</span>.<span class="pl-en">greaterThanDate</span>(<span class="pl-s"><span class="pl-pds">'</span>2010-01-02<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>2010-01-01<span class="pl-pds">'</span></span>);</pre></div>
 
 <h2>
-<a id="表单验证说明文档" class="anchor" href="#%E8%A1%A8%E5%8D%95%E9%AA%8C%E8%AF%81%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>表单验证说明文档</h2>
+<a id="说明文档" class="anchor" href="#%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>说明文档</h2>
 
 <blockquote>
-<p>new Validator(formName, options)</p>
+<p>new Validator(options)</p>
 </blockquote>
 
 <h3>
 <a id="参数可选无参为字符串验证" class="anchor" href="#%E5%8F%82%E6%95%B0%E5%8F%AF%E9%80%89%E6%97%A0%E5%8F%82%E4%B8%BA%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%AA%8C%E8%AF%81" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参数（可选，无参为字符串验证）</h3>
 
-<p><strong><code>formName</code></strong> （必需） 是标签中 <code>&lt;form&gt;</code> 中的 <code>id</code> 或者 <code>name</code> 的值</p>
-
-<p><strong><code>options</code></strong> （必需） 是 Validator 的第二个参数</p>
+<p><strong><code>options</code></strong> （可选） 是 Validator 的第二个参数</p>
 
 <ul>
 <li>
-<code>fields</code> 表单验证域 <code>rules</code> 和 <code>messages</code> 集合</li>
+<code>formName</code> （可选） 是 <code>&lt;form&gt;</code> 中的 <code>name</code> 或者 <code>id</code> 的值</li>
 <li>
-<code>errorPlacement</code> （可选） 错误信息位置</li>
+<code>bodyData</code> （可选） 此参数用作 express 服务端的数据接收入口。此参数与<code>formName</code> 、<code>errorPlacement</code> 等 DOM 相关的参数不可同时存在</li>
 <li>
-<code>callback</code> （可选） 验证成功或失败后回调函数</li>
+<code>fields</code> （可选） 表单验证域 <code>rules</code> 和 <code>messages</code> 集合，后续可通过 <code>.addMethod(name, method)</code> 和 <code>.removeFields(fieldNames)</code> 进行变更</li>
+<li>
+<code>errorPlacement</code> （可选） 错误信息位置，默认位置为表单元素的后一个元素</li>
+<li>
+<code>callback</code> （可选） 表单提交 或 <code>.validate()</code> 调用后触发</li>
+<li>
+<code>errorClass</code> （可选） 验证错误 css 类，默认 <code>valid-error</code>
+</li>
+<li>
+<code>errorEl</code> （可选） 验证错误创建的元素，默认 <code>em</code>
+</li>
+<li>
+<code>eventLevel</code> （可选） 用户编辑表单后 触发事件级别，有三种参数可选： <code>off</code> 不监听，<code>change</code> 监听改变事件， <code>all</code> 监听输入事件和改变事件，默认 <code>all</code>。</li>
 </ul>
 
 <h3>
-<a id="参数详细" class="anchor" href="#%E5%8F%82%E6%95%B0%E8%AF%A6%E7%BB%86" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参数详细</h3>
+<a id="参数示例" class="anchor" href="#%E5%8F%82%E6%95%B0%E7%A4%BA%E4%BE%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>参数示例</h3>
 
 <p><strong><code>fields</code></strong> ：</p>
 
@@ -140,9 +194,11 @@
     }
 }</pre></div>
 
+<p><strong><code>bodyData</code></strong> ： 遵循为 express 的 body-parser 表单数据格式：<code>{email: "example#example.com", birthday: "2012-12-12"}</code></p>
+
 <p>注： <code>email</code> 、<code>phone</code> 为表单 <code>name</code> 属性<br>
-<code>rules</code> ： 一个或多个规则（中间用 <code>|</code> 分隔）<br>
-<code>messages</code> ： 相对应的错误提示（中间用 <code>|</code> 分隔） <code>{{value}}</code> 为表单中的 value 值， <code>{{param}}</code> 为 <code>max_length(32)</code> 的参数 <br> （不填写则没有提示）</p>
+<code>rules</code> ：（必选） 一个或多个规则（中间用 <code>|</code> 分隔）<br>
+<code>messages</code> ：（可选） 相对应的错误提示（中间用 <code>|</code> 分隔） <code>{{value}}</code> 为表单中的 value 值， <code>{{param}}</code> 为 <code>max_length(32)</code> 的参数</p>
 
 <p><strong><code>errorPlacement</code></strong> ：</p>
 
@@ -153,41 +209,48 @@
     }
 },</pre></div>
 
-<p>注： <code>errorEl</code> 为错误信息节点，<code>fieldEl</code> 为出现错误的表单节点
-验证失败后 validator.js 会在类似文本框表单中添加 <code>valid-error</code> ， checkbox、radio 中添加 <code>valid-label-error</code> 错误信息中添加 <code>valid-error-message</code> class 类</p>
+<p>注： <code>errorEl</code> 为错误信息节点，<code>fieldEl</code> 为验证的表单节点
+验证失败后，表单中会添加 <code>valid-error</code> ， 错误信息中添加 <code>valid-error-message</code> 类名</p>
 
 <p><strong><code>callback</code></strong> ：</p>
 
-<div class="highlight highlight-source-js"><pre><span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-c1">event</span>, <span class="pl-smi">errors</span>) {
+<div class="highlight highlight-source-js"><pre><span class="pl-en">callback</span><span class="pl-k">:</span> <span class="pl-k">function</span>(<span class="pl-smi">errors</span>, <span class="pl-c1">event</span>) {
     <span class="pl-c">// 自定义逻辑</span>
     <span class="pl-k">if</span> (errors) {
-        <span class="pl-c">// 验证失败逻辑</span>
+        <span class="pl-c">// do something...</span>
     }
 }</pre></div>
 
 <p>注： <code>event</code> 当前事件<br>
-<code>errors</code> 验证失败的表单域对象。表单验证成功， <code>errors</code> 的值为 <code>null</code></p>
+<code>errors</code> 验证失败的错误 json 集合。表单验证成功， <code>errors</code> 的值为 <code>null</code></p>
 
 <h3>
 <a id="方法" class="anchor" href="#%E6%96%B9%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>方法</h3>
 
-<p>例如：</p>
-
-<div class="highlight highlight-source-js"><pre><span class="pl-smi">validator</span>.<span class="pl-en">validate</span>();</pre></div>
+<ul>
+<li>方法都支持链式调用</li>
+</ul>
 
 <p><strong><code>.validate()</code> 手动验证</strong></p>
 
-<p>注： validator.js 默认使用 submit 按钮提交进行拦截验证，可手动调用 <code>.validate()</code> 调用验证 form 所有定义过的元素</p>
+<p>注： 默认使用 submit 按钮提交进行拦截验证，可手动调用 <code>.validate()</code> 调用验证所有定义过的元素，返回值为 <code>Boolean</code></p>
+
+<p>如：</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">if</span> (<span class="pl-smi">validator</span>.<span class="pl-en">validate</span>()) {
+    <span class="pl-c">// do something...</span>
+};</pre></div>
 
 <p><strong><code>.validateByName(name)</code> 手动验证单个表单域</strong></p>
 
-<p>注： validator.js 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 <code>.validateByName(name)</code> 进行验证单个域， <code>name</code> 参数为 表单域的 <code>name</code> 属性</p>
+<p>注： 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 <code>.validateByName(name)</code> 进行验证单个域<br>
+<code>name</code> 参数为 表单域的 <code>name</code> 属性，返回值为 <code>Boolean</code></p>
 
-<p><strong><code>.preventSubmit()</code> 阻止表单提交</strong></p>
+<p><strong><code>.preventSubmit()</code> 阻止表单提交</strong>  无 <code>&lt;form&gt;</code> 的表单验证，则参数无效</p>
 
 <p><strong><code>.addMethod(name, method)</code> 自定义验证方法</strong></p>
 
-<p>注： 当遇到 validator.js 提供的默认方法无法实现验证的时候，添加<code>.addMethod(name, method)</code>方法进行扩展<br>
+<p>注： 当遇到默认方法无法实现验证的时候（大多数情况），添加<code>.addMethod(name, method)</code>方法进行扩展<br>
 <code>name</code> 为校验名称，格式： is_date<br>
 <code>method</code> 为自定义方法</p>
 
@@ -206,8 +269,42 @@
     <span class="pl-k">return</span> checkedNum <span class="pl-k">&gt;=</span> param;
 });</pre></div>
 
+<p><strong><code>.onInputEvent(name, level)</code> 绑定用户输入事件和改变事件</strong> </p>
+
+<p>注：<code>name</code> name 属性， <code>level</code> 事件级别：有三种参数可选： <code>off</code> 不监听，<code>change</code> 监听改变事件， <code>all</code> 监听输入事件和改变事件，默认 <code>all</code><br>
+如：ajax 验证不需要很高的触发频率，可设置为 <code>change</code> 或 <code>off</code> 进行手动验证</p>
+
+<p><strong><code>.addFields(fields)</code> 动态添加 fields 方法</strong></p>
+
+<p>注： 满足更多动态验证表单的需求。可通过 <code>.addFields(fields)</code> 来动态新增一个或多个表单验证域，参数和上述 <code>fields</code> 用法一样</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">validator</span>.<span class="pl-en">addFields</span>({
+    userName<span class="pl-k">:</span> {
+        rules<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>required | is_real_name<span class="pl-pds">'</span></span>,
+        messages<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>不能为空 | 请输入真实姓名<span class="pl-pds">"</span></span>
+    }
+});</pre></div>
+
+<p><strong><code>.removeFields(fieldNames)</code> 动态移除 fields 方法</strong></p>
+
+<p>注： 满足更多动态验证表单的需求。可通过 <code>.removeFields(fieldNames)</code> 来动态移除一个表单验证域，移除之后，验证器不验证该元素<br>
+<code>fieldNames</code> 类型为 Array</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// 移除单个</span>
+<span class="pl-smi">validator</span>.<span class="pl-en">removeFields</span>([<span class="pl-s"><span class="pl-pds">'</span>userName<span class="pl-pds">'</span></span>]);
+<span class="pl-c">// 移除多个</span>
+<span class="pl-smi">validator</span>.<span class="pl-en">removeFields</span>([<span class="pl-s"><span class="pl-pds">'</span>userName<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>email<span class="pl-pds">'</span></span>]);</pre></div>
+
+<p><strong>其他</strong></p>
+
+<ol>
+<li>[动态验证] 当 <code>field</code> 验证条件存在，DOM节点不存在时，如果 <code>field</code> 包含 <code>required</code> 条件，则最终验证不通过，否则通过验证。</li>
+<li>[事件监听] 如果动态验证中，新增节点，默认不会有表单监听，这时需 手动调用 <code>.onInputEvent(name, level)</code> 添加监听，无 <code>&lt;form&gt;</code> 表单默认无监听</li>
+<li>[错误信息] 错误位置提示信息，<code>checkbox</code>、<code>radio</code> 元素对于 <code>label</code> 元素的位置不固定，各个 UI 组件不统一，默认不设置</li>
+</ol>
+
 <h2>
-<a id="字符串验证说明文档" class="anchor" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%AA%8C%E8%AF%81%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>字符串验证说明文档</h2>
+<a id="内置验证方法" class="anchor" href="#%E5%86%85%E7%BD%AE%E9%AA%8C%E8%AF%81%E6%96%B9%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>内置验证方法</h2>
 
 <p>如：</p>
 
@@ -240,14 +337,68 @@
 <h2>
 <a id="备注" class="anchor" href="#%E5%A4%87%E6%B3%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>备注</h2>
 
-<p>validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br>
-因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性<br>
-validator.js 不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用</p>
+<p><code>validate-framework</code>组件只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br>
+<code>validate-framework</code>不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用</p>
+
+<h2>
+<a id="与-1xx-api-变更" class="anchor" href="#%E4%B8%8E-1xx-api-%E5%8F%98%E6%9B%B4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>与 1.x.x API 变更</h2>
+
+<ol>
+<li>将 <code>formName</code> 位置放入 <code>options</code> 中，并可允许不是必选项</li>
+<li>动态添加的表单元素，需添加监听方法 <code>.onInputEvent(name, level)</code>
+</li>
+<li>
+<code>callback</code> 参数中，方法 errors, event 顺序改变</li>
+<li>
+<code>removeFields</code> 只允许数组参数</li>
+<li>内部变量 <code>field.el</code> 的 <code>el</code> 为数组形式</li>
+</ol>
 
 <h2>
 <a id="规范" class="anchor" href="#%E8%A7%84%E8%8C%83" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>规范</h2>
 
-<p>validator.js 采用 <code>eslint</code> 来保持代码的正确性和可读性，详情见 <code>.eslintrc</code> 文件</p>
+<p><code>validate-framework</code>采用 <code>eslint</code> 来保持代码的正确性和可读性，详情见 <code>.eslintrc</code> 文件</p>
+
+<h2>
+<a id="更新日志" class="anchor" href="#%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>更新日志</h2>
+
+<h3>
+<a id="v200" class="anchor" href="#v200" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>v2.0.0</h3>
+
+<ol>
+<li> [新增] 服务端验证</li>
+<li> [新增] 无  验证</li>
+<li> [修改] <code>formName</code> 为非必选项</li>
+<li> [修改] 多处重构</li>
+<li> [修改] 调整 API</li>
+</ol>
+
+<h3>
+<a id="v141" class="anchor" href="#v141" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>v1.4.1</h3>
+
+<ol>
+<li> [修正] 执行 <code>.removeFields</code> 方法后，应删除对应的错误域</li>
+<li> 变更 email 正则</li>
+<li> 注释修正</li>
+</ol>
+
+<h3>
+<a id="v140" class="anchor" href="#v140" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>v1.4.0</h3>
+
+<ol>
+<li> [新增] <code>.addFields</code> 和 <code>.removeFields</code> 扩展方法</li>
+<li> 实现动态验证表单域</li>
+<li> 微调内部函数结构</li>
+</ol>
+
+<h3>
+<a id="v130" class="anchor" href="#v130" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>v1.3.0</h3>
+
+<ol>
+<li> [新增] 相同 name 属性表单验证</li>
+<li> 兼容未在 dom 中的元素，可预先定义</li>
+<li> 微调内部函数名称</li>
+</ol>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LICENSE</h2>
