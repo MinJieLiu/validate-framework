@@ -143,7 +143,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 **`options`** （可选） 是 Validator 的第二个参数
 
   * `formName` （可选） 是 `<form>` 中的 `name` 或者 `id` 的值
-  * `bodyData` （可选） 此参数用作 express 服务端的数据接收入口。使用此参数后，`formName` 、`errorPlacement` 等参数将失效
+  * `bodyData` （可选） 此参数用作 express 服务端的数据接收入口。此参数与`formName` 、`errorPlacement` 等 DOM 相关的参数不可同时存在
   * `fields` （可选） 表单验证域 `rules` 和 `messages` 集合，后续可通过 `.addMethod(name, method)` 和 `.removeFields(fieldNames)` 进行变更
   * `errorPlacement` （可选） 错误信息位置，默认位置为表单元素的后一个元素
   * `callback` （可选） 表单提交 或 `.validate()` 调用后触发
@@ -151,7 +151,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
   * `errorEl` （可选） 验证错误创建的元素，默认 `em`
   * `eventLevel` （可选） 用户编辑表单后 触发事件级别，有三种参数可选： `off` 不监听，`change` 监听改变事件， `all` 监听输入事件和改变事件，默认 `all`。
 
-### 参数详细
+### 参数示例
 
 **`fields`** ：
 
@@ -283,7 +283,7 @@ validator.removeFields(['userName', 'email']);
  2. [事件监听] 如果动态验证中，新增节点，默认不会有表单监听，这时需 手动调用 `.onInputEvent(name, level)` 添加监听，无 `<form>` 表单默认无监听
  3. [错误信息] 错误位置提示信息，`checkbox`、`radio` 元素对于 `label` 元素的位置不固定，各个 UI 组件不统一，默认不设置
 
-## 字符串验证说明文档
+## 内置验证方法
 
 如：
 ```js
@@ -316,7 +316,6 @@ v.isPhone('170111222231');
 ## 备注
 
 validator.js 只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
-因注重结构和逻辑分离，validator.js 暂不考虑将验证表达式加入 html 结构中，以保持良好的可维护性<br />
 validator.js 不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
 
 
