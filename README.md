@@ -10,7 +10,7 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
 ## 特性
 
  1. 轻量、无依赖
- 2. 可脱离 `<form>` 验证
+ 2. 自由，可脱离 `<form>` 验证
  3. 前后端通用 （支持 express）
  4. 字符串验证
  5. 易于扩展
@@ -318,6 +318,14 @@ v.isPhone('170111222231');
 `validate-framework`组件只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
 `validate-framework`不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
 
+
+##与 1.x.x API 区别
+
+ 1. 将 `formName` 位置放入 `options` 中，并可允许不是必选项
+ 2. 动态添加的表单元素，需添加监听方法 `.onInputEvent(name, level)`
+ 3. `callback` 参数中，方法 errors, event 顺序改变
+ 4. `removeFields` 只允许数组参数
+ 5. 内部变量 `field.el` 的 `el` 为数组形式
 
 ## 规范
 
