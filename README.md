@@ -319,7 +319,7 @@ v.isPhone('170111222231');
 `validate-framework`不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
 
 
-##与 1.x.x API 区别
+##与 1.x.x API 变更
 
  1. 将 `formName` 位置放入 `options` 中，并可允许不是必选项
  2. 动态添加的表单元素，需添加监听方法 `.onInputEvent(name, level)`
