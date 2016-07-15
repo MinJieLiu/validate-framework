@@ -205,11 +205,12 @@ callback: function(errors, event) {
 
 ### 方法
 
- * 方法都支持链式调用
+ * 除返回值为 Boolean 类型的方法都支持链式调用
 
 **`.validate()` 手动验证**
 
-注： 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证所有定义过的元素，返回值为 `Boolean`
+返回值为 `Boolean`<br />
+注： 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证所有定义过的元素
 
 如：
 ```js
@@ -220,8 +221,9 @@ if (validator.validate()) {
 
 **`.validateByName(name)` 手动验证单个表单域**
 
+返回值为 `Boolean`<br />
 注： 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域<br />
-`name` 参数为 表单域的 `name` 属性，返回值为 `Boolean`
+`name` 参数为 表单域的 `name` 属性，
 
 **`.preventSubmit()` 阻止表单提交**  无 `<form>` 的表单验证，则参数无效
 
