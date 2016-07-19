@@ -182,22 +182,6 @@ var _testHook = {
 };
 
 /**
- * 默认参数
- */
-var _default = {
-
-    // 错误信息类名称
-    errorClass: 'valid-error',
-
-    // 错误信息节点
-    errorEl: 'em',
-
-    // 表单触发事件级别
-    eventLevel: 'all'
-
-};
-
-/**
  * Validator 对象
  * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
@@ -211,27 +195,31 @@ var Validator = function(options) {
         return this;
     }
 
-    // 替换默认参数
-    var opts = extend(_default, options);
+    this._default = {
+        // 错误信息类名称
+        errorClass: 'valid-error',
+        // 错误信息节点
+        errorEl: 'em',
+        // 表单触发事件级别
+        eventLevel: 'all'
+    };
 
-    // init
-    this.opts = opts;
+    // 替换默认参数
+    this.opts = extend(this._default, options);
     this.form = {};
     this.bodyData = options.bodyData;
     this.errors = {};
     this.fields = {};
     this.handles = {};
 
-    var fields = opts.fields;
-
     // 构建具有所有需要验证的信息域
-    this.addFields(fields);
+    this.addFields(this.opts.fields);
 
     // 有 form 表单的验证
-    if (isBrowser() && opts.formName) {
+    if (isBrowser() && this.opts.formName) {
 
         // 获取表单对象
-        this.form = document.forms[opts.formName];
+        this.form = document.forms[this.opts.formName];
 
         // HTML5 添加 novalidate
         this.form.setAttribute('novalidate', 'novalidate');
@@ -391,7 +379,7 @@ Validator.prototype = {
     removeFields: function(fieldNames) {
 
         if (fieldNames instanceof Array) {
-            for (var i, namesLength = fieldNames.length; i < namesLength; i++) {
+            for (var i = 0, namesLength = fieldNames.length; i < namesLength; i++) {
                 // 移除对象
                 this.fields && delete this.fields[fieldNames[i]];
                 this.errors && delete this.errors[fieldNames[i]];

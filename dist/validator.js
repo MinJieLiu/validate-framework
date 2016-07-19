@@ -1,6 +1,6 @@
 /*!
- * validate-framework v2.0.0
- * 轻量级JavaScript表单验证，字符串验证。
+ * validate-framework v2.0.1
+ * 轻量、强大、无依赖、前后端通用的 JavaScript 验证组件
  * 
  * Copyright (c) 2016 LMY
  * https://github.com/MinJieLiu/validator.js
@@ -176,17 +176,6 @@
         }
     };
     /**
- * 默认参数
- */
-    var _default = {
-        // 错误信息类名称
-        errorClass: "valid-error",
-        // 错误信息节点
-        errorEl: "em",
-        // 表单触发事件级别
-        eventLevel: "all"
-    };
-    /**
  * Validator 对象
  * @param {Object} 参数：包括 验证域、错误信息位置、回调函数
  */
@@ -197,22 +186,27 @@
         if (!options) {
             return this;
         }
+        this._default = {
+            // 错误信息类名称
+            errorClass: "valid-error",
+            // 错误信息节点
+            errorEl: "em",
+            // 表单触发事件级别
+            eventLevel: "all"
+        };
         // 替换默认参数
-        var opts = extend(_default, options);
-        // init
-        this.opts = opts;
+        this.opts = extend(this._default, options);
         this.form = {};
         this.bodyData = options.bodyData;
         this.errors = {};
         this.fields = {};
         this.handles = {};
-        var fields = opts.fields;
         // 构建具有所有需要验证的信息域
-        this.addFields(fields);
+        this.addFields(this.opts.fields);
         // 有 form 表单的验证
-        if (isBrowser() && opts.formName) {
+        if (isBrowser() && this.opts.formName) {
             // 获取表单对象
-            this.form = document.forms[opts.formName];
+            this.form = document.forms[this.opts.formName];
             // HTML5 添加 novalidate
             this.form.setAttribute("novalidate", "novalidate");
             // 绑定用户输入事件
@@ -340,7 +334,7 @@
      */
         removeFields: function(fieldNames) {
             if (fieldNames instanceof Array) {
-                for (var i, namesLength = fieldNames.length; i < namesLength; i++) {
+                for (var i = 0, namesLength = fieldNames.length; i < namesLength; i++) {
                     // 移除对象
                     this.fields && delete this.fields[fieldNames[i]];
                     this.errors && delete this.errors[fieldNames[i]];
