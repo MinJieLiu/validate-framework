@@ -147,7 +147,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
   * `fields` （可选） 表单验证域 `rules` 和 `messages` 集合，后续可通过 `.addMethod(name, method)` 和 `.removeFields(fieldNames)` 进行变更
   * `errorPlacement` （可选） 错误信息位置，默认位置为表单元素的后一个元素
   * `callback` （可选） 表单提交 或 `.validate()` 调用后触发
-  * `errorClass` （可选） 验证错误 css 类，默认 `valid-error`
+  * `prefix` （可选） 验证正确或错误 class 或 id 前缀，默认 `valid`
   * `errorEl` （可选） 验证错误创建的元素，默认 `em`
   * `eventLevel` （可选） 用户编辑表单后 触发事件级别，有三种参数可选： `off` 不监听，`change` 监听改变事件， `all` 监听输入事件和改变事件，默认 `all`。
 
