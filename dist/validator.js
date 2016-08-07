@@ -40,7 +40,7 @@
         // 浮点数
         decimal: /^\-?\d*\.?\d+$/,
         // 邮箱
-        email: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+        email: /^[a-zA-Z0-9.!#$%&’*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
         // IP 地址 [ip ipv4、ipv6]
         ip: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])((\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}|(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){5})$/,
         // 电话号码
@@ -187,8 +187,8 @@
             return this;
         }
         this._default = {
-            // 错误信息类名称
-            errorClass: "valid-error",
+            // css 类前缀
+            prefix: "valid",
             // 错误信息节点
             errorEl: "em",
             // 表单触发事件级别
@@ -478,9 +478,9 @@
             // 错误信息操作
             if (errorObj) {
                 // 添加错误类信息
-                var clazz = this.opts.errorClass;
+                var clazz = this.opts.prefix + "-error";
                 errorObj.clazz = clazz;
-                // 设置 id 下划线规范
+                // 设置错误 id
                 errorObj.placeId = (clazz + "_" + (field.id || field.name)).replace("-", "_");
                 // 当前条目验证结果展示
                 if (successed) {
@@ -569,6 +569,7 @@
             // 移除表单域错误类
             for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
                 removeClass(errorObj.el[i], errorObj.clazz);
+                addClass(errorObj.el[i], this.opts.prefix + "-success");
             }
             // 移除错误信息节点
             var errorEl = document.getElementById(errorObj.placeId);
@@ -584,19 +585,21 @@
             }
             // 清除之前保留的错误信息
             this._removeErrorPlace(errorObj);
+            var opts = this.opts;
             // 当前表单域添加错误类
             for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
+                removeClass(errorObj.el[i], opts.prefix + "-success");
                 addClass(errorObj.el[i], errorObj.clazz);
             }
             // 创建元素
-            var errorEl = document.createElement(this.opts.errorEl);
+            var errorEl = document.createElement(opts.errorEl);
             addClass(errorEl, errorObj.clazz + "-message");
             errorEl.setAttribute("id", errorObj.placeId);
             errorEl.innerText = errorObj.message;
             // 错误信息位置
-            if (typeof this.opts.errorPlacement === "function") {
+            if (typeof opts.errorPlacement === "function") {
                 // 参数：错误信息节点，当前表单节点
-                this.opts.errorPlacement(errorEl, errorObj.el[0]);
+                opts.errorPlacement(errorEl, errorObj.el[0]);
             } else {
                 // 默认错误信息位置
                 // label 、 radio 元素错误位置不固定，默认暂不设置
