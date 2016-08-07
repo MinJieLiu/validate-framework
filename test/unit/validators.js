@@ -80,7 +80,7 @@ describe("validators", function() {
         expect(v.isAbc('A!')).to.be.false;
     });
 
-    // 邮箱验证 完美的邮箱验证表达式非常庞大，达23k，故采用普通的邮箱验证表达式，不匹配中文域名
+    // 邮箱验证 ，暂不匹配中文域名
     it("isEmail() 邮箱验证", function() {
         expect(v.isEmail('d.s.s.d@qq.com.cn')).to.be.true;
         expect(v.isEmail('d.s-s.d@qq.com.cn')).to.be.true;
@@ -95,7 +95,7 @@ describe("validators", function() {
         expect(v.isEmail('wowo@123.sd')).to.be.true;
         expect(v.isEmail('wowo@123.23')).to.be.true;
         expect(v.isEmail('wowo.oqqcom')).to.be.false;
-        expect(v.isEmail('wowo@123')).to.be.false;
+        expect(v.isEmail('wowo@123')).to.be.true;
         expect(v.isEmail('wowo@asdf.中国')).to.be.false;
         expect(v.isEmail('wowo@中国.com')).to.be.false;
         expect(v.isEmail('中@qq.com')).to.be.false;
