@@ -1,16 +1,31 @@
 {
   "name": "validate-framework",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "轻量、强大、无依赖、前后端通用的 JavaScript 验证组件",
   "homepage": "https://github.com/MinJieLiu/validator.js",
   "main": "dist/validator.js",
   "scripts": {
-    "lint": "eslint src/validator.js",
-    "test": "mocha-phantomjs test/validators.html",
-    "build:min": "umd Validator src/validator.js | uglifyjs -mc | bannerjs -o > dist/validator.min.js",
-    "build:dist": "umd Validator src/validator.js | uglifyjs -b --comments all | bannerjs -m > dist/validator.js",
-    "build": "npm run lint && npm run build:min && npm run build:dist",
-    "watch": "onchange './src/validator.js' -- npm run build"
+    "clean": "rimraf dist",
+    "lint": "eslint src --fix",
+    "dev": "better-npm-run dev --watch",
+    "build": "better-npm-run dev",
+    "prod": "better-npm-run prod",
+    "deploy": "npm run lint && npm run clean && npm run build && npm run prod",
+    "test": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js"
+  },
+  "betterScripts": {
+    "dev": {
+      "command": "webpack",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    "prod": {
+      "command": "webpack",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -30,18 +45,22 @@
   "author": "LMY",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^6.9.1",
-    "babel-eslint": "^6.0.4",
-    "bannerjs": "^1.0.1",
+    "babel-cli": "^6.14.0",
+    "babel-core": "^6.14.0",
+    "babel-eslint": "^6.1.2",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "better-npm-run": "0.0.11",
     "chai": "^3.5.0",
-    "eslint": "^2.11.1",
-    "eslint-plugin-promise": "^1.3.2",
-    "eslint-plugin-standard": "^1.3.2",
-    "mocha": "^2.4.5",
-    "mocha-phantomjs": "^4.0.2",
-    "object-assign": "^4.1.0",
-    "onchange": "^2.4.0",
-    "uglify-js": "^2.6.2",
-    "umd": "^3.0.1"
+    "eslint": "^3.6.0",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.3.0",
+    "mocha": "^3.1.0",
+    "mocha-phantomjs": "^4.1.0",
+    "rimraf": "^2.5.4",
+    "webpack": "^1.13.2"
   }
 }

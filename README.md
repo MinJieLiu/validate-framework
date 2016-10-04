@@ -1,33 +1,30 @@
-#validator.js
+#Validator.js
 
-[![Build Status](https://travis-ci.org/MinJieLiu/validator.js.svg?branch=master)](https://travis-ci.org/MinJieLiu/validator.js)
+[![Build Status](https://travis-ci.org/MinJieLiu/Validator.js.svg?branch=master)](https://travis-ci.org/MinJieLiu/Validator.js)
 [![npm version](https://badge.fury.io/js/validate-framework.svg)](https://badge.fury.io/js/validate-framework)
 
 一款轻量、强大、无依赖、前后端通用的 JavaScript 验证组件
 
-Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.github.io/validator.js/example)
+Demo： [http://minjieliu.github.io/Validator.js/example](http://minjieliu.github.io/Validator.js/example)
 
 ## 特性
 
  1. 轻量、无依赖
  2. 自由，可脱离 `<form>` 验证
- 3. 前后端通用 （支持 express）
+ 3. 前后端通用
  4. 字符串验证
  5. 易于扩展
  6. 相同 name 的表单验证
  7. 动态验证
- 8. 兼容 chrome 、firfox 、IE6 +
+ 8. 兼容 chrome 、firfox 、IE9 +
 
+注意：若要兼容低版本浏览器，请使用 `v2.1.1` 版
 
 ## 快速上手
 
-通过 `bower` 安装
-
-    bower install validate-framework
-
 通过 `npm` 安装
 
-    npm install validate-framework
+    npm install validate-framework --save
 
 
 基本用法：
@@ -47,15 +44,17 @@ Demo： [http://minjieliu.github.io/validator.js/example](http://minjieliu.githu
 ```
 
 ```js
-var validator = new Validator({
+import validateFramework from 'validate-framework';
+
+const validator = new validateFramework({
     formName: 'validate_form',
     fields: {
         email: {
-            rules: 'required | is_email | max_length(32)',
+            rules: 'required | isEmail | maxLength(32)',
             messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
         },
         phone: {
-            rules: 'is_phone',
+            rules: 'isPhone',
             messages: "手机号： {{value}} 不合法"
         }
     },
@@ -77,10 +76,12 @@ var validator = new Validator({
 ```
 
 ```js
-var validator = new Validator({
+import validateFramework from 'validate-framework';
+
+const validator = new validateFramework({
     fields: {
         email: {
-            rules: 'required | is_email | max_length(32)',
+            rules: 'required | isEmail | maxLength(32)',
             messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
         }
     },
@@ -95,19 +96,21 @@ validator.validate();
 服务端用法：
 
 ```js
+import validateFramework from 'validate-framework';
+
 var bodyData = {
     email: "example#example.com",
     birthday: "2012-12-12"
 };
-var validator = new Validator({
+var validator = new validateFramework({
     bodyData: bodyData,
     fields: {
         email: {
-            rules: 'required | is_email | max_length(32)',
+            rules: 'required | isEmail | maxLength(32)',
             messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
         },
         birthday: {
-            rules: 'required | is_date',
+            rules: 'required | isDate',
             messages: "不能为空 | 请输入合法日期"
         }
     },
@@ -123,8 +126,9 @@ validator.validate();
 字符串验证：
 
 ```js
-// 返回布尔值
-var v = new Validator();
+import validateFramework from 'validate-framework';
+
+var v = new validateFramework();
 v.isEmail('example@qq.com');
 v.isIp('192.168.1.1');
 v.isPhone('170111222231');
@@ -158,11 +162,11 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 ```js
 fields: {
     email: {
-        rules: 'required | is_email | max_length(32)',
+        rules: 'required | isEmail | maxLength(32)',
         messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
     },
     phone: {
-        rules: 'is_phone',
+        rules: 'isPhone',
         messages: "手机号： {{value}} 不合法"
     }
 }
@@ -172,7 +176,7 @@ fields: {
 
 注： `email` 、`phone` 为表单 `name` 属性<br />
 `rules` ：（必选） 一个或多个规则（中间用 ` | ` 分隔）<br />
-`messages` ：（可选） 相对应的错误提示（中间用 ` | ` 分隔） `{{value}}` 为表单中的 value 值， `{{param}}` 为 `max_length(32)` 的参数
+`messages` ：（可选） 相对应的错误提示（中间用 ` | ` 分隔） `{{value}}` 为表单中的 value 值， `{{param}}` 为 `maxLength(32)` 的参数
 
 **`errorPlacement`** ：
 
@@ -230,14 +234,14 @@ if (validator.validate()) {
 **`.addMethod(name, method)` 自定义验证方法**
 
 注： 当遇到默认方法无法实现验证的时候（大多数情况），添加`.addMethod(name, method)`方法进行扩展<br />
-`name` 为校验名称，格式： is_date<br />
+`name` 为校验名称，格式： isDate<br />
 `method` 为自定义方法
 
 如：
 ```js
 // checkbox 至少选择两项 方法
-// 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)
-validator.addMethod('select_limit', function(field, param) {
+// 扩展内部验证方法 field: 验证域， param: 参数 如 selectLimit(2)
+validator.addMethod('selectLimit', function(field, param) {
     // checkbox 至少选择两项
     var checkedNum = 0;
     for (var i = 0, elLength = field.el.length; i < elLength; i++) {
@@ -289,7 +293,6 @@ validator.removeFields(['userName', 'email']);
 
 如：
 ```js
-var v = new Validator();
 v.isEmail('example@qq.com');
 v.isPhone('170111222231');
 ```
@@ -321,20 +324,25 @@ v.isPhone('170111222231');
 `validate-framework`不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
 
 
-##与 1.x.x API 变更
+##与 2.x.x API 变更
 
- 1. 将 `formName` 位置放入 `options` 中，并可允许不是必选项
- 2. 动态添加的表单元素，需添加监听方法 `.onInputEvent(name, level)`
- 3. `callback` 参数中，方法 errors, event 顺序改变
- 4. `removeFields` 只允许数组参数
- 5. 内部变量 `field.el` 的 `el` 为数组形式
+ 1. 使用 `es2015` 语法重构、webpack 工程化
+ 2. 验证方法名称调整为驼峰式语法
+ 3. 为 IE9+ 浏览器而设计，若兼容低版本浏览器，请使用 v2 版本
 
 ## 规范
 
-`validate-framework`采用 `eslint` 来保持代码的正确性和可读性，详情见 `.eslintrc` 文件
+`validate-framework` 使用 `eslint` 来保持代码的正确性和可读性，详情见 `.eslintrc` 文件
 
 
 ## 更新日志
+
+### v3.0.0
+
+1.  [新增] 使用 `es2015` 语法重构、webpack 工程化
+2.  [调整] 验证方法名称调整为驼峰式语法
+3.  [调整] v3 为 IE9+ 浏览器而设计，若兼容低版本浏览器，请使用 v2 版本
+
 
 ### v2.1.1
 
@@ -375,7 +383,3 @@ v.isPhone('170111222231');
 ## LICENSE
 
 MIT
-
-## 参考
-
-https://github.com/jaywcjlove/validator.js
