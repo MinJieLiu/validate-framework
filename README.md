@@ -10,15 +10,15 @@ Demo： [http://minjieliu.github.io/Validator.js/example](http://minjieliu.githu
 ## 特性
 
  1. 轻量、无依赖
- 2. 自由，可脱离 `<form>` 验证
+ 2. 可选核心组件
  3. 前后端通用
- 4. 字符串验证
- 5. 易于扩展
+ 4. umd 支持
+ 5. es2015 语法
  6. 相同 name 的表单验证
  7. 动态验证
  8. 兼容 chrome 、firfox 、IE9 +
 
-注意：若要兼容低版本浏览器，请使用 `v2.1.1` 版
+注意：若要兼容 `IE6+` 浏览器，请使用 `v2.1.1` 版
 
 ## 快速上手
 
@@ -140,7 +140,7 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 
 ## 说明文档
 
-> new Validator(options)
+> new validateFramework(options)
 
 ### 参数（可选，无参为字符串验证）
 
@@ -320,8 +320,9 @@ v.isPhone('170111222231');
 
 ## 备注
 
-`validate-framework`组件只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
-`validate-framework`不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
+1. 组件只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
+2. 可选核心组件，脱离dom及事件的支持
+3. 不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
 
 
 ##与 2.x.x API 变更

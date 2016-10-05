@@ -6,6 +6,9 @@ import {
 } from './util';
 import Validate from './Validate';
 
+/**
+ * validator 组件
+ */
 export default class Validator extends Validate {
 
   /**

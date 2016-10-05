@@ -10,6 +10,9 @@ import {
 } from './util';
 import testHook from './testHook';
 
+/**
+ * 核心验证组件，不包括事件及 dom 操作
+ */
 export default class Validate {
 
   constructor(options) {
