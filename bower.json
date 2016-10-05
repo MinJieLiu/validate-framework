@@ -1,6 +1,6 @@
 {
   "name": "validate-framework",
-  "description": "轻量级JavaScript表单验证，字符串验证。",
+  "description": "轻量、强大、无依赖、前后端通用的 JavaScript 验证组件",
   "main": "dist/validator.js",
   "authors": [
     "LMY"
@@ -17,7 +17,7 @@
   ],
   "homepage": "https://github.com/MinJieLiu/validator.js",
   "moduleType": [
-    "amd"
+    "umd"
   ],
   "ignore": [
     "**/.*",

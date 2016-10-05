@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>数据验证</title>
   <link rel="stylesheet" href="bootstrap.css" />
-  <script src="../dist/validator.js"></script>
+  <script src="../lib/validator.js"></script>
 </head>
 
 <body>
@@ -43,6 +43,7 @@
     remarks: "123456"
   };
 
+  var Validator = window.validator.default;
   var validator = new Validator({
     bodyData: bodyData,
     fields: {

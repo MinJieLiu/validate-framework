@@ -22,7 +22,7 @@ module.exports = {
   },
   devtool: 'source-map',
   output: {
-    path: path.join(__dirname, '/dist'),
+    path: path.join(__dirname, '/lib'),
     filename: outputFile,
     library: libraryName,
     libraryTarget: 'umd',

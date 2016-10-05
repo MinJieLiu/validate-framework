@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>相同 name 验证</title>
   <link rel="stylesheet" href="bootstrap.css" />
-  <script src="../dist/validator.js"></script>
+  <script src="../lib/validator.js"></script>
   <style>
 
     .valid-error {
@@ -76,7 +76,8 @@
 </script>
 
 <script>
-  var validator = new Vlidator({
+  var Validator = window.validator.default;
+  var validator = new Validator({
     formName: 'validate_form',
     fields: {
       email: {

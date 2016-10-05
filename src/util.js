@@ -23,6 +23,7 @@ function extend(target, source) {
 /**
  * 设置除主属性的验证域为默认值
  * @param field
+ * @return field
  */
 function initField(field) {
   field.id = null;
@@ -30,6 +31,7 @@ function initField(field) {
   field.type = null;
   field.value = null;
   field.checked = null;
+  return field;
 }
 
 /**
