@@ -4,7 +4,7 @@ const path = require('path');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const env = process.env.NODE_ENV;
 
-const libraryName = 'validator';
+const libraryName = 'Validator';
 const plugins = [];
 let outputFile;
 
@@ -34,9 +34,6 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
-        query: {
-          presets: ['es2015'],
-        },
       },
     ],
   },
