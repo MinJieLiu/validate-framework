@@ -1,5 +1,5 @@
 import chai from 'chai';
-import Validator from '../lib/Validator';
+import Validator from '../src/Validator';
 
 chai.expect();
 
