@@ -1,11 +1,11 @@
 {
   "name": "validate-framework",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "轻量、强大、无依赖、前后端通用的 JavaScript 验证组件",
   "homepage": "https://github.com/MinJieLiu/validator.js",
-  "main": "dist/validator.js",
+  "main": "lib/Validator.js",
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf lib",
     "lint": "eslint src --fix",
     "dev": "better-npm-run dev --watch",
     "build": "better-npm-run dev",
