@@ -1,5 +1,5 @@
 /*!
- * validate-framework v2.0.1
+ * validate-framework v2.1.1
  * 轻量、强大、无依赖、前后端通用的 JavaScript 验证组件
  * 
  * Copyright (c) 2016 LMY
