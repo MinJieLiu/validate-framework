@@ -4,12 +4,12 @@ import {
   addClass,
   removeClass,
 } from './util';
-import Validate from './Validate';
+import ValidateCore from './Validate';
 
 /**
  * validator 组件
  */
-export default class Validator extends Validate {
+export default class Validator extends ValidateCore {
 
   /**
    * Field 验证之后处理
