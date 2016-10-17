@@ -1,3 +1,3 @@
-import Validator from './Validator';
+import Validator from './Validator-dom';
 
 export default Validator;
