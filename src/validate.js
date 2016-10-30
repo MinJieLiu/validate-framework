@@ -87,7 +87,7 @@ validate.validateByField = (field) => {
  * @return {Object} results 结果列表
  */
 validate.validateByFields = (fields, body) => {
-  const results = null;
+  const results = {};
   for (const name in fields) {
     const field = fields[name];
     field.name = name;
