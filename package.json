@@ -1,6 +1,6 @@
 {
   "name": "validate-framework",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "轻量、强大、无依赖、前后端通用的 JavaScript 验证组件",
   "homepage": "https://github.com/MinJieLiu/validator.js",
   "main": "dist/Validator.js",
