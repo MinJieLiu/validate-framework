@@ -15,7 +15,7 @@
     "validate.js",
     "form"
   ],
-  "homepage": "https://github.com/MinJieLiu/validator.js",
+  "homepage": "https://github.com/MinJieLiu/validate-framework",
   "moduleType": [
     "umd"
   ],

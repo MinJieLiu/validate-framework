@@ -1,11 +1,11 @@
-#Validator.js
+#validate-framework
 
-[![Build Status](https://travis-ci.org/MinJieLiu/Validator.js.svg?branch=master)](https://travis-ci.org/MinJieLiu/Validator.js)
+[![Build Status](https://travis-ci.org/MinJieLiu/validate-framework.svg?branch=master)](https://travis-ci.org/MinJieLiu/validate-framework)
 [![npm version](https://badge.fury.io/js/validate-framework.svg)](https://badge.fury.io/js/validate-framework)
 
 一款轻量、强大、无依赖、前后端通用的 JavaScript 验证组件
 
-Demo： [http://minjieliu.github.io/Validator.js/example](http://minjieliu.github.io/Validator.js/example)
+Demo： [http://minjieliu.github.io/validate-framework/example](http://minjieliu.github.io/validate-framework/example)
 
 ## 特性
 

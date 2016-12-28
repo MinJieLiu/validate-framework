@@ -2,7 +2,7 @@
   "name": "validate-framework",
   "version": "3.1.2",
   "description": "轻量、强大、无依赖、前后端通用的 JavaScript 验证组件",
-  "homepage": "https://github.com/MinJieLiu/validator.js",
+  "homepage": "https://github.com/MinJieLiu/validate-framework",
   "main": "dist/Validator.js",
   "scripts": {
     "clean": "rimraf lib && rimraf dist",
@@ -35,7 +35,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MinJieLiu/validator.js"
+    "url": "https://github.com/MinJieLiu/validate-framework"
   },
   "keywords": [
     "validate-framework",
