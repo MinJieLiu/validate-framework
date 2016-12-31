@@ -1,35 +1,9 @@
 {
-  "parser" : "babel-eslint",
-  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "extends": "airbnb-base",
   "globals": {
-    "document"    : true,
-    "navigator"   : true,
-    "window"      : true
-  },
-  "rules"  : {
-    // 换行符风格 unix/windows
-    "linebreak-style": 0,
-    // 一元符 ++ 和 -- 编译时会自动插入分号，空白的差异会改变的源代码的语义
-    "no-plusplus": [2, { "allowForLoopAfterthoughts": true }],
-    // 驼峰命名
-    "camelcase": 0,
-    // 方法名
-    "func-names": 0,
-    // for in 循环
-    "guard-for-in": 0,
-    // import 依赖
-    "import/no-extraneous-dependencies": 0,
-    // 无 continue
-    "no-continue": 0,
-    // 修改参数变量可能会产生误导，导致混乱的行为
-    "no-param-reassign": [2, { "props": false }],
-    // 禁用特定表达式
-    "no-restricted-syntax": 0,
-    // 禁用下划线命名
-    "no-underscore-dangle": 0,
-    // 此规则旨在消除这对程序的状态没有影响未使用的表达式
-    "no-unused-expressions": 0,
-    // 最大长度字符
-    "max-len": [2, 160]
+    "document": true,
+    "navigator": true,
+    "window": true
   }
 }

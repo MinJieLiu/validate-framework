@@ -1,7 +1,7 @@
 {
   "name": "validate-framework",
-  "description": "轻量、强大、无依赖、前后端通用的 JavaScript 验证组件",
-  "main": "lib/Validator.js",
+  "description": "轻量、强大、无依赖的 JavaScript 验证组件",
+  "main": "dist/Validator.js",
   "authors": [
     "LMY"
   ],
@@ -13,6 +13,8 @@
     "validation",
     "validate",
     "validate.js",
+    "validate-form",
+    "formValidate",
     "form"
   ],
   "homepage": "https://github.com/MinJieLiu/validate-framework",

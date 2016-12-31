@@ -1,86 +1,41 @@
 /**
- * 判断 field 是否为字符串
- * @param {Object} field 验证域
- * @return {String} 返回值
+ * utils
  */
-function getValue(field) {
-  return (typeof field === 'string') ? field : field.value;
-}
 
-/**
- * 对象继承
- * @param {Object} target
- * @param {Object} source
- * @return {Object} target
- */
-function extend(target, source) {
-  for (const key in source) {
-    target[key] = source[key];
-  }
-  return target;
-}
-
-/**
- * 设置除主属性的验证域为默认值
- * @param field
- * @return field
- */
-function initField(field) {
-  field.id = null;
-  field.el = null;
-  field.type = null;
-  field.value = null;
-  field.checked = null;
-  return field;
-}
-
-/**
- * 转换为日期
- * @param {String} param 日期格式：yyyy-MM-dd
- * @return {Date}
- */
-function parseToDate(param) {
-  const thatDate = new Date();
-  const dateArray = param.split('-');
-
-  thatDate.setFullYear(dateArray[0]);
-  thatDate.setMonth(dateArray[1] - 1);
-  thatDate.setDate(dateArray[2]);
-  return thatDate;
-}
+export { getValue, parseToDate } from 'validate-framework-utils/lib/util';
 
 /**
  * 是否为浏览器环境
  * @return {Boolean}
  */
-function isBrowser() {
+export function isBrowser() {
   return typeof window !== 'undefined';
 }
 
 /**
- * 获取当前事件，兼容火狐浏览器
+ * 获取当前事件
  * @param {Event} evt
  * @return {Event}
  */
-function getCurrentEvent(evt) {
+export function getCurrentEvent(evt) {
   return isBrowser() ? (evt || window.event) : null;
 }
 
 /**
  * 判断节点是否为 radio 或者 checkbox
- * @param el 传入节点
+ * @param el
  * @return {Boolean}
  */
-function isRadioOrCheckbox(el) {
+export function isRadioOrCheckbox(el) {
   return el.type === 'radio' || el.type === 'checkbox';
 }
 
 /**
  * 判断节点是否为 select
- * @param {Element} elArray 传入节点
+ * @param {Element} elArray
  * @return {Boolean}
  */
-function isSelect(elArray) {
+export function isSelect(elArray) {
   return elArray[0].tagName === 'OPTION';
 }
 
@@ -89,15 +44,19 @@ function isSelect(elArray) {
  * @param elArray 传入节点
  * @return {Boolean}
  */
-function isSameNameField(elArray) {
-  return elArray && elArray.length && !isRadioOrCheckbox(elArray[0]) && !isSelect(elArray);
+export function isSameNameField(elArray) {
+  return elArray
+    && elArray.length
+    && !isRadioOrCheckbox(elArray[0])
+    && !isSelect(elArray);
 }
 
 /**
- * 通过 name 获取节点集合
- * @param {String} name 属性
+ * 通过 name 获取节点
+ * @param {String} name
+ * @return {NodeList}
  */
-function getElementsByName(name) {
+export function getElementsByName(name) {
   return document.getElementsByName(name);
 }
 
@@ -107,9 +66,9 @@ function getElementsByName(name) {
  * @param {String} attributeName 需要获取的属性
  * @return {String} 属性值
  */
-function attributeValue(elArray, attributeName) {
+export function attributeValue(elArray, attributeName) {
   if (isRadioOrCheckbox(elArray[0])) {
-    for (let i = 0, elLength = elArray.length; i < elLength; i++) {
+    for (let i = 0, elLength = elArray.length; i < elLength; i += 1) {
       if (elArray[i].checked) {
         return elArray[i][attributeName];
       }
@@ -119,49 +78,33 @@ function attributeValue(elArray, attributeName) {
 }
 
 /**
- * 判断是否包含 class
- * @param {Element} el
- * @param {String} cls 类名
+ * 初始化域的其他属性
  */
-function hasClass(el, cls) {
-  return el.className.match(new RegExp(`(\\s|^)${cls}(\\s|$)`));
-}
-
-/**
- * 添加 class
- * @param {Element} el
- * @param {String} cls 类名
- */
-function addClass(el, cls) {
-  if (!hasClass(el, cls)) {
-    el.classList ? el.classList.add(cls) : el.className += ` ${cls}`;
-  }
-}
-
-/**
- * 移除 class
- * @param {Element} el
- * @param {String} cls 类名
- */
-function removeClass(el, cls) {
-  if (hasClass(el, cls)) {
-    const reg = new RegExp(`(\\s|^)${cls}(\\s|$)`);
-    el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, ' ');
-  }
-}
-
-export {
-  getValue,
-  extend,
-  initField,
-  parseToDate,
-  isBrowser,
-  getCurrentEvent,
-  isRadioOrCheckbox,
-  isSelect,
-  isSameNameField,
-  getElementsByName,
-  attributeValue,
-  addClass,
-  removeClass,
+export const fieldOtherInitProps = {
+  id: null,
+  el: null,
+  type: null,
+  value: null,
+  checked: null,
 };
+
+/**
+ * 组装验证域
+ * field.el 统一为 Array 对象
+ * @param {Object} field
+ */
+export function assembleField(field) {
+  // 设置验证信息域属性
+  const el = field.el;
+  if (el) {
+    Object.assign(field, {
+      id: el[0].id,
+      type: el[0].type,
+      value: attributeValue(el, 'value'),
+      checked: attributeValue(el, 'checked'),
+    });
+  } else {
+    // 动态删除表单域之后初始化其他属性
+    Object.assign(field, fieldOtherInitProps);
+  }
+}

@@ -1,3 +1,5 @@
-import Validator from './Validator-dom';
+/**
+ * export default
+ */
 
-export default Validator;
+export default from './Validator';
