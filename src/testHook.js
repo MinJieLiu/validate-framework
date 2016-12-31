@@ -1,8 +1,7 @@
-import testHook from 'validate-framework-utils/lib/testHook';
 import { isRadioOrCheckbox } from './util';
 
 // 合并条件
-Object.assign(testHook, {
+export default {
   // 是否为必须
   required(field) {
     if (typeof field === 'string') {
@@ -14,6 +13,4 @@ Object.assign(testHook, {
     }
     return field.value !== null && field.value !== '';
   },
-});
-
-export default testHook;
+};

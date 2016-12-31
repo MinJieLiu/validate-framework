@@ -1,12 +1,12 @@
 import BaseValidator from 'validate-framework-utils';
 import {
-  isBrowser,
   getCurrentEvent,
   isSelect,
   isSameNameField,
   fieldOtherInitProps,
   assembleField,
 } from './util';
+import testHook from './testHook';
 
 /**
  * 验证组件
@@ -15,6 +15,8 @@ export default class Core extends BaseValidator {
 
   constructor(options) {
     super();
+    // 合并验证方法
+    Object.assign(this, testHook);
 
     // 无参数
     if (!options) {
@@ -71,14 +73,11 @@ export default class Core extends BaseValidator {
     // 如果有错误，停止 submit 提交
     if (!isSuccess) {
       this.preventSubmit();
-    } else {
-      // 将 null 暴露到 callback 函数中
-      this.errors = null;
     }
 
     // 执行回调函数
     if (typeof this.opts.callback === 'function') {
-      this.opts.callback(this.errors, this.handles.evt);
+      this.opts.callback(isSuccess, this.errors);
     }
 
     return isSuccess;

@@ -1,6 +1,7 @@
 import {
   getCurrentEvent,
   isRadioOrCheckbox,
+  isSameNameField,
 } from './util';
 import Core from './Core';
 
@@ -32,16 +33,24 @@ export default class Validator extends Core {
    * 绑定用户输入事件和改变事件
    */
   addFormEvent() {
-    this.form.oninput = (e) => {
+    const handleChange = (e) => {
       const evt = getCurrentEvent(e);
       const el = evt.target || evt.srcElement;
       const field = this.fields[el.name];
 
-      // 设置触发事件的表单元素
-      field.el = this.handleGetArrayByName(field.name);
+      const elArray = this.handleGetArrayByName(field.name);
+      if (isSameNameField(elArray)) {
+        field.el = [el];
+      } else {
+        // 设置触发事件的表单元素
+        field.el = elArray;
+      }
       // 验证单个表单
       return this.assembleValidateField(field);
     };
+
+    this.form.oninput = handleChange;
+    this.form.onchange = handleChange;
     return this;
   }
 

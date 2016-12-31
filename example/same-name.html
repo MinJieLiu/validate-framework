@@ -84,12 +84,12 @@
         messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
       }
     },
-    callback: function (errors, event) {
+    callback: function (result, error) {
 
       var submitButton = document.getElementById('submit');
       removeClass(submitButton, 'btn-primary');
       // 如果错误为空
-      if (!errors) {
+      if (result) {
         // 演示阻止表单提交
         validator.preventSubmit();
         // 设置成功按钮样式
