@@ -39,13 +39,13 @@ export default class Core extends BaseValidator {
     this.addFields(this.opts.fields);
 
     // 有 form 表单的验证
-    if (isBrowser() && this.opts.formName) {
+    if (this.opts.formName) {
       // 获取表单对象
       this.form = document.forms[this.opts.formName];
-
       // 添加 novalidate
       this.form.setAttribute('novalidate', 'novalidate');
-
+      // 绑定表单事件
+      this.addFormEvent();
       // 绑定提交事件
       this.handleOnSubmit();
     }
@@ -131,6 +131,7 @@ export default class Core extends BaseValidator {
     // 验证
     const { result, error } = this.validateByField(field);
     // 错误信息
+    error.el = field.el;
     this.errors[error.name] = result ? null : error;
     // 验证钩子
     this.afterFieldValidate(result, error);
@@ -165,6 +166,7 @@ export default class Core extends BaseValidator {
         // 构建单个需要验证的信息域
         this.fields[name] = {
           ...fields[name],
+          name,
           ...fieldOtherInitProps,
         };
       });

@@ -61,17 +61,23 @@
 <div class="jumbotron">
   <div class="container">
     <h1 class="title">validate-framework</h1>
-    <h2 class="title">一款轻量、强大、无依赖、前后端通用的 JavaScript 验证组件</h2>
+    <h2 class="title">一款轻量、无依赖的 JavaScript 验证组件</h2>
     <h3>
-      <iframe src="https://ghbtns.com/github-btn.html?user=MinJieLiu&repo=validate-framework&type=star&count=true&size=large"
-              frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+      <iframe
+          src="https://ghbtns.com/github-btn.html?user=MinJieLiu&repo=validate-framework&type=star&count=true&size=large"
+          frameborder="0" scrolling="0" width="160px" height="30px">
+      </iframe>
     </h3>
   </div>
   <!-- fork Me -->
-  <a href="https://github.com/MinJieLiu/validate-framework"><img style="position: absolute; top: 0; right: 0; border: 0;"
-                                                           src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
-                                                           alt="Fork me on GitHub"
-                                                           data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+  <a href="https://github.com/MinJieLiu/validate-framework">
+    <img
+      style="position: absolute; top: 0; right: 0; border: 0;"
+      src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+      alt="Fork me on GitHub"
+      data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
+    />
+  </a>
 </div>
 
 <div class="container">
@@ -150,15 +156,7 @@
   <h3>更多</h3>
   <ul>
     <li><a href="same-name.html" target="_blank">相同 name 属性表单验证</a></li>
-    <li><a href="no-form.html" target="_blank">无 &lt;form&gt; 表单验证</a></li>
-    <li><a href="validate-data.html" target="_blank">JSON 格式数据验证</a></li>
   </ul>
-
-  <h3>字符串验证</h3>
-  <div class="panel panel-default">
-    <div class="panel-body" id="stringValidate">
-    </div>
-  </div>
 
 </div>
 
@@ -196,12 +194,12 @@
       }
     },
     // 参数：errorEl 错误信息节点，fieldEl 出现错误的表单节点
-    errorPlacement: function (errorEl, fieldEl) {
+    errorPlacement: function (errorEl, elArray) {
       // 非 label 、radio 元素
-      if (!isRadioOrCheckbox(fieldEl)) {
-        fieldEl.parentNode.appendChild(errorEl);
+      if (!isRadioOrCheckbox(elArray[0])) {
+        elArray[0].parentNode.appendChild(errorEl);
       } else {
-        fieldEl.parentNode.parentNode.parentNode.appendChild(errorEl);
+        elArray[0].parentNode.parentNode.parentNode.appendChild(errorEl);
       }
     },
     callback: function (errors, event) {
@@ -222,21 +220,22 @@
         addClass(submitButton, 'btn-danger');
         submitButton.value = '验证失败';
       }
-
     }
   });
 
   // checkbox 至少选择两项
   // 扩展内部验证方法 field: 验证域， param: 参数 如 select_limit(2)
-  validator.addMethod('selectLimit', function (field, param) {
-    // checkbox 至少选择两项
-    var checkedNum = 0;
-    for (var i = 0, elLength = field.el.length; i < elLength; i++) {
-      if (field.el[i].checked) {
-        checkedNum += 1;
+  validator.addMethods({
+    selectLimit: function (field, param) {
+      // checkbox 至少选择两项
+      var checkedNum = 0;
+      for (var i = 0, elLength = field.el.length; i < elLength; i++) {
+        if (field.el[i].checked) {
+          checkedNum += 1;
+        }
       }
+      return checkedNum >= param;
     }
-    return checkedNum >= param;
   });
 
   // 设置邮箱值
@@ -258,17 +257,6 @@
     // 通过 name 验证单个表单域
     validator.validateByName('email');
   });
-
-
-  // 字符串验证
-  var v = new Validator();
-  var stringMessage = '';
-  stringMessage += '邮箱验证 -&gt; isEmail(\'example@qq.com\'): ' + v.isEmail('example@qq.com') + '<br />';
-  stringMessage += '手机验证 -&gt; isPhone(\'170123456789\'): ' + v.isPhone('170123456789') + '<br />';
-  stringMessage += '日期验证 -&gt; isDate(\'2010-13-10\'): ' + v.isDate('2010-13-10') + '<br />';
-  stringMessage += '小于某个日期 -&gt; lessThanDate(\'2010-01-02\', \'2010-01-01\'): ' + v.lessThanDate('2010-01-02', '2010-01-01') + '<br />';
-  stringMessage += '更多……';
-  document.getElementById('stringValidate').innerHTML = stringMessage;
 
   // Demo 中未使用 jQuery 类库，作为演示添加方法
   /**
@@ -299,7 +287,7 @@
 
   /**
    * 判断节点是否为 radio 或者 checkbox
-   * @param {Element} 传入节点
+   * @param {Element} el
    * @return {Boolean}
    */
   function isRadioOrCheckbox(el) {
@@ -317,7 +305,6 @@
     } else {
       el['on' + type] = fn;
     }
-    ;
   }
 
 </script>

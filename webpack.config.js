@@ -18,7 +18,7 @@ if (env === 'production') {
 
 module.exports = {
   entry: {
-    main: './src/index.js',
+    main: './src/index',
   },
   devtool: 'source-map',
   output: {

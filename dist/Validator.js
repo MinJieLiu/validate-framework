@@ -59,14 +59,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.default = undefined;
 	
-	var _ValidatorDom = __webpack_require__(1);
+	var _Validator = __webpack_require__(1);
 	
-	var _ValidatorDom2 = _interopRequireDefault(_ValidatorDom);
-
+	var _Validator2 = _interopRequireDefault(_Validator);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.default = _Validator2.default; /**
+	                                        * export default
+	                                        */
 
-	exports.default = _ValidatorDom2.default;
 	module.exports = exports['default'];
 
 /***/ },
@@ -83,9 +87,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _util = __webpack_require__(2);
 	
-	var _Validator = __webpack_require__(3);
+	var _Core2 = __webpack_require__(4);
 	
-	var _Validator2 = _interopRequireDefault(_Validator);
+	var _Core3 = _interopRequireDefault(_Core2);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -98,8 +102,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * validator 组件
 	 */
-	var Validator = function (_ValidatorCore) {
-	  _inherits(Validator, _ValidatorCore);
+	var Validator = function (_Core) {
+	  _inherits(Validator, _Core);
 	
 	  function Validator() {
 	    _classCallCheck(this, Validator);
@@ -114,149 +118,110 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Field 验证之后处理
 	     * @param isSuccess
-	     * @param errors
+	     * @param error
 	     */
-	    value: function afterFieldValidate(isSuccess, errors) {
+	    value: function afterFieldValidate(isSuccess, error) {
 	      // 错误信息操作
-	      if (errors) {
-	        // 添加错误类信息
-	        var clazz = this.opts.prefix + '-error';
-	        errors.clazz = clazz;
-	        // 设置错误 id
-	        errors.placeId = (clazz + '_' + (errors.id || errors.name)).replace('-', '_');
+	      Object.assign(error, {
+	        placeId: 'place_' + (error.id || error.name)
+	      });
 	
-	        // 当前条目验证结果展示
-	        if (isSuccess) {
-	          this._removeErrorPlace(errors);
-	        } else {
-	          this._addErrorPlace(errors);
-	        }
+	      // 当前条目验证结果展示
+	      if (isSuccess) {
+	        this.handleSuccessPlace(error);
+	      } else {
+	        this.handleErrorPlace(error);
 	      }
 	    }
 	
 	    /**
 	     * 绑定用户输入事件和改变事件
-	     * @param {String} name 属性
-	     * @param {String} level 事件级别 off/change/all
 	     */
 	
 	  }, {
-	    key: 'onInputEvent',
-	    value: function onInputEvent(name, level) {
-	      var validateFieldFunc = function (that) {
-	        return function (e) {
-	          try {
-	            var evt = (0, _util.getCurrentEvent)(e);
-	            var el = evt.target || evt.srcElement;
-	            var field = that.fields[el.name];
+	    key: 'addFormEvent',
+	    value: function addFormEvent() {
+	      var _this2 = this;
 	
-	            // 设置触发事件的表单元素
-	            field.el = that._getArrayByName(field.name);
-	            // 验证单个表单
-	            return that._validateField(field);
-	          } catch (ex) {
-	            return null;
-	          }
-	        };
-	      }(this);
+	      this.form.oninput = function (e) {
+	        var evt = (0, _util.getCurrentEvent)(e);
+	        var el = evt.target || evt.srcElement;
+	        var field = _this2.fields[el.name];
 	
-	      // 绑定表单值改变拦截
-	      var formEls = name ? this._getArrayByName(name) : this.form.elements;
-	
-	      for (var i = 0, formElsLength = formEls.length; i < formElsLength; i++) {
-	        var oninput = void 0;
-	        var onchange = void 0;
-	        var noop = function noop() {};
-	        var thatLevel = level || this.opts.eventLevel;
-	        // 触发事件绑定
-	        switch (thatLevel) {
-	          case 'off':
-	            oninput = noop;
-	            onchange = noop;
-	            break;
-	          case 'change':
-	            oninput = noop;
-	            onchange = validateFieldFunc;
-	            break;
-	          case 'all':
-	            oninput = validateFieldFunc;
-	            onchange = validateFieldFunc;
-	            break;
-	          default:
-	            break;
-	        }
-	        // 针对 IE 浏览器使用 onkeyup 事件
-	        var thisEl = formEls[i];
-	        if (!!window.ActiveXObject || 'ActiveXObject' in window) {
-	          thisEl.onkeyup = oninput;
-	        } else {
-	          thisEl.oninput = oninput;
-	        }
-	        thisEl.onchange = onchange;
-	      }
+	        // 设置触发事件的表单元素
+	        field.el = _this2.handleGetArrayByName(field.name);
+	        // 验证单个表单
+	        return _this2.assembleValidateField(field);
+	      };
 	      return this;
 	    }
 	
 	    /**
-	     * 移除当前条目错误信息
-	     * @param {Object} errorObj 验证信息域
+	     * 验证成功操作
+	     * @param {Object} error
 	     */
 	
 	  }, {
-	    key: '_removeErrorPlace',
-	    value: function _removeErrorPlace(errorObj) {
-	      if (!errorObj.el) {
+	    key: 'handleSuccessPlace',
+	    value: function handleSuccessPlace(error) {
+	      var elArray = error.el;
+	      if (!(elArray && elArray.length)) {
 	        return;
 	      }
 	
-	      // 移除表单域错误类
-	      for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
-	        (0, _util.removeClass)(errorObj.el[i], errorObj.clazz);
-	        (0, _util.addClass)(errorObj.el[i], this.opts.prefix + '-success');
-	      }
+	      var classNames = this.opts.classNames;
+	
+	      // 类操作
+	      elArray.forEach(function (theEl) {
+	        theEl.classList.remove(classNames.error);
+	        theEl.classList.add(classNames.success);
+	      });
 	
 	      // 移除错误信息节点
-	      var errorEl = document.getElementById(errorObj.placeId);
-	      errorEl && errorEl.parentNode.removeChild(errorEl);
+	      var errorEl = document.getElementById(error.placeId);
+	      if (errorEl) {
+	        errorEl.parentNode.removeChild(errorEl);
+	      }
 	    }
 	
 	    /**
-	     * 添加当前条目错误信息
-	     * @param {Object} errorObj 验证信息域
+	     * 验证错误操作
+	     * @param {Object} error
 	     */
 	
 	  }, {
-	    key: '_addErrorPlace',
-	    value: function _addErrorPlace(errorObj) {
-	      if (!errorObj.el) {
+	    key: 'handleErrorPlace',
+	    value: function handleErrorPlace(error) {
+	      var elArray = error.el;
+	      if (!(elArray && elArray.length)) {
 	        return;
 	      }
 	
-	      // 清除之前保留的错误信息
-	      this._removeErrorPlace(errorObj);
+	      var classNames = this.opts.classNames;
 	
-	      var opts = this.opts;
+	      elArray.forEach(function (theEl) {
+	        theEl.classList.remove(classNames.success);
+	        theEl.classList.add(classNames.error);
+	      });
 	
-	      // 当前表单域添加错误类
-	      for (var i = 0, elLength = errorObj.el.length; i < elLength; i++) {
-	        (0, _util.removeClass)(errorObj.el[i], opts.prefix + '-success');
-	        (0, _util.addClass)(errorObj.el[i], errorObj.clazz);
+	      // 错误信息元素
+	      var errorEl = document.getElementById(error.placeId);
+	      if (!errorEl) {
+	        // 创建信息元素
+	        errorEl = document.createElement('label');
+	        errorEl.classList.add(classNames.error + '-message');
+	        errorEl.setAttribute('id', error.placeId);
 	      }
-	
-	      // 创建元素
-	      var errorEl = document.createElement(opts.errorEl);
-	      (0, _util.addClass)(errorEl, errorObj.clazz + '-message');
-	      errorEl.setAttribute('id', errorObj.placeId);
-	      errorEl.innerText = errorObj.message;
+	      errorEl.innerText = error.message;
 	
 	      // 错误信息位置
-	      if (typeof opts.errorPlacement === 'function') {
+	      if (typeof this.opts.errorPlacement === 'function') {
 	        // 参数：错误信息节点，当前表单节点
-	        opts.errorPlacement(errorEl, errorObj.el[0]);
+	        this.opts.errorPlacement(errorEl, elArray);
 	      } else {
 	        // 默认错误信息位置
-	        // label 、 radio 元素错误位置不固定，默认暂不设置
-	        var fieldEl = errorObj.el[0];
+	        // label 、 radio 元素错误位置不固定，默认不设置
+	        var fieldEl = elArray[0];
 	        if (!(0, _util.isRadioOrCheckbox)(fieldEl)) {
 	          fieldEl.parentNode.appendChild(errorEl);
 	        }
@@ -265,70 +230,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }]);
 	
 	  return Validator;
-	}(_Validator2.default);
+	}(_Core3.default);
 	
 	exports.default = Validator;
 	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	/**
-	 * 判断 field 是否为字符串
-	 * @param {Object} field 验证域
-	 * @return {String} 返回值
-	 */
-	function getValue(field) {
-	  return typeof field === 'string' ? field : field.value;
-	}
 	
-	/**
-	 * 对象继承
-	 * @param {Object} target
-	 * @param {Object} source
-	 * @return {Object} target
-	 */
-	function extend(target, source) {
-	  for (var key in source) {
-	    target[key] = source[key];
+	var _util = __webpack_require__(3);
+	
+	Object.defineProperty(exports, 'getValue', {
+	  enumerable: true,
+	  get: function get() {
+	    return _util.getValue;
 	  }
-	  return target;
-	}
+	});
+	Object.defineProperty(exports, 'parseToDate', {
+	  enumerable: true,
+	  get: function get() {
+	    return _util.parseToDate;
+	  }
+	});
+	exports.isBrowser = isBrowser;
+	exports.getCurrentEvent = getCurrentEvent;
+	exports.isRadioOrCheckbox = isRadioOrCheckbox;
+	exports.isSelect = isSelect;
+	exports.isSameNameField = isSameNameField;
+	exports.attributeValue = attributeValue;
+	exports.assembleField = assembleField;
 	
-	/**
-	 * 设置除主属性的验证域为默认值
-	 * @param field
-	 * @return field
-	 */
-	function initField(field) {
-	  field.id = null;
-	  field.el = null;
-	  field.type = null;
-	  field.value = null;
-	  field.checked = null;
-	  return field;
-	}
-	
-	/**
-	 * 转换为日期
-	 * @param {String} param 日期格式：yyyy-MM-dd
-	 * @return {Date}
-	 */
-	function parseToDate(param) {
-	  var thatDate = new Date();
-	  var dateArray = param.split('-');
-	
-	  thatDate.setFullYear(dateArray[0]);
-	  thatDate.setMonth(dateArray[1] - 1);
-	  thatDate.setDate(dateArray[2]);
-	  return thatDate;
-	}
 	
 	/**
 	 * 是否为浏览器环境
@@ -339,7 +277,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	/**
-	 * 获取当前事件，兼容火狐浏览器
+	 * 获取当前事件
 	 * @param {Event} evt
 	 * @return {Event}
 	 */
@@ -349,7 +287,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * 判断节点是否为 radio 或者 checkbox
-	 * @param el 传入节点
+	 * @param el
 	 * @return {Boolean}
 	 */
 	function isRadioOrCheckbox(el) {
@@ -358,7 +296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * 判断节点是否为 select
-	 * @param {Element} elArray 传入节点
+	 * @param {Element} elArray
 	 * @return {Boolean}
 	 */
 	function isSelect(elArray) {
@@ -375,14 +313,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	/**
-	 * 通过 name 获取节点集合
-	 * @param {String} name 属性
-	 */
-	function getElementsByName(name) {
-	  return document.getElementsByName(name);
-	}
-	
-	/**
 	 * 获取节点对象的属性
 	 * @param {Object} elArray 传入节点
 	 * @param {String} attributeName 需要获取的属性
@@ -390,7 +320,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function attributeValue(elArray, attributeName) {
 	  if (isRadioOrCheckbox(elArray[0])) {
-	    for (var i = 0, elLength = elArray.length; i < elLength; i++) {
+	    for (var i = 0, elLength = elArray.length; i < elLength; i += 1) {
 	      if (elArray[i].checked) {
 	        return elArray[i][attributeName];
 	      }
@@ -400,54 +330,40 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	/**
-	 * 判断是否包含 class
-	 * @param {Element} el
-	 * @param {String} cls 类名
+	 * 初始化域的其他属性
 	 */
-	function hasClass(el, cls) {
-	  return el.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
-	}
+	var fieldOtherInitProps = exports.fieldOtherInitProps = {
+	  id: null,
+	  el: null,
+	  type: null,
+	  value: null,
+	  checked: null
+	};
 	
 	/**
-	 * 添加 class
-	 * @param {Element} el
-	 * @param {String} cls 类名
+	 * 组装验证域
+	 * field.el 统一为 Array 对象
+	 * @param {Object} field
 	 */
-	function addClass(el, cls) {
-	  if (!hasClass(el, cls)) {
-	    el.classList ? el.classList.add(cls) : el.className += ' ' + cls;
+	function assembleField(field) {
+	  // 设置验证信息域属性
+	  var el = field.el;
+	  if (el) {
+	    Object.assign(field, {
+	      id: el[0].id,
+	      type: el[0].type,
+	      value: attributeValue(el, 'value'),
+	      checked: attributeValue(el, 'checked')
+	    });
+	  } else {
+	    // 动态删除表单域之后初始化其他属性
+	    Object.assign(field, fieldOtherInitProps);
 	  }
 	}
-	
-	/**
-	 * 移除 class
-	 * @param {Element} el
-	 * @param {String} cls 类名
-	 */
-	function removeClass(el, cls) {
-	  if (hasClass(el, cls)) {
-	    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
-	    el.classList ? el.classList.remove(cls) : el.className = el.className.replace(reg, ' ');
-	  }
-	}
-	
-	exports.getValue = getValue;
-	exports.extend = extend;
-	exports.initField = initField;
-	exports.parseToDate = parseToDate;
-	exports.isBrowser = isBrowser;
-	exports.getCurrentEvent = getCurrentEvent;
-	exports.isRadioOrCheckbox = isRadioOrCheckbox;
-	exports.isSelect = isSelect;
-	exports.isSameNameField = isSameNameField;
-	exports.getElementsByName = getElementsByName;
-	exports.attributeValue = attributeValue;
-	exports.addClass = addClass;
-	exports.removeClass = removeClass;
 
 /***/ },
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	'use strict';
 	
@@ -457,70 +373,111 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
+	exports.getValue = getValue;
+	exports.parseToDate = parseToDate;
+	/**
+	 * 获取 value 属性
+	 * @param {*} field 域
+	 * @return {String}
+	 */
+	function getValue(field) {
+	  return (typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object' ? field.value : field;
+	}
+	
+	/**
+	 * 字符串转换为日期
+	 * @param {String} param 日期格式：YYYY-MM-DD
+	 * @return {Date}
+	 */
+	function parseToDate(param) {
+	  var thatDate = new Date();
+	  var dateArray = param.split('-');
+	  thatDate.setFullYear(dateArray[0]);
+	  thatDate.setMonth(dateArray[1] - 1);
+	  thatDate.setDate(dateArray[2]);
+	  return thatDate;
+	}
+	//# sourceMappingURL=util.js.map
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	var _validateFrameworkUtils = __webpack_require__(5);
+	
+	var _validateFrameworkUtils2 = _interopRequireDefault(_validateFrameworkUtils);
+	
 	var _util = __webpack_require__(2);
-	
-	var _testHook = __webpack_require__(4);
-	
-	var _testHook2 = _interopRequireDefault(_testHook);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	/**
-	 * 核心验证组件，不包括事件及 dom 操作
-	 */
-	var Validate = function () {
-	  function Validate(options) {
-	    _classCallCheck(this, Validate);
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
-	    // 绑定验证方法
-	    for (var key in _testHook2.default) {
-	      this[key] = _testHook2.default[key];
-	    }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	/**
+	 * 验证组件
+	 */
+	var Core = function (_BaseValidator) {
+	  _inherits(Core, _BaseValidator);
+	
+	  function Core(options) {
+	    var _ret2;
+	
+	    _classCallCheck(this, Core);
 	
 	    // 无参数
+	    var _this = _possibleConstructorReturn(this, (Core.__proto__ || Object.getPrototypeOf(Core)).call(this));
+	
 	    if (!options) {
-	      return this;
+	      var _ret;
+	
+	      return _ret = _this, _possibleConstructorReturn(_this, _ret);
 	    }
 	
-	    this._default = {
-	      // css 类前缀
-	      prefix: 'valid',
-	      // 错误信息节点
-	      errorEl: 'em',
-	      // 表单触发事件级别
-	      eventLevel: 'all'
-	    };
+	    // params
+	    _this.opts = Object.assign({
+	      classNames: {
+	        error: 'valid-error',
+	        success: 'valid-success'
+	      }
+	    }, options);
 	
-	    // 替换默认参数
-	    this.opts = (0, _util.extend)(this._default, options);
-	    this.form = {};
-	    this.bodyData = options.bodyData;
-	    this.errors = {};
-	    this.fields = {};
-	    this.handles = {};
+	    // init
+	    _this.form = {};
+	    _this.errors = {};
+	    _this.fields = {};
+	    _this.handles = {};
 	
 	    // 构建具有所有需要验证的信息域
-	    this.addFields(this.opts.fields);
+	    _this.addFields(_this.opts.fields);
 	
 	    // 有 form 表单的验证
-	    if ((0, _util.isBrowser)() && this.opts.formName) {
+	    if (_this.opts.formName) {
 	      // 获取表单对象
-	      this.form = document.forms[this.opts.formName];
-	
-	      // HTML5 添加 novalidate
-	      this.form.setAttribute('novalidate', 'novalidate');
-	
-	      // 绑定用户输入事件
-	      this.onInputEvent && this.onInputEvent(null, 'all');
-	
+	      _this.form = document.forms[_this.opts.formName];
+	      // 添加 novalidate
+	      _this.form.setAttribute('novalidate', 'novalidate');
+	      // 绑定表单事件
+	      _this.addFormEvent();
 	      // 绑定提交事件
-	      this._onSubmit();
+	      _this.handleOnSubmit();
 	    }
-	    return this;
+	    return _ret2 = _this, _possibleConstructorReturn(_this, _ret2);
 	  }
 	
 	  /**
@@ -530,21 +487,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	
 	
-	  _createClass(Validate, [{
+	  _createClass(Core, [{
 	    key: 'validate',
 	    value: function validate(evt) {
+	      var _this2 = this;
+	
 	      this.handles.evt = (0, _util.getCurrentEvent)(evt);
 	      var isSuccess = true;
-	      var fields = this.fields;
 	
-	      for (var name in fields) {
+	      Object.keys(this.fields).forEach(function (name) {
 	        // 通过 name 验证
-	        if (!this.validateByName(name)) {
+	        if (!_this2.validateByName(name)) {
 	          isSuccess = false;
 	        }
-	      }
+	      });
 	
-	      // 如果有错误，停止 submit 提交，并停止执行回调函数
+	      // 如果有错误，停止 submit 提交
 	      if (!isSuccess) {
 	        this.preventSubmit();
 	      } else {
@@ -563,44 +521,69 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * 验证单个表单域
 	     * @param {String} name 属性
-	     * @return {Boolean} 是否成功
+	     * @return {Boolean}
 	     */
 	
 	  }, {
 	    key: 'validateByName',
 	    value: function validateByName(name) {
+	      var _this3 = this;
+	
 	      var field = this.fields[name];
-	      var isSuccess = false;
+	      var isSuccess = true;
 	
 	      // 单个验证没找到规则
 	      if (!field) {
-	        return isSuccess;
+	        return !isSuccess;
 	      }
 	
 	      // 获取验证的 DOM 节点数组
-	      var el = this._getArrayByName(field.name);
+	      var elArray = this.handleGetArrayByName(field.name);
 	
 	      // 表单 name 属性相同且不是 radio、checkbox、select 的表单域
-	      if ((0, _util.isSameNameField)(el)) {
-	        // 默认通过验证，若有一个错误，则不通过
-	        var isMultiSuccess = true;
-	        for (var i = 0, elLength = el.length; i < elLength; i++) {
+	      if ((0, _util.isSameNameField)(elArray)) {
+	        elArray.forEach(function (item) {
 	          // 当前验证的 field 对象
 	          // 默认设置 el 为数组对象
-	          field.el = [el[i]];
-	          // 若有一个错误，则不通过
-	          if (!this._validateField(field)) {
-	            isMultiSuccess = false;
+	          field.el = [item];
+	          if (!_this3.assembleValidateField(field)) {
+	            isSuccess = false;
 	          }
-	        }
-	        isSuccess = isMultiSuccess;
+	        });
 	      } else {
 	        // 正常验证
-	        field.el = el;
-	        isSuccess = this._validateField(field);
+	        field.el = elArray;
+	        isSuccess = this.assembleValidateField(field);
 	      }
 	
 	      return isSuccess;
+	    }
+	
+	    /**
+	     * 验证及组装错误信息
+	     * @param field
+	     * @return {Boolean}
+	     */
+	
+	  }, {
+	    key: 'assembleValidateField',
+	    value: function assembleValidateField(field) {
+	      // 初始化
+	      (0, _util.assembleField)(field);
+	      // 验证
+	
+	      var _validateByField = this.validateByField(field),
+	          result = _validateByField.result,
+	          error = _validateByField.error;
+	      // 错误信息
+	
+	
+	      error.el = field.el;
+	      this.errors[error.name] = result ? null : error;
+	      // 验证钩子
+	      this.afterFieldValidate(result, error);
+	
+	      return result;
 	    }
 	
 	    /**
@@ -623,67 +606,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	     * 扩展校验方法
-	     * @param {String} name 校验名称
-	     * @param {Function} method 校验方法
-	     */
-	
-	  }, {
-	    key: 'addMethod',
-	    value: function addMethod(name, method) {
-	      if (typeof method === 'function') {
-	        // 绑定验证方法
-	        _testHook2.default[name] = method;
-	
-	        // 绑定至对象
-	        this[name] = method;
-	      }
-	
-	      return this;
-	    }
-	
-	    /**
 	     * 动态添加 fields 方法
-	     * @param {Object} fields 对象
+	     * @param {Object} fields
 	     */
 	
 	  }, {
 	    key: 'addFields',
 	    value: function addFields(fields) {
+	      var _this4 = this;
+	
 	      if ((typeof fields === 'undefined' ? 'undefined' : _typeof(fields)) === 'object') {
 	        // 构建具有所有需要验证的信息域
-	        for (var name in fields) {
-	          var field = fields[name];
-	
-	          // 规则正确，则进行
-	          if (field.rules) {
-	            // 初始化 其他属性
-	            field.name = name;
-	            field = (0, _util.initField)(field);
-	
-	            // 构建单个需要验证的信息域
-	            this.fields[name] = field;
-	          }
-	        }
+	        Object.keys(fields).forEach(function (name) {
+	          // 构建单个需要验证的信息域
+	          _this4.fields[name] = _extends({}, fields[name], {
+	            name: name
+	          }, _util.fieldOtherInitProps);
+	        });
 	      }
 	      return this;
 	    }
 	
 	    /**
 	     * 动态移除 fields 方法
-	     * @param {Array} fieldNames 名称
+	     * @param {string} names 名称
 	     */
 	
 	  }, {
 	    key: 'removeFields',
-	    value: function removeFields(fieldNames) {
-	      if (fieldNames instanceof Array) {
-	        for (var i = 0, namesLength = fieldNames.length; i < namesLength; i++) {
-	          // 移除对象
-	          this.fields && delete this.fields[fieldNames[i]];
-	          this.errors && delete this.errors[fieldNames[i]];
-	        }
+	    value: function removeFields() {
+	      var _this5 = this;
+	
+	      for (var _len = arguments.length, names = Array(_len), _key = 0; _key < _len; _key++) {
+	        names[_key] = arguments[_key];
 	      }
+	
+	      names.forEach(function (name) {
+	        // 移除域和错误类
+	        delete _this5.fields[name];
+	        delete _this5.errors[name];
+	      });
 	      return this;
 	    }
 	
@@ -692,8 +654,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	
 	  }, {
-	    key: '_onSubmit',
-	    value: function _onSubmit() {
+	    key: 'handleOnSubmit',
+	    value: function handleOnSubmit() {
 	      var thatOnSubmit = this.form.onsubmit;
 	      this.form.onsubmit = function (that) {
 	        return function (e) {
@@ -708,184 +670,68 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	     * 验证当前节点
-	     * @param  {Object} field 验证信息域
-	     * @return {Boolean} 是否成功
-	     */
-	
-	  }, {
-	    key: '_validateField',
-	    value: function _validateField(field) {
-	      var _this = this;
-	
-	      var thatField = field;
-	      // 成功标识
-	      var isSuccess = true;
-	      // 错误对象
-	      this.errors = this.errors || {};
-	
-	      // 更新验证域
-	      thatField = this._updateField(thatField);
-	
-	      var isRequired = thatField.rules.indexOf('required') !== -1;
-	      var isEmpty = thatField.value === undefined || thatField.value === '' || thatField.value === null;
-	
-	      var rules = thatField.rules.split(/\s*\|\s*/g);
-	
-	      var _loop = function _loop(i, ruleLength) {
-	        // 逐条验证，如果已经验证失败，则暂时不需要进入当前条目再次验证
-	        if (!isSuccess) {
-	          return 'break';
-	        }
-	
-	        // 转换：max_length(12) => ['max_length', 12]
-	        var method = rules[i];
-	        var parts = /^(.+?)\((.+)\)$/.exec(method);
-	        var param = '';
-	
-	        // 解析带参数的验证如 max_length(12)
-	        if (parts) {
-	          method = parts[1];
-	          param = parts[2];
-	        }
-	
-	        // 如果不是 required 这个字段，该值是空的，则不验证，继续下一个规则。
-	        if (!isRequired && isEmpty) {
-	          return 'continue';
-	        }
-	
-	        // 匹配验证
-	        if (typeof _testHook2.default[method] === 'function') {
-	          if (!_testHook2.default[method].apply(_this, [thatField, param])) {
-	            isSuccess = false;
-	          }
-	        }
-	
-	        // 错误信息域
-	        _this.errors[thatField.name] = {
-	          el: thatField.el,
-	          id: thatField.id,
-	          name: thatField.name,
-	          rule: method
-	        };
-	
-	        // 解析错误信息
-	        if (!isSuccess) {
-	          // 错误提示
-	          _this.errors[thatField.name].message = function message() {
-	            var seqText = thatField.messages ? thatField.messages.split(/\s*\|\s*/g)[i] : '';
-	
-	            // 替换 {{value}} 和 {{param}} 为指定值
-	            return seqText ? seqText.replace(/\{\{\s*value\s*}}/g, thatField.value).replace(/\{\{\s*param\s*}}/g, param) : seqText;
-	          }();
-	        }
-	      };
-	
-	      _loop2: for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
-	        var _ret = _loop(i, ruleLength);
-	
-	        switch (_ret) {
-	          case 'break':
-	            break _loop2;
-	
-	          case 'continue':
-	            continue;}
-	      }
-	
-	      // 钩子：验证单个之后
-	
-	
-	      this.afterFieldValidate && this.afterFieldValidate(isSuccess, this.errors[thatField.name]);
-	
-	      // 验证成功后，删除之前验证过的信息
-	      if (isSuccess) {
-	        delete this.errors[thatField.name];
-	      }
-	
-	      return isSuccess;
-	    }
-	
-	    /**
-	     * 更新单个验证域
-	     * field.el 统一为 Array 对象
-	     * @param {Object} field 验证域
-	     * @return {Object} field
-	     */
-	
-	  }, {
-	    key: '_updateField',
-	    value: function _updateField(field) {
-	      var thatField = field;
-	      // 数据验证模式
-	      if (this.bodyData) {
-	        thatField.value = this.bodyData[thatField.name];
-	        return thatField;
-	      }
-	
-	      // 设置验证信息域属性
-	      var el = thatField.el;
-	      if (el) {
-	        thatField.id = el[0].id;
-	        thatField.type = el[0].type;
-	        thatField.value = (0, _util.attributeValue)(el, 'value');
-	        thatField.checked = (0, _util.attributeValue)(el, 'checked');
-	      } else {
-	        // 动态删除表单域之后清空对象值
-	        thatField = (0, _util.initField)(field);
-	      }
-	      return thatField;
-	    }
-	
-	    /**
-	     * 获取 nodeList 转换为 Array 统一验证，并避免 IE 序列化崩溃 BUG
+	     * 将 nodeList 转换为 Array 统一验证
 	     * @param {String} name 节点
+	     * @return {Array}
 	     */
 	
 	  }, {
-	    key: '_getArrayByName',
-	    value: function _getArrayByName(name) {
-	      // 仅浏览器环境
-	      if ((0, _util.isBrowser)()) {
-	        var elObj = void 0;
+	    key: 'handleGetArrayByName',
+	    value: function handleGetArrayByName(name) {
+	      // field element
+	      var el = this.form[name];
+	      var result = [];
 	
-	        // 若有 form 存在定位更精确
-	        if (this.opts.formName) {
-	          elObj = this.form[name];
-	        } else {
-	          elObj = (0, _util.getElementsByName)(name);
-	        }
-	
-	        // 如果节点对象不存在或长度为零
-	        if (!elObj || elObj.length === 0) {
-	          return null;
-	        }
-	
-	        // 将节点转换为数组
-	        var arr = [];
-	        var elLength = elObj.length;
-	
-	        // 排除 select， select 为数组形式
-	        if (elLength && !(0, _util.isSelect)(elObj)) {
-	          for (var i = 0; i < elLength; i++) {
-	            arr.push(elObj[i]);
-	          }
-	        } else {
-	          arr.push(elObj);
-	        }
-	        return arr;
+	      // 如果节点对象不存在或长度为零
+	      if (!el || el.length === 0) {
+	        return result;
 	      }
-	      return null;
+	
+	      // 将节点转换为数组
+	      var elLength = el.length;
+	
+	      // 排除 select， select 为数组形式
+	      if (elLength && !(0, _util.isSelect)(el)) {
+	        for (var i = 0; i < elLength; i += 1) {
+	          result.push(el[i]);
+	        }
+	      } else {
+	        result.push(el);
+	      }
+	      return result;
 	    }
 	  }]);
 	
-	  return Validate;
-	}();
+	  return Core;
+	}(_validateFrameworkUtils2.default);
 	
-	exports.default = Validate;
+	exports.default = Core;
 	module.exports = exports['default'];
 
 /***/ },
-/* 4 */
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = undefined;
+	
+	var _Validator = __webpack_require__(6);
+	
+	var _Validator2 = _interopRequireDefault(_Validator);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.default = _Validator2.default; /**
+	                                        * export default component
+	                                        */
+	//# sourceMappingURL=index.js.map
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -894,18 +740,109 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	var _regex = __webpack_require__(5);
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _testHook = __webpack_require__(7);
+	
+	var _testHook2 = _interopRequireDefault(_testHook);
+	
+	var _core = __webpack_require__(9);
+	
+	var _core2 = _interopRequireDefault(_core);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * 验证组件
+	 */
+	var Validator = function () {
+	  function Validator() {
+	    _classCallCheck(this, Validator);
+	
+	    // 绑定验证基本验证方法
+	    Object.assign(this, _extends({}, _testHook2.default));
+	  }
+	
+	  /**
+	   * 添加验证方法
+	   * @param methods
+	   * @return {Validator}
+	   */
+	
+	
+	  _createClass(Validator, [{
+	    key: 'addMethods',
+	    value: function addMethods(methods) {
+	      Object.assign(this, methods);
+	      return this;
+	    }
+	
+	    /**
+	     * 移除验证方法
+	     * @param names
+	     * @return {Validator}
+	     */
+	
+	  }, {
+	    key: 'removeMethods',
+	    value: function removeMethods() {
+	      var _this = this;
+	
+	      for (var _len = arguments.length, names = Array(_len), _key = 0; _key < _len; _key++) {
+	        names[_key] = arguments[_key];
+	      }
+	
+	      names.forEach(function (name) {
+	        return delete _this[name];
+	      });
+	      return this;
+	    }
+	
+	    /**
+	     * 通过 field 验证
+	     * @param  {Object} field 验证信息域
+	     * @return {Object} 包含结果、错误信息
+	     */
+	
+	  }, {
+	    key: 'validateByField',
+	    value: function validateByField(field) {
+	      return _core2.default.call(this, field);
+	    }
+	  }]);
+	
+	  return Validator;
+	}();
+	
+	exports.default = Validator;
+	//# sourceMappingURL=Validator.js.map
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _regex = __webpack_require__(8);
 	
 	var _regex2 = _interopRequireDefault(_regex);
 	
-	var _util = __webpack_require__(2);
+	var _util = __webpack_require__(3);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	/**
 	 * 验证方法类
 	 */
-	var testHook = {
+	exports.default = {
 	
 	  // 验证自然数
 	  isNumeric: function isNumeric(field) {
@@ -988,12 +925,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	
 	
-	  // 是否为必填
+	  // 是否为必须
 	  required: function required(field) {
-	    if ((0, _util.isRadioOrCheckbox)(field)) {
-	      return field.checked === true;
+	    if (typeof field === 'string') {
+	      return field !== '';
+	    } else if (Array.isArray(field.value)) {
+	      return field.value.length;
 	    }
-	    return (0, _util.getValue)(field) !== null && (0, _util.getValue)(field) !== '';
+	    return field.value !== null && field.value !== '';
 	  },
 	
 	
@@ -1040,7 +979,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var currentDate = (0, _util.parseToDate)((0, _util.getValue)(field));
 	    var paramDate = (0, _util.parseToDate)(date);
 	
-	    if (!paramDate || !currentDate) {
+	    if (!(paramDate && currentDate)) {
 	      return false;
 	    }
 	    return currentDate > paramDate;
@@ -1052,18 +991,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var currentDate = (0, _util.parseToDate)((0, _util.getValue)(field));
 	    var paramDate = (0, _util.parseToDate)(date);
 	
-	    if (!paramDate || !currentDate) {
+	    if (!(paramDate && currentDate)) {
 	      return false;
 	    }
 	    return currentDate < paramDate;
 	  }
 	};
-	
-	exports.default = testHook;
-	module.exports = exports['default'];
+	//# sourceMappingURL=testHook.js.map
 
 /***/ },
-/* 5 */
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1074,7 +1011,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * 正则表达式
 	 */
-	var regex = {
+	exports.default = {
 	
 	  // 自然数
 	  numeric: /^\d+$/,
@@ -1106,9 +1043,83 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // 日期
 	  date: /^\d{4}-\d{1,2}-\d{1,2}$/
 	};
+	//# sourceMappingURL=regex.js.map
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
 	
-	exports.default = regex;
-	module.exports = exports["default"];
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	exports.default = function (field) {
+	  var _this = this;
+	
+	  // 成功标识
+	  var result = true;
+	  var error = null;
+	
+	  var isRequired = field.rules.includes('required');
+	  var isEmpty = field.value === undefined || field.value === null || field.value === '';
+	
+	  var rules = field.rules.split(/\s*\|\s*/g);
+	
+	  rules.forEach(function (rule, index) {
+	    // 逐条验证，如果已经验证失败，则不需要进入当前条目再次验证
+	    if (!result) {
+	      return;
+	    }
+	
+	    // 转换如：maxLength(12) => ['maxLength', 12]
+	    var parts = /^(.+?)\((.+)\)$/.exec(rule);
+	    var method = rule;
+	    var param = '';
+	
+	    // 解析带参数的验证如 max_length(12)
+	    if (parts) {
+	      method = parts[1];
+	      param = parts[2];
+	    }
+	
+	    // 如果该规则为 required，并且该值为空，则不验证
+	    var jumpRule = !isRequired && isEmpty;
+	
+	    // 匹配验证
+	    if (typeof _this[method] === 'function' && !jumpRule) {
+	      if (!_this[method].apply(_this, [field, param])) {
+	        result = false;
+	      }
+	    }
+	
+	    // 错误信息域
+	    error = {
+	      id: field.id,
+	      name: field.name,
+	      value: field.value,
+	      rule: method
+	    };
+	
+	    // 解析错误信息
+	    if (!result) {
+	      // 错误提示
+	      error.message = function () {
+	        var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[index] : '';
+	
+	        // 替换 {{value}} 和 {{param}} 为指定值
+	        return seqText ? seqText.replace(/\{\{\s*value\s*}}/g, field.value).replace(/\{\{\s*param\s*}}/g, param) : seqText;
+	      }();
+	    }
+	  });
+	
+	  return {
+	    result: result,
+	    error: error
+	  };
+	};
+	//# sourceMappingURL=core.js.map
 
 /***/ }
 /******/ ])

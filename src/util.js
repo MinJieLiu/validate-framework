@@ -52,15 +52,6 @@ export function isSameNameField(elArray) {
 }
 
 /**
- * 通过 name 获取节点
- * @param {String} name
- * @return {NodeList}
- */
-export function getElementsByName(name) {
-  return document.getElementsByName(name);
-}
-
-/**
  * 获取节点对象的属性
  * @param {Object} elArray 传入节点
  * @param {String} attributeName 需要获取的属性

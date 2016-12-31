@@ -30,60 +30,18 @@ export default class Validator extends Core {
 
   /**
    * 绑定用户输入事件和改变事件
-   * @param {String} name 属性
-   * @param {String} level 事件级别 off/change/all
    */
-  onInputEvent(name, level) {
-    const validateFieldFunc = (that => (e) => {
-      try {
-        const evt = getCurrentEvent(e);
-        const el = evt.target || evt.srcElement;
-        const field = that.fields[el.name];
+  addFormEvent() {
+    this.form.oninput = (e) => {
+      const evt = getCurrentEvent(e);
+      const el = evt.target || evt.srcElement;
+      const field = this.fields[el.name];
 
-        // 设置触发事件的表单元素
-        field.el = that.handleGetArrayByName(field.name);
-        // 验证单个表单
-        return that.assembleValidateField(field);
-      } catch (ex) {
-        return null;
-      }
-    })(this);
-
-    // 绑定表单值改变拦截
-    const formEls = name ? this.handleGetArrayByName(name) : this.form.elements;
-
-    for (let i = 0, formElsLength = formEls.length; i < formElsLength; i += 1) {
-      let oninput;
-      let onchange;
-      const noop = function () {
-      };
-      const thatLevel = level || this.opts.eventLevel;
-      // 触发事件绑定
-      switch (thatLevel) {
-        case 'off':
-          oninput = noop;
-          onchange = noop;
-          break;
-        case 'change':
-          oninput = noop;
-          onchange = validateFieldFunc;
-          break;
-        case 'all':
-          oninput = validateFieldFunc;
-          onchange = validateFieldFunc;
-          break;
-        default:
-          break;
-      }
-      // 针对 IE 浏览器使用 onkeyup 事件
-      const thisEl = formEls[i];
-      if (!!window.ActiveXObject || 'ActiveXObject' in window) {
-        thisEl.onkeyup = oninput;
-      } else {
-        thisEl.oninput = oninput;
-      }
-      thisEl.onchange = onchange;
-    }
+      // 设置触发事件的表单元素
+      field.el = this.handleGetArrayByName(field.name);
+      // 验证单个表单
+      return this.assembleValidateField(field);
+    };
     return this;
   }
 
@@ -93,17 +51,16 @@ export default class Validator extends Core {
    */
   handleSuccessPlace(error) {
     const elArray = error.el;
-    if (!elArray.length) {
+    if (!(elArray && elArray.length)) {
       return;
     }
 
     const classNames = this.opts.classNames;
 
     // 类操作
-    elArray.forEach((name) => {
-      elArray[name].classList
-        .remove(classNames.error)
-        .add(classNames.success);
+    elArray.forEach((theEl) => {
+      theEl.classList.remove(classNames.error);
+      theEl.classList.add(classNames.success);
     });
 
     // 移除错误信息节点
@@ -119,22 +76,25 @@ export default class Validator extends Core {
    */
   handleErrorPlace(error) {
     const elArray = error.el;
-    if (!elArray.length) {
+    if (!(elArray && elArray.length)) {
       return;
     }
 
     const classNames = this.opts.classNames;
 
-    elArray.forEach((name) => {
-      elArray[name].classList
-        .remove(classNames.success)
-        .add(classNames.error);
+    elArray.forEach((theEl) => {
+      theEl.classList.remove(classNames.success);
+      theEl.classList.add(classNames.error);
     });
 
-    // 创建信息元素
-    const errorEl = document.createElement('label');
-    errorEl.classList.add(`${classNames.error}-message`);
-    errorEl.setAttribute('id', error.placeId);
+    // 错误信息元素
+    let errorEl = document.getElementById(error.placeId);
+    if (!errorEl) {
+      // 创建信息元素
+      errorEl = document.createElement('label');
+      errorEl.classList.add(`${classNames.error}-message`);
+      errorEl.setAttribute('id', error.placeId);
+    }
     errorEl.innerText = error.message;
 
     // 错误信息位置
