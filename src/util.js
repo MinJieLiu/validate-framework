@@ -5,20 +5,12 @@
 export { getValue, parseToDate } from 'validate-framework-utils/lib/util';
 
 /**
- * 是否为浏览器环境
- * @return {Boolean}
- */
-export function isBrowser() {
-  return typeof window !== 'undefined';
-}
-
-/**
  * 获取当前事件
  * @param {Event} evt
  * @return {Event}
  */
 export function getCurrentEvent(evt) {
-  return isBrowser() ? (evt || window.event) : null;
+  return evt || window.event;
 }
 
 /**
@@ -66,6 +58,38 @@ export function attributeValue(elArray, attributeName) {
     }
   }
   return elArray[0][attributeName];
+}
+
+/**
+ * 判断是否包含 class
+ * @param {Element} el
+ * @param {String} className
+ */
+function hasClass(el, className) {
+  return el.className.match(new RegExp(`(\\s|^)${className}(\\s|$)`));
+}
+
+/**
+ * 添加 class
+ * @param {Element} el
+ * @param {String} className
+ */
+export function addClass(el, className) {
+  if (!hasClass(el, className)) {
+    el.className += ` ${className}`; // eslint-disable-line no-param-reassign
+  }
+}
+
+/**
+ * 移除 class
+ * @param {Element} el
+ * @param {String} className
+ */
+export function removeClass(el, className) {
+  if (hasClass(el, className)) {
+    const reg = new RegExp(`(\\s|^)${className}(\\s|$)`);
+    el.className = el.className.replace(reg, ' '); // eslint-disable-line no-param-reassign
+  }
 }
 
 /**

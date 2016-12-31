@@ -2,6 +2,8 @@ import {
   getCurrentEvent,
   isRadioOrCheckbox,
   isSameNameField,
+  addClass,
+  removeClass,
 } from './util';
 import Core from './Core';
 
@@ -68,8 +70,8 @@ export default class Validator extends Core {
 
     // 类操作
     elArray.forEach((theEl) => {
-      theEl.classList.remove(classNames.error);
-      theEl.classList.add(classNames.success);
+      removeClass(theEl, classNames.error);
+      addClass(theEl, classNames.success);
     });
 
     // 移除错误信息节点
@@ -92,8 +94,8 @@ export default class Validator extends Core {
     const classNames = this.opts.classNames;
 
     elArray.forEach((theEl) => {
-      theEl.classList.remove(classNames.success);
-      theEl.classList.add(classNames.error);
+      removeClass(theEl, classNames.success);
+      addClass(theEl, classNames.error);
     });
 
     // 错误信息元素

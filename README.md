@@ -3,22 +3,16 @@
 [![Build Status](https://travis-ci.org/MinJieLiu/validate-framework.svg?branch=master)](https://travis-ci.org/MinJieLiu/validate-framework)
 [![npm version](https://badge.fury.io/js/validate-framework.svg)](https://badge.fury.io/js/validate-framework)
 
-一款轻量、强大、无依赖、前后端通用的 JavaScript 验证组件
+一款轻量、无依赖的 JavaScript 验证组件
 
 Demo： [http://minjieliu.github.io/validate-framework/example](http://minjieliu.github.io/validate-framework/example)
 
 ## 特性
 
  1. 轻量、无依赖
- 2. 可选核心组件
- 3. 前后端通用
- 4. umd 支持
- 5. es2015 语法
- 6. 相同 name 的表单验证
- 7. 动态验证
- 8. 兼容 chrome 、firfox 、IE9 +
-
-注意：若要兼容 `IE6+` 浏览器，请使用 `v2.1.1` 版
+ 1. 相同 name 的表单验证
+ 1. 动态验证
+ 1. 兼容 chrome 、firfox 、IE9 +
 
 ## 快速上手
 
@@ -30,16 +24,16 @@ Demo： [http://minjieliu.github.io/validate-framework/example](http://minjieliu
 基本用法：
 
 ```html
-<form id="validate_form">
-    <div class="form-group">
-        <label for="email">邮箱：</label>
-        <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
-    </div>
-    <div class="form-group">
-        <label for="phone">手机：</label>
-        <input class="form-control" id="phone" name="phone" type="text" placeholder="请输入手机号" />
-    </div>
-    <input class="btn btn-primary" id="submit" type="submit" value="提交" />
+<form name="basicForm">
+  <div class="form-group">
+    <label for="email">邮箱：</label>
+    <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
+  </div>
+  <div class="form-group">
+    <label for="phone">手机：</label>
+    <input class="form-control" id="phone" name="phone" type="text" placeholder="请输入手机号" />
+  </div>
+  <input class="btn btn-primary" id="submit" type="submit" value="提交" />
 </form>
 ```
 
@@ -47,113 +41,41 @@ Demo： [http://minjieliu.github.io/validate-framework/example](http://minjieliu
 import validateFramework from 'validate-framework';
 
 const validator = new validateFramework({
-    formName: 'validate_form',
-    fields: {
-        email: {
-            rules: 'required | isEmail | maxLength(32)',
-            messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
-        },
-        phone: {
-            rules: 'isPhone',
-            messages: "手机号： {{value}} 不合法"
-        }
+  formName: 'basicForm',
+  fields: {
+    email: {
+      rules: 'required | isEmail | maxLength(32)',
+      messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
     },
-    callback: function(errors, event) {
-        // 阻止表单提交
-        validator.preventSubmit();
-        // do something...
+    phone: {
+      rules: 'isPhone',
+      messages: "手机号： {{value}} 不合法"
     }
+  },
+  callback: function (result, error) {
+    // 阻止表单提交
+    validator.preventSubmit();
+    // do something...
+  }
 });
-```
 
-无 `<form>` 用法：
-
-```html
-<div class="form-group">
-    <label for="email">邮箱：</label>
-    <input class="form-control" id="email" name="email" type="email" placeholder="请输入邮箱" />
-</div>
-```
-
-```js
-import validateFramework from 'validate-framework';
-
-const validator = new validateFramework({
-    fields: {
-        email: {
-            rules: 'required | isEmail | maxLength(32)',
-            messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
-        }
-    },
-    callback: function(errors, event) {
-        // do something...
-    }
-});
-// 手动触发验证
+// 验证
 validator.validate();
 ```
-
-服务端用法：
-
-```js
-import validateFramework from 'validate-framework';
-
-var bodyData = {
-    email: "example#example.com",
-    birthday: "2012-12-12"
-};
-var validator = new validateFramework({
-    bodyData: bodyData,
-    fields: {
-        email: {
-            rules: 'required | isEmail | maxLength(32)',
-            messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
-        },
-        birthday: {
-            rules: 'required | isDate',
-            messages: "不能为空 | 请输入合法日期"
-        }
-    },
-    callback: function(errors, event) {
-        // do something...
-    }
-});
-// 手动触发验证
-validator.validate();
-```
-
-
-字符串验证：
-
-```js
-import validateFramework from 'validate-framework';
-
-var v = new validateFramework();
-v.isEmail('example@qq.com');
-v.isIp('192.168.1.1');
-v.isPhone('170111222231');
-v.lessThan('11', '22');
-v.greaterThanDate('2010-01-02', '2010-01-01');
-```
-
-
 
 ## 说明文档
 
 > new validateFramework(options)
 
-### 参数（可选，无参为字符串验证）
+### options
 
-**`options`** （可选） 是 Validator 的第二个参数
+**`options`** （必选）
 
-  * `formName` （可选） 是 `<form>` 中的 `name` 或者 `id` 的值
-  * `bodyData` （可选） 此参数用作 express 服务端的数据接收入口。此参数与`formName` 、`errorPlacement` 等 DOM 相关的参数不可同时存在
-  * `fields` （可选） 表单验证域 `rules` 和 `messages` 集合，后续可通过 `.addMethod(name, method)` 和 `.removeFields(fieldNames)` 进行变更
-  * `errorPlacement` （可选） 错误信息位置，默认位置为表单元素的后一个元素
+  * `formName` （必选） 是 `<form>` 中的 `name` 或者 `id` 的值
+  * `fields` （可选） 表单验证域 `rules` 和 `messages` 集合，后续可通过 `.addMethods(methods)` 和 `.removeMethods(...names)` 进行变更
+  * `errorPlacement` （可选） 错误信息位置
   * `callback` （可选） 表单提交 或 `.validate()` 调用后触发
-  * `prefix` （可选） 验证正确或错误 class 或 id 前缀，默认 `valid`
-  * `errorEl` （可选） 验证错误创建的元素，默认 `em`
-  * `eventLevel` （可选） 用户编辑表单后 触发事件级别，有三种参数可选： `off` 不监听，`change` 监听改变事件， `all` 监听输入事件和改变事件，默认 `all`。
+  * `classNames` （可选） 验证正确或错误 class
 
 ### 参数示例
 
@@ -161,18 +83,16 @@ v.greaterThanDate('2010-01-02', '2010-01-01');
 
 ```js
 fields: {
-    email: {
-        rules: 'required | isEmail | maxLength(32)',
-        messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
-    },
-    phone: {
-        rules: 'isPhone',
-        messages: "手机号： {{value}} 不合法"
-    }
+  email: {
+    rules: 'required | isEmail | maxLength(32)',
+    messages: "不能为空 | 请输入合法邮箱 | 不能超过 {{param}} 个字符"
+  },
+  phone: {
+    rules: 'isPhone',
+    messages: "手机号： {{value}} 不合法"
+  }
 }
 ```
-
-**`bodyData`** ： 遵循为 express 的 body-parser 表单数据格式：`{email: "example#example.com", birthday: "2012-12-12"}`
 
 注： `email` 、`phone` 为表单 `name` 属性<br />
 `rules` ：（必选） 一个或多个规则（中间用 ` | ` 分隔）<br />
@@ -181,11 +101,11 @@ fields: {
 **`errorPlacement`** ：
 
 ```js
-errorPlacement: function(errorEl, fieldEl) {
-    // 非 label 、radio 元素
-    if (fieldEl.parentNode !== undefined) {
-        fieldEl.parentNode.appendChild(errorEl);
-    }
+errorPlacement: function (errorEl, fieldEl) {
+  // 非 label 、radio 元素
+  if (fieldEl.parentNode !== undefined) {
+    fieldEl.parentNode.appendChild(errorEl);
+  }
 },
 ```
 
@@ -195,16 +115,16 @@ errorPlacement: function(errorEl, fieldEl) {
 **`callback`** ：
 
 ```js
-callback: function(errors, event) {
-    // 自定义逻辑
-    if (errors) {
-        // do something...
-    }
+callback: function (result, error) {
+  // 自定义逻辑
+  if (errors) {
+      // do something...
+  }
 }
 ```
 
-注： `event` 当前事件<br />
-`errors` 验证失败的错误 json 集合。表单验证成功， `errors` 的值为 `null`
+注： `result` 验证结果<br />
+`error` 验证失败的错误集合
 
 
 ### 方法
@@ -216,78 +136,52 @@ callback: function(errors, event) {
 返回值为 `Boolean`<br />
 注： 默认使用 submit 按钮提交进行拦截验证，可手动调用 `.validate()` 调用验证所有定义过的元素
 
-如：
-```js
-if (validator.validate()) {
-    // do something...
-};
-```
-
-**`.validateByName(name)` 手动验证单个表单域**
+**`.validateByName(name)` 通过 name 验证单个表单域**
 
 返回值为 `Boolean`<br />
-注： 默认使用表单改变事件拦截验证，当使用 js 方法改变表单的值时，可手动调用 `.validateByName(name)` 进行验证单个域<br />
-`name` 参数为 表单域的 `name` 属性，
 
-**`.preventSubmit()` 阻止表单提交**  无 `<form>` 的表单验证，则参数无效
+**`.preventSubmit()` 阻止表单提交**
 
-**`.addMethod(name, method)` 自定义验证方法**
-
-注： 当遇到默认方法无法实现验证的时候（大多数情况），添加`.addMethod(name, method)`方法进行扩展<br />
-`name` 为校验名称，格式： isDate<br />
-`method` 为自定义方法
+**`.addMethods(methods)` 自定义验证方法**
 
 如：
 ```js
 // checkbox 至少选择两项 方法
-// 扩展内部验证方法 field: 验证域， param: 参数 如 selectLimit(2)
-validator.addMethod('selectLimit', function(field, param) {
+validator.addMethods({
+  selectLimit: function (field, param) {
     // checkbox 至少选择两项
     var checkedNum = 0;
     for (var i = 0, elLength = field.el.length; i < elLength; i++) {
-        if (field.el[i].checked) {
-            checkedNum += 1;
-        }
+      if (field.el[i].checked) {
+        checkedNum += 1;
+      }
     }
     return checkedNum >= param;
+  },
 });
 ```
-
-**`.onInputEvent(name, level)` 绑定用户输入事件和改变事件** 
-
-注：`name` name 属性， `level` 事件级别：有三种参数可选： `off` 不监听，`change` 监听改变事件， `all` 监听输入事件和改变事件，默认 `all`<br />
-如：ajax 验证不需要很高的触发频率，可设置为 `change` 或 `off` 进行手动验证
 
 **`.addFields(fields)` 动态添加 fields 方法**
 
-注： 满足更多动态验证表单的需求。可通过 `.addFields(fields)` 来动态新增一个或多个表单验证域，参数和上述 `fields` 用法一样
+注：通过 `.addFields(fields)` 来动态新增一个或多个表单验证域
 
 ```js
 validator.addFields({
-    userName: {
-        rules: 'required | is_real_name',
-        messages: "不能为空 | 请输入真实姓名"
-    }
+  userName: {
+    rules: 'required | isRealName',
+    messages: "不能为空 | 请输入真实姓名"
+  }
 });
 ```
 
-**`.removeFields(fieldNames)` 动态移除 fields 方法**
-
-注： 满足更多动态验证表单的需求。可通过 `.removeFields(fieldNames)` 来动态移除一个表单验证域，移除之后，验证器不验证该元素<br />
-`fieldNames` 类型为 Array
+**`.removeFields(...names)` 移除 fields 方法**
 
 ```js
 // 移除单个
-validator.removeFields(['userName']);
+validator.removeFields('userName');
 // 移除多个
-validator.removeFields(['userName', 'email']);
+validator.removeFields('userName', 'email');
 ```
-
-**其他**
-
- 1. [动态验证] 当 `field` 验证条件存在，DOM节点不存在时，如果 `field` 包含 `required` 条件，则最终验证不通过，否则通过验证。
- 2. [事件监听] 如果动态验证中，新增节点，默认不会有表单监听，这时需 手动调用 `.onInputEvent(name, level)` 添加监听，无 `<form>` 表单默认无监听
- 3. [错误信息] 错误位置提示信息，`checkbox`、`radio` 元素对于 `label` 元素的位置不固定，各个 UI 组件不统一，默认不设置
 
 ## 内置验证方法
 
@@ -314,78 +208,6 @@ v.isPhone('170111222231');
 - [x] lessThan(param1, param2)  少于某个数
 - [x] greaterThanDate(date1, date2)  大于某个日期
 - [x] lessThanDate(date1, date2)  小于某个日期
-
-验证方法不够？ `.addMethod(name, method)` 添加自定义验证方法（与表单验证自定义方法类似）
-
-
-## 备注
-
-1. 组件只包含验证实现，不包括 UI，因此 UI 部分可以自由发挥<br />
-2. 可选核心组件，脱离dom及事件的支持
-3. 不依赖 jQuery 及其他类库，可结合 jQuery 及其他类库使用
-
-
-##与 2.x.x API 变更
-
- 1. 使用 `es2015` 语法重构、webpack 工程化
- 2. 验证方法名称调整为驼峰式语法
- 3. 为 IE9+ 浏览器而设计，若兼容低版本浏览器，请使用 v2 版本
-
-## 规范
-
-`validate-framework` 使用 `eslint` 来保持代码的正确性和可读性，详情见 `.eslintrc` 文件
-
-
-## 更新日志
-
-### v3.1.0
-
-1.  [新增] 提供不依赖实例的验证方法 `validate.js`
-2.  [调整] `src` 目录文件名称调整
-
-
-### v3.0.0
-
-1.  [新增] 使用 `es2015` 语法重构、webpack 工程化
-2.  [调整] 验证方法名称调整为驼峰式语法
-3.  [调整] v3 为 IE9+ 浏览器而设计，若兼容低版本浏览器，请使用 v2 版本
-
-
-### v2.1.1
-
-1.  [新增] 表单验证成功 class
-2.  [调整] 邮箱验证调整为 w3c 提供的正则
-
-### v2.0.1
-
-1.  解决一些 bug
-
-### v2.0.0
-
-1.  [新增] 服务端验证
-2.  [新增] 无 <form> 验证
-3.  [修改] `formName` 为非必选项
-4.  [修改] 多处重构
-5.  [修改] 调整 API
-
-### v1.4.1
-
-1.  [修正] 执行 `.removeFields` 方法后，应删除对应的错误域
-2.  变更 email 正则
-3.  注释修正
-
-### v1.4.0
-
-1.  [新增] `.addFields` 和 `.removeFields` 扩展方法
-2.  实现动态验证表单域
-3.  微调内部函数结构
-
-### v1.3.0
-
-1.  [新增] 相同 name 属性表单验证
-2.  兼容未在 dom 中的元素，可预先定义
-3.  微调内部函数名称
-
 
 ## LICENSE
 

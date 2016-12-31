@@ -18,7 +18,6 @@ if (env === 'production') {
 
 module.exports = {
   entry: [
-    'babel-polyfill',
     './src/index',
   ],
   devtool: 'source-map',
