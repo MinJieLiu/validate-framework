@@ -1,6 +1,5 @@
 #validate-framework
 
-[![Build Status](https://travis-ci.org/MinJieLiu/validate-framework.svg?branch=master)](https://travis-ci.org/MinJieLiu/validate-framework)
 [![npm version](https://badge.fury.io/js/validate-framework.svg)](https://badge.fury.io/js/validate-framework)
 
 一款轻量、无依赖的 JavaScript 验证组件
