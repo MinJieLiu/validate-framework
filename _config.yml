@@ -1,0 +1,8 @@
+title: Validator.js
+description: JavaScript表单验证，字符串验证
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
