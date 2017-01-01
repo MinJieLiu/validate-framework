@@ -90,6 +90,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _util = __webpack_require__(3);
@@ -129,8 +131,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    value: function afterFieldValidate(isSuccess, error) {
 	      // 错误信息操作
-	      Object.assign(error, {
-	        placeId: 'place_' + (error.id || error.name)
+	      _extends(error, {
+	        placeId: 'valid_error_place_' + (error.id || error.name)
 	      });
 	
 	      // 当前条目验证结果展示
@@ -224,7 +226,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!errorEl) {
 	        // 创建信息元素
 	        errorEl = document.createElement('label');
-	        errorEl.classList.add(classNames.error + '-message');
+	        (0, _util.addClass)(errorEl, classNames.error + '-message');
 	        errorEl.setAttribute('id', error.placeId);
 	      }
 	      errorEl.innerText = error.message;
@@ -259,6 +261,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	var _util = __webpack_require__(4);
 	
@@ -353,7 +357,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function addClass(el, className) {
 	  if (!hasClass(el, className)) {
-	    el.className += ' ' + className; // eslint-disable-line no-param-reassign
+	    if (el.classList) {
+	      el.classList.add(className);
+	    } else {
+	      el.className += ' ' + className; // eslint-disable-line no-param-reassign
+	    }
 	  }
 	}
 	
@@ -364,8 +372,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function removeClass(el, className) {
 	  if (hasClass(el, className)) {
-	    var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
-	    el.className = el.className.replace(reg, ' '); // eslint-disable-line no-param-reassign
+	    if (el.classList) {
+	      el.classList.remove(className);
+	    } else {
+	      var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+	      el.className = el.className.replace(reg, ' '); // eslint-disable-line no-param-reassign
+	    }
 	  }
 	}
 	
@@ -389,7 +401,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // 设置验证信息域属性
 	  var el = field.el;
 	  if (el) {
-	    Object.assign(field, {
+	    _extends(field, {
 	      id: el[0].id,
 	      type: el[0].type,
 	      value: attributeValue(el, 'value'),
@@ -397,7 +409,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  } else {
 	    // 动态删除表单域之后初始化其他属性
-	    Object.assign(field, fieldOtherInitProps);
+	    _extends(field, fieldOtherInitProps);
 	  }
 	}
 
@@ -449,9 +461,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -487,7 +499,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // 合并验证方法
 	    var _this = _possibleConstructorReturn(this, (Core.__proto__ || Object.getPrototypeOf(Core)).call(this));
 	
-	    Object.assign(_this, _testHook2.default);
+	    _extends(_this, _testHook2.default);
 	
 	    // 无参数
 	    if (!options) {
@@ -497,7 +509,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    // params
-	    _this.opts = Object.assign({
+	    _this.opts = _extends({
 	      classNames: {
 	        error: 'valid-error',
 	        success: 'valid-success'
@@ -808,7 +820,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _classCallCheck(this, Validator);
 	
 	    // 绑定验证基本验证方法
-	    Object.assign(this, _extends({}, _testHook2.default));
+	    _extends(this, _extends({}, _testHook2.default));
+	    return this;
 	  }
 	
 	  /**
@@ -821,7 +834,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Validator, [{
 	    key: 'addMethods',
 	    value: function addMethods(methods) {
-	      Object.assign(this, methods);
+	      _extends(this, methods);
 	      return this;
 	    }
 	
@@ -884,65 +897,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	/**
-	 * 验证方法类
+	 * 验证方法
 	 */
 	exports.default = {
 	
-	  // 验证自然数
+	  // 自然数
 	  isNumeric: function isNumeric(field) {
 	    return _regex2.default.numeric.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证整数
+	  // 整数
 	  isInteger: function isInteger(field) {
 	    return _regex2.default.integer.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证浮点数
+	  // 浮点数
 	  isDecimal: function isDecimal(field) {
 	    return _regex2.default.decimal.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证邮箱
+	  // 邮箱
 	  isEmail: function isEmail(field) {
 	    return _regex2.default.email.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证 IP 地址
+	  // IP 地址
 	  isIp: function isIp(field) {
 	    return _regex2.default.ip.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证座机
+	  // 座机
 	  isTel: function isTel(field) {
 	    return _regex2.default.tel.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证手机
+	  // 手机
 	  isPhone: function isPhone(field) {
 	    return _regex2.default.phone.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证字母数字下划线
+	  // 字母数字下划线
 	  isAbc: function isAbc(field) {
 	    return _regex2.default.abc.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证URL
+	  // URL
 	  isUrl: function isUrl(field) {
 	    return _regex2.default.url.test((0, _util.getValue)(field));
 	  },
 	
 	
-	  // 验证日期
+	  // 日期
 	  isDate: function isDate(field) {
 	    // 解析日期
 	    var thatDate = (0, _util.getValue)(field);
@@ -957,7 +970,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	
 	      var numDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	      // 闰年2月29号
+	      // 闰年 2 月 29 号
 	      if (year % 400 === 0 || year % 100 !== 0 && year % 4 === 0) {
 	        numDays[1] = 29;
 	      }
@@ -980,7 +993,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	
 	
-	  // 多于 某个数
+	  // 大于某个数
 	  greaterThan: function greaterThan(field, param) {
 	    var value = (0, _util.getValue)(field);
 	    if (!_regex2.default.decimal.test(value)) {
@@ -990,7 +1003,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	
 	
-	  // 少于 某个数
+	  // 小于某个数
 	  lessThan: function lessThan(field, param) {
 	    var value = (0, _util.getValue)(field);
 	    if (!_regex2.default.decimal.test(value)) {
@@ -1099,36 +1112,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+	                                                                                                                                                                                                                                                                   * 通过 field 验证
+	                                                                                                                                                                                                                                                                   * @param  {Object} field 验证信息域
+	                                                                                                                                                                                                                                                                   * @return {Object} 包含结果、错误信息
+	                                                                                                                                                                                                                                                                   */
+	
+	
 	exports.default = function (field) {
 	  var _this = this;
 	
 	  // 成功标识
 	  var result = true;
-	  var error = null;
-	
-	  var isRequired = field.rules.includes('required');
-	  var isEmpty = field.value === undefined || field.value === null || field.value === '';
+	  // 错误信息域
+	  var error = {
+	    id: field.id,
+	    name: field.name,
+	    value: field.value
+	  };
 	
 	  var rules = field.rules.split(/\s*\|\s*/g);
 	
+	  var isRequired = rules.some(function (rule) {
+	    return rule === 'required';
+	  });
+	  var isEmpty = field.value === undefined || field.value === null || field.value === '';
+	
 	  rules.forEach(function (rule, index) {
-	    // 逐条验证，如果已经验证失败，则不需要进入当前条目再次验证
+	    // 标识不通过，则不继续验证该规则
 	    if (!result) {
 	      return;
 	    }
 	
-	    // 转换如：maxLength(12) => ['maxLength', 12]
+	    // 转换：maxLength(12) => ['maxLength', 12]
 	    var parts = /^(.+?)\((.+)\)$/.exec(rule);
 	    var method = rule;
 	    var param = '';
 	
-	    // 解析带参数的验证如 max_length(12)
+	    // 解析带参数的验证如 maxLength(12)
 	    if (parts) {
 	      method = parts[1];
 	      param = parts[2];
 	    }
 	
-	    // 如果该规则为 required，并且该值为空，则不验证
+	    // 信息域规则中没有包含 required，并且该值为空，则不验证
 	    var jumpRule = !isRequired && isEmpty;
 	
 	    // 匹配验证
@@ -1138,23 +1165,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	
-	    // 错误信息域
-	    error = {
-	      id: field.id,
-	      name: field.name,
-	      value: field.value,
-	      rule: method
-	    };
-	
-	    // 解析错误信息
+	    // 验证不通过，解析错误信息
 	    if (!result) {
-	      // 错误提示
-	      error.message = function () {
-	        var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[index] : '';
-	
-	        // 替换 {{value}} 和 {{param}} 为指定值
-	        return seqText ? seqText.replace(/\{\{\s*value\s*}}/g, field.value).replace(/\{\{\s*param\s*}}/g, param) : seqText;
-	      }();
+	      _extends(error, {
+	        rule: method,
+	        message: function () {
+	          var seqText = field.messages ? field.messages.split(/\s*\|\s*/g)[index] : '';
+	          // 替换 {{value}} 和 {{param}} 中参数
+	          return seqText ? seqText.replace(/\{\{\s*value\s*}}/g, field.value).replace(/\{\{\s*param\s*}}/g, param) : seqText;
+	        }()
+	      });
 	    }
 	  });
 	

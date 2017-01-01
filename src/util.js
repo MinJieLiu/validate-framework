@@ -76,7 +76,11 @@ function hasClass(el, className) {
  */
 export function addClass(el, className) {
   if (!hasClass(el, className)) {
-    el.className += ` ${className}`; // eslint-disable-line no-param-reassign
+    if (el.classList) {
+      el.classList.add(className);
+    } else {
+      el.className += ` ${className}`; // eslint-disable-line no-param-reassign
+    }
   }
 }
 
@@ -87,8 +91,12 @@ export function addClass(el, className) {
  */
 export function removeClass(el, className) {
   if (hasClass(el, className)) {
-    const reg = new RegExp(`(\\s|^)${className}(\\s|$)`);
-    el.className = el.className.replace(reg, ' '); // eslint-disable-line no-param-reassign
+    if (el.classList) {
+      el.classList.remove(className);
+    } else {
+      const reg = new RegExp(`(\\s|^)${className}(\\s|$)`);
+      el.className = el.className.replace(reg, ' '); // eslint-disable-line no-param-reassign
+    }
   }
 }
 

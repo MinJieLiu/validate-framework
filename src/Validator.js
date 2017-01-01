@@ -20,7 +20,7 @@ export default class Validator extends Core {
   afterFieldValidate(isSuccess, error) {
     // 错误信息操作
     Object.assign(error, {
-      placeId: (`place_${error.id || error.name}`),
+      placeId: (`valid_error_place_${error.id || error.name}`),
     });
 
     // 当前条目验证结果展示
@@ -103,7 +103,7 @@ export default class Validator extends Core {
     if (!errorEl) {
       // 创建信息元素
       errorEl = document.createElement('label');
-      errorEl.classList.add(`${classNames.error}-message`);
+      addClass(errorEl, `${classNames.error}-message`);
       errorEl.setAttribute('id', error.placeId);
     }
     errorEl.innerText = error.message;
